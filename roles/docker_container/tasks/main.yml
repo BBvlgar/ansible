@@ -1,0 +1,207 @@
+---
+##
+# Pull command from docker module does not work as expected and
+# has thus been replaced with "docker pull" on the command line
+##
+
+# Tell the user, which container will be worked on
+- debug:
+    msg: "Now container *{{ app.name }}* will be worked on:"
+
+# There are basically two ways to connect data space to a container:
+# * Bind: a specific folder within the host system will be mounted to the
+#   container
+# * Mount: there will be a Docker volume that will provide one folder to be
+#   mounted to the container
+#
+# Within this role, we handle two types of data binding and one type of mounting
+#
+# This first helper task prepares the first type of data binding, the binding of
+# whole folders / directories
+- name: 'fill first volume helper: prepare for directory binds'
+  set_fact:
+    # * `docker_home` is a globally (at least for server) defined base directory
+    #   where directories and files of binds should be stored.
+    # * `app.shared_home_app` would allow one to use one shared base path for
+    #   subfolders and files with another container / app.
+    #   Is regularly defined by app variable within the host_vars file.
+    #   Defaults to the current app name, `app.name`
+    # * `helper` is the loop variable – regularly known as `item`.
+    #
+    # Since we want to handle a bind, the given array represented as `helper`
+    # has to have two entries and can have another third entry.
+    # * `helper.0` represents the subfolder mentioned above that should be
+    #   placed on the host system.
+    # * `helper.1` is the destination path within the container
+    # * `helper.2` is the optional mention of how to bind – with read only
+    #   access (`ro`) or with read write access (`rw`).
+    #   Docker defaults to `rw` if not defined.
+    volvar: "{{ docker_home }}/{{ app.shared_home_app | default(app.name) }}/{{ helper.0 }}:{{helper.1}}{% if helper.2 is defined and helper.2 != '' %}:{{ helper.2 }}{% endif %}"
+  # Only run this task, if there is a folder on the host defined and the current
+  # App / Container should even be worked on.
+  when: helper.1 is defined and ((runallapps is defined and runallapps) or (app.run is defined and app.run))
+  # `with_items` tells Ansible to repeat this task for every element of a list /
+  # array ( [] ).
+  # By combining `with_items` and a `when` condition, the condition will be
+  # checked for every run through the loop.
+  # By default – i.e. if the variable is not defined – this task should loop
+  # over an empty array.
+  # OFF TOPIC: For usage with dictionaries / objects, there would be `with_dict`
+  with_items: "{{ app.directories | default([]) }}"
+  # The result of this task is the variable `volume_helper1`.
+  # Of this object, the only interesting part afterwards will be the objects
+  # behind the key `results` – thats how Ansible allows Skripts to access the
+  # results of Tasks within a loop like that.
+  register: volume_helper1
+  # Since the role `docker_single_container` is a role that is reused in lots of
+  # other roles and / or playbooks and is likely to have nested loops, Ansible
+  # easily gets confused by nested `item` variables.
+  # To avoid this confusion, all loops within this role are completed by a
+  # `loop_control` section that defines the `loop_var` which will replace the
+  # usage of `item` within the current task.
+  loop_control:
+    loop_var: helper
+
+# Basically the same as above – instead for directories now for files that
+# should be bound to the Docker container.
+- name: 'fill second volume helper: prepare for file binds'
+  set_fact:
+    volvar: "{{ docker_home }}/{{ app.shared_home_app | default(app.name) }}/{{ file.0 }}:{{file.1}}{% if file.2 is defined and file.2 != '' %}:{{ file.2 }}{% endif %}"
+  when: file.1 is defined and ((runallapps is defined and runallapps) or (app.run is defined and app.run))
+  with_items: "{{ app.mountfiles | default([]) }}"
+  register: volume_helper2
+  loop_control:
+    loop_var: file
+
+# The `register:variable` attribute of tasks like used above creates a variable
+# with a relatively unusable object behind `variable.results` at first.
+# To get a clean, usable array of bind commands to be used for the Container
+# creation, we have to do some "magic" here:
+# `volumes1` will be an array of strings with one of the following
+# forms after that task:
+# * `path_on_host:path_on_container` if only two elements are defined
+# * `path_on_host:path_on_container:mode` if all three elements are defined
+- name: reduce first volume helper
+  set_fact:
+    volumes1: "{{ volume_helper1.results | map(attribute='ansible_facts.volvar') | list }}"
+  ignore_errors: true
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# again the same thing for files:
+- name: reduce second volume helper
+  set_fact:
+    volumes2: "{{ volume_helper2.results | map(attribute='ansible_facts.volvar') | list }}"
+  ignore_errors: true
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# now that we prepared all bind commands for our folders that should be bound,
+# we have to ensure that the folders on the host system do exist.
+- name: Create needed dirs – if they do not already exist
+  file:
+    path: "{{ docker_home }}/{{ app.shared_home_app | default(app.name) }}/{{ dir.0 }}"
+    state: directory
+    mode: "{{ dir.3 | default('0755') }}"
+  with_items: "{{ app.directories | default([]) }}"
+  loop_control:
+    loop_var: dir
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# If there is defined one or more git repository to be checked out, prepare the
+# checkout.
+- name: correct git destinations
+  set_fact:
+    git:
+      repo: "{{ gititem.repo }}"
+      dest: "{{ docker_home }}/{{ app.shared_home_app | default(app.name) }}/{{ gititem.dest }}"
+  with_items: "{{ app.git | default([]) }}"
+  register: dockerAndGit
+  loop_control:
+    loop_var: gititem
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# again prepare usable variable for the git commands below
+- name: fetch git items out of the previous results
+  set_fact:
+    docker_git: "{{ dockerAndGit.results | map(attribute='ansible_facts.git') | list }}"
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# run the git checkout process
+- name: checkout git repo if defined
+  git: "{{ repo }}"
+  with_items: "{{ docker_git | default([]) }}"
+  loop_control:
+    loop_var: repo
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# Same as above for directories – now we ensure that our files that should be
+# bound to the container do exist.
+# If we would not do this, Docker would assume the bind paths to be directories
+# and create folders, what could destroy the container when it requires a file
+# on the destination.
+- name: Create needed files – if they do not already exist
+  file:
+    path: "{{ docker_home }}/{{ app.shared_home_app | default(app.name) }}/{{ file.0 }}"
+    state: touch
+    mode: "{{ file.3 | default('0755') }}"
+  with_items: "{{ app.mountfiles | default([]) }}"
+  loop_control:
+    loop_var: file
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# pull the currently newest image for the container rollout
+- name: Pull updated images for the container rollout
+  command: "docker pull {% if app.repository is defined and app.repository != '' %}{{ app.repository }}/{% endif %}{{ app.image }}:{{ app.version | default('latest') }}"
+  when: ((app.pull is defined and app.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
+        ((runallapps is defined and runallapps) or (app.run is defined and app.run))
+
+# create Docker networks if they are defined and needed
+- name: Make sure docker networks exists
+  docker_network:
+    name: "{{ network.name }}"
+    appends: yes
+  with_items: "{{ app.networks | default([]) }}"
+  loop_control:
+    loop_var: network
+  ignore_errors: yes
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# If one or more directories of the container should be mounted from a data
+# volume, at this moment that single one or the other ones will be created
+- name: Create Docker volumes
+  docker_volume:
+    name: "{{ vol.name }}"
+    state: "{{ vol.state | default('present') }}"
+  with_items: "{{ app.docker_volumes | default([]) }}"
+  loop_control:
+    loop_var: vol
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+# Now the final app container will be started with all defined variables
+# For more information on this task:
+# https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
+- name: Control App container
+  docker_container:
+    image: "{% if app.repository is defined and app.repository != '' %}{{ app.repository }}/{% endif %}{{ app.image }}:{{ app.version | default('latest') }}"
+    name: "{{ app.name }}"
+    stop_timeout: "{{ app.stop_timeout | default(10) }}"
+    hostname: "{{ app.hostname | default(app.name) }}"
+    capabilities: "{{ app.capabilities | default([]) }}"
+    state: "{{ app.state | default( state ) }}"
+    env: "{{ app.env | default({}) }}"
+    recreate: "{{ app.recreate | default( recreate ) }}"
+    exposed: "{{ app.expose_ports | default([]) }}"
+    memory: "{{ app.memory_limit | default('')}}"
+    log_driver: "{{ app.log_driver | default('json-file') }}"
+    log_options: "{{ app.log_options | default({}) }}"
+    networks: "{{ app.networks | default([]) }}"
+    published_ports: "{{ app.aux_ports | default([]) }}"
+    volumes: "{{  volumes1 | default([]) + volumes2 | default([]) + app.volumes | default([]) }}"
+    volumes_from: "{{ app.volumes_from | default([]) }}"
+    restart_policy: "{{ app.restart_policy | default(docker_restart_policy) }}"
+    labels: "{{ app.labels | default({}) }}"
+    user: "{{ app.user | default('') }}"
+    privileged: "{{ app.privileged | default('off') }}"
+    working_dir: "{{ app.working_dir | default('') }}"
+    command: "{{ app.command | default('') }}"
+    init: "{{ app.init | default('no') }}"
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
