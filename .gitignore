@@ -1,0 +1,5 @@
+*.retry
+.logintask
+.directory
+.vagrant
+.DS_Store
