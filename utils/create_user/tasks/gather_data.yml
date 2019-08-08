@@ -1,0 +1,131 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+
+  vars:
+    env: testing
+
+  vars_files:
+    - ../../../environments/{{ env }}/group_vars/manage_user_secrets.yml
+
+  vars_prompt:
+    - name: "admin_user"
+      prompt: "Please enter your username (admin_user)"
+      private: no
+      when: admin_user is not defined
+
+    - name: "admin_password"
+      prompt: "Please enter your password (admin_password)"
+      private: yes
+      when: admin_password is not defined
+
+    - name: "ticket_user"
+      prompt: "Please enter your user for the ticket system"
+      private: no
+      when: ticket_user is not defined
+
+    - name: "ticket_password"
+      prompt: "Please enter your password for the ticket system"
+      private: yes
+      when: ticket_password is not defined
+
+    - name: "ticket_number"
+      prompt: "Please enter the ticket number, e.g. AM-1 (ticket_number)"
+      private: no
+      when: ticket_number is not defined
+
+  tasks:
+    - name: Get data fields from ticket
+      jira: username={{ ticket_user }} password={{ ticket_password }} uri={{ ticket_system }} project=AM operation=fetch issue={{ ticket_number }}
+      register: data
+      no_log: "{{ no_log|default('true') }}"
+
+    - name: Create random password (for user login)
+      shell: openssl rand -base64 12
+      register: password
+
+    - set_fact:
+        user:
+          registration:
+            user:
+              username:     "{{ data.meta.fields.customfield_10144 }}"
+              name:         "{{ data.meta.fields.customfield_10135 }}"
+              firstname:    "{{ data.meta.fields.customfield_10136 }}"
+              mail:         "{{ data.meta.fields.customfield_10143|lower }}"
+              lvl:          "{{ data.meta.fields.customfield_10141.value }}"
+              valuestream:  "{{ data.meta.fields.customfield_11200.value|default('null') }}"
+              location:     "{{ data.meta.fields.customfield_10138.value }}"
+              mobilephone:  "{{ data.meta.fields.customfield_10201 }}"
+              telephone:    "{{ data.meta.fields.customfield_10201 }}"
+              password:     "{{ password.stdout }}"
+            contract:
+              days:         "{{ data.meta.fields.customfield_10137 }}"
+              startdate:    "{{ data.meta.fields.customfield_10133 }}"
+              enddate:      "{{ data.meta.fields.customfield_10134 }}"
+              hours:        "{{ data.meta.fields.customfield_10142 }}"
+              state:        "{{ data.meta.fields.customfield_10138.value }}"
+              employer:     "{{ data.meta.fields.customfield_11600.value }}"
+              employerId:     "{{ data.meta.fields.customfield_11600.id }}"
+              mon:			"{{data.meta.fields.customfield_12902}}"
+              tue:			"{{data.meta.fields.customfield_12903}}"
+              wed:			"{{data.meta.fields.customfield_12904}}"
+              thu:			"{{data.meta.fields.customfield_12905}}"
+              fri:			"{{data.meta.fields.customfield_12906}}"
+              sat:			"{{data.meta.fields.customfield_12907}}"
+              sun:			"{{data.meta.fields.customfield_12908}}"
+          secret: "{{ secret }}"
+
+        # Set input variables as host facts for use in other playbooks on this host
+        admin_user: "{{admin_user}}"
+        admin_password: "{{ admin_password }}"
+        ldap_url: "{{ ldap_url }} "
+
+# Validation
+    - name: Test if all fields are set
+      fail: msg="Require fields are not set!"
+      with_items:
+        - "{{ user.registration.user.username }}"
+        - "{{ user.registration.user.mail }}"
+      when: "{{ item|trim =='' }}"
+
+    - name: Test if contract is valid
+      fail: "msg='Please correct the contract type which is set to >{{ data.meta.fields.customfield_12107.value }}< with and end date of >{{ user.registration.contract.enddate }}< in the ticket {{ ticket_number }}'"
+      when: ( data.meta.fields.customfield_12107.id == "11806" and user.registration.contract.enddate == "" ) or ( data.meta.fields.customfield_12107.id == "11807" and user.registration.contract.enddate != "" )
+
+    - name: Copy generation script
+      copy: src=../files/openldap_passwd.py dest=/tmp/openldap_passwd.py mode=755
+
+    - name: Hash password
+      shell: cd /tmp ; python -c "import openldap_passwd ; print openldap_passwd.make_secret('{{ user.registration.user.password }}')" | base64
+      register: password
+
+    - name: Delete generation script
+      file: path=/tmp/openldap_passwd.py state=absent
+
+    # Workaround to generate utf-8 from unicode and then encode it in base64
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.location }} | base64"
+      register: location_b64
+
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.firstname }} | base64"
+      register: firstname_b64
+
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.name }} | base64"
+      register: lastname_b64
+
+    - name: Base64 encode variables
+      shell: "printf '{{ user.registration.user.firstname }} {{ user.registration.user.name }}' | base64"
+      register: name_b64
+
+
+    # Set base64 encoded variables
+    - set_fact:
+        password_enc: "{{ password.stdout }}"
+        location_b64: "{{ location_b64.stdout }}"
+        firstname_b64: "{{ firstname_b64.stdout }}"
+        lastname_b64: "{{ lastname_b64.stdout }}"
+        name_b64: "{{ name_b64.stdout }}"
+
+    - debug: msg="Creating user with the following details {{ user.registration.user.username  }} {{ user.registration.user.password }} with employer {{ user.registration.contract.employer }} id {{ user.registration.contract.employerId }}" 

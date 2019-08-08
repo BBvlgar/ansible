@@ -1,0 +1,45 @@
+---
+- hosts: apps
+
+  tasks:
+    - set_fact:
+        user: "{{ hostvars.get('localhost').get('user') }}"
+
+    - set_fact: 
+        mail_template: "welcome_mail.j2"
+
+    - debug:
+        msg: "System {{ mail_template }} has uuid {{ mail_template }}"
+
+    - set_fact: 
+        mail_template: "welcome_mail_sopra.j2"
+      when: "{{ user.registration.contract.employerId }} == 12700"  
+
+    - debug:
+        msg: "System {{ mail_template }} has uuid {{ mail_template }}"
+
+    - set_fact: 
+        mail_template: "welcome_mail_extern.j2"
+      when: "{{ user.registration.contract.employerId }} == 11402"  
+
+    - debug:
+        msg: "System {{ mail_template }} has uuid {{ mail_template }}"
+
+    - set_fact: 
+        mail_template: "welcome_mail_extern.j2"
+      when: "{{ user.registration.contract.employerId }} == 11403"  
+
+    - debug:
+        msg: "System {{ mail_template }} has uuid {{ mail_template }}"
+
+    - name: Copy welcome mail to server
+      template: src=../templates/{{ mail_template }} dest=/tmp/{{ user.registration.user.mail }}.welcome
+
+    - pause: prompt="Welcome email will be sent to mailbox {{ user.registration.user.mail }}"
+
+    - name: Send welcome mail
+      shell: cat /tmp/{{ user.registration.user.mail }}.welcome | mail -s "Herzlich Willkommen bei der it-e!" {{ user.registration.user.mail }}
+
+    - name: Make sure welcome mail is deleted
+      file: path=/tmp/{{ user.registration.user.mail }}.welcome state=absent
+

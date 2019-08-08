@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+
+  vars_files:
+  - ../vars/level.yml
+  - ../vars/location.yml
+  - ../vars/contact.yml
+
+  tasks:
+    - name: Check if user does not yet exist (do NOT use ldap filter since the return code does not depend on the filter results)
+      command: >
+        ldapsearch -x
+        -D "uid={{ admin_user }},ou=people,dc=it-economics,dc=de"
+        -w "{{ admin_password }}"
+        -H "{{ ldap_url }}"
+        -b "ou=people,dc=it-economics,dc=de"
+        uid={{ user.registration.user.username }}
+      register: user_exists
+      no_log: "{{ no_log|default('true') }}"
+
+    - include: ldap_user.yml
+      when: "'numEntries: 1' not in user_exists.stdout"
+
+    - include: ldap_groups.yml

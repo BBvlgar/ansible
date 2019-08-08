@@ -1,0 +1,47 @@
+---
+- hosts: pki
+  vars:
+    env: testing
+    workdir: /home/sysadmin/Private/it-economics_CA
+
+  vars_files:
+    - ../../../environments/{{env}}/group_vars/manage_user_secrets.yml
+
+  tasks:
+#    - name: Make sure ecryptfs is mounted
+#      shell: mount | grep ecryptfs
+#      register: ecryptfs_mounted
+#      ignore_errors: yes
+
+#    - pause: prompt="Please mount the sysadmin ecryptfs before proceeding, then press enter"
+#      when: ecryptfs_mounted|failed
+
+    - name: Get location of certificate file
+      shell: find {{ workdir }}/internal {{ workdir }}/external -name "it-economics_{{ hostvars.get('localhost').get('email') }}.crt" | grep "{{ workdir }}"
+      register: cert
+      ignore_errors: yes
+
+    # sort hit list by certificate creation date (field 2) then get the last entry (tail -n 1) and check if this is already revoked (grep ^R)
+    - name: Check if already revoked
+      shell: grep {{ hostvars.get('localhost').get('email') }} {{ workdir }}/db/index.txt | sort -n -k2 | tail -n 1 | grep "^R"
+      register: revoked
+      ignore_errors: yes
+
+    - block:
+      - name: Revoke SSL certificate
+        shell: openssl ca {{ item }} -passin pass:{{ ca_password }}
+        environment:
+          OPENSSL_CONF: "{{ workdir }}/ca/it-economics_CA.cnf"
+        with_items:
+          - "-revoke {{ cert.stdout }}"
+          - "-gencrl -out {{ workdir }}/ca/it-economics_CA.crl"
+
+      - name: Ensure revoked certificates dir exists
+        file: path={{ workdir }}/revoked state=directory
+
+      - name: Move old certificates to revoked directory
+        shell: mv {{ cert.stdout|dirname }} {{ workdir }}/revoked/{{ hostvars.get('localhost').get('email') }}.$(date +%s)
+      when: revoked is failed and cert is success
+
+    - name: Copy CRL to s3
+      aws_s3: src="{{ workdir }}/ca/it-economics_CA.crl" aws_access_key={{ aws_access_key }} aws_secret_key={{ aws_secret_key }} bucket=ca.it-economics.de mode=put region=eu-west-1 object=/it-economics_CA.crl

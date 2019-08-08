@@ -1,0 +1,14 @@
+---
+# Find user account in local files
+# TODO Prettify output so that only HITS are shown
+- hosts: all
+  tasks:
+  - name: Look for user in file
+    shell: "test -f {{ item }} && grep {{ hostvars.get('localhost').get('username') }} {{ item }}"
+    with_items:
+    - /etc/ssh/sshd_config
+    - /etc/passwd
+    - /etc/apache2/dav_svn.authz
+    ignore_errors: true
+    no_log: true
+

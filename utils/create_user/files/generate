@@ -1,0 +1,120 @@
+#!/bin/bash -e
+
+# COMMAND LINE AGRS
+TYPE="$1"
+EMAIL="$2"              # email address
+CN="$3"                 # common name
+CA_PASSWD="$4"          # ca private key passphrase
+KEY_PASSWD="$5"         # new certificate private key passphrase
+
+# GLOBAL VARS
+PKI_ROOT=~/Private/it-economics_CA
+PKI_ROOT_CA=$PKI_ROOT/ca/it-economics_CA.crt
+KEY_ROOT=$PKI_ROOT/$TYPE/$EMAIL
+REQEXTS=local_ca_${TYPE}_reqexts
+EXTENSIONS=local_ca_${TYPE}_extensions
+STUB=it-economics_$EMAIL
+
+# USAGE
+SCRIPTNAME="generate"
+USAGE="Usage: $SCRIPTNAME [internal|external|server] [e-mail adress] [full name] [CA private key password] [New private key password]
+
+\ne.g.: $SCRIPTNAME internal tklein@it-economics.de 'Torsten Klein'
+\ne.g.: $SCRIPTNAME external mathias.menzel.extern@it-economics.de 'Mathias Menzel' Def12345 Admin123
+"
+
+# Exports for OpenSSL
+export CN
+export EMAIL
+export OPENSSL_CONF=$PKI_ROOT/ca/it-economics_CA.cnf
+
+log() {
+    local prefix="ERROR"
+    case $1 in
+        0)
+            prefix="INFO"
+        ;;
+        *)
+            prefix="ERROR"
+        ;;
+    esac
+    echo $(date --rfc-3339=seconds) $prefix: $2
+    
+    if [ $1 -ne 0 ] ; then
+        exit 1
+    fi
+}
+
+# Sanity checks
+sanity() {
+    if [ -z "$1" ] ; then
+        echo -e $USAGE
+        exit 1
+    else
+        for i in $@ ; do
+            if [ -z "$i" ] ; then
+                echo -e $USAGE
+                exit 1
+            fi
+        done
+    fi
+
+    if [ -e $KEY_ROOT ]; then
+        log 1 "$KEY_ROOT exists!"
+    fi
+}
+
+createKey() {
+        local csr=${STUB}.csr
+        local pem=${STUB}.crt
+        local key=${STUB}.key
+        local p12=${STUB}.p12
+        local der=${STUB}.cer
+
+	mkdir -p $KEY_ROOT
+        log  $? "Creating $KEY_ROOT with CN: $CN"
+	
+	cd $KEY_ROOT
+	log $? "Changing workdir to $KEY_ROOT"
+
+	openssl req -batch -passin pass:"$KEY_PASSWD" -passout pass:"$KEY_PASSWD" -newkey rsa:4096 -reqexts $REQEXTS -keyout $key -keyform PEM -out $csr -outform PEM 
+        log $? "Generating new key $key with specified phassphrase and creating CSR $csr"
+
+	openssl ca -passin pass:"$CA_PASSWD" -batch -extensions $EXTENSIONS -in $csr -out $pem
+	log $? "Handling CSR $csr with CA from $PKI_ROOT"
+
+	openssl verify -CAfile $PKI_ROOT_CA $pem
+	log $? "Verifying new certificate $pem against CA $PKI_ROOT_CA"
+
+	chmod 400 $key
+	
+        openssl pkcs12 -passin pass:"$KEY_PASSWD" -passout pass:"$KEY_PASSWD" -export -inkey $key -in $pem -name "it-economics PKCS#12 ${EMAIL}" -out $p12
+        log $? "Generating P12 file $p12"
+        
+        openssl x509 -in $pem -outform der -out $der
+        log $? "Generating DER encoded file $der"
+
+}
+
+# Check if $EMAIL is a valid e-mail adress
+validateEmail() {
+    echo "$EMAIL" | grep -E "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" > /dev/null
+    log $? "Checking if $EMAIL is valid"
+}
+############# main ############
+sanity $@
+validateEmail
+
+case "$TYPE" in
+    internal|external)
+        createKey
+    ;;
+  *)
+    echo $USAGE
+    exit 1
+    ;;
+esac
+###########################
+
+
+cd -
