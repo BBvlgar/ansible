@@ -1,0 +1,11 @@
+// Automatically upgrade packages from these (origin:archive) pairs
+Unattended-Upgrade::Allowed-Origins {
+	"${distro_id}:${distro_codename}-security";
+};
+
+// List of packages to not update
+Unattended-Upgrade::Package-Blacklist {
+};
+
+// Unattended-Upgrade::Mail "security@example.com";
+// Unattended-Upgrade::MailOnlyOnError "true";
