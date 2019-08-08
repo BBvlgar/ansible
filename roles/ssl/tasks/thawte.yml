@@ -1,0 +1,19 @@
+- name: Ensure folders exist
+  file: path=/etc/ssl/{{ item }} state=directory owner=root group=root mode=0770
+  with_items:
+    - thawte
+
+# 'path' is the relative path from the execution of the playbook
+- name: Check if certificate folder exists on localhost
+  local_action: stat path=./certs/thawte/any.it-economics.de
+  become: no
+  register: thawte
+
+- name: Ensure thawte config for host is installed
+  template: src={{ item }} dest=/etc/ssl/thawte/{{ item | basename }} owner=root group=root mode=0400
+  with_items:
+    - "{{ certs_base }}/thawte/chain.crt"
+    - "{{ certs_base }}/thawte/any.it-economics.de/any.it-economics.de.crt"
+    - "{{ certs_base }}/thawte/any.it-economics.de/any.it-economics.de.key"
+  ignore_errors: true
+  when: thawte.stat.exists

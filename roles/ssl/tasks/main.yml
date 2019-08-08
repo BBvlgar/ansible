@@ -1,0 +1,31 @@
+---
+- name: Ensure dependencies are installed
+  apt: name={{ item }} state=present update_cache=no
+  with_items:
+    - openssl
+
+- include: tls_install.yml
+
+- name: Get CA certificates
+  get_url: url=http://ca.it-economics.de/{{ item }} dest=/usr/share/ca-certificates/{{ item }} mode=0755 force=yes
+  with_items:
+    - it-economics_CA.crt
+    - StartCom_Class_3_OV_Server_CA.crt
+  when: not ansible_os_family == 'SHMZ'
+
+- name: Get Amazon RDS certificates
+  get_url: url=https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem dest=/usr/share/ca-certificates/rds-combined-ca-bundle.crt mode=0755
+  when: not ansible_os_family == 'SHMZ'
+
+- name: Enable CA certificates
+  lineinfile: dest=/etc/ca-certificates.conf state=present line={{ item }}
+  with_items:
+    - it-economics_CA.crt
+    - StartCom_Class_3_OV_Server_CA.crt
+    - "{{ ansible_fqdn }}.crt"
+    - rds-combined-ca-bundle.crt
+  when: not ansible_os_family == 'SHMZ'
+
+- name: Update certificate list
+  command: update-ca-certificates
+  when: not ansible_os_family == 'SHMZ'
