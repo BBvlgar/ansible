@@ -1,0 +1,11 @@
+  base_dependencies:
+  - ntp
+  - vi
+  - vim
+  - nano
+  - htop
+  - zsh
+  - screen
+  - wget
+  - sudo
+  
