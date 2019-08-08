@@ -1,7 +1,7 @@
 ###
 ##  ALL servers
 ###
-#  Within the gropu `server_definitions` all servers / hosts have to be defined
+#  Within the group `server_definitions` all servers / hosts have to be defined
 #  once with all their auth information.
 #  With this convention, the other groups can be read easy.
 ###

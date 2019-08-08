@@ -1,0 +1,7 @@
+---
+
+awslogs_key: "{{ awslogs.key }}"
+awslogs_secret_key: "{{ awslogs.secret }}"
+awslogs_region: "{{ awslogs.region }}"
+
+...

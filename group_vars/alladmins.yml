@@ -1,0 +1,8 @@
+---
+
+# the group `alladmins` is applied to these servers, where every admin defined
+# within the `admins` array of the `all.yml` group_vars file should have admin
+# access to. Therefore the `restricted_admins` array has to be empty.
+restricted_admins: []
+
+...
