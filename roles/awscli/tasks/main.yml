@@ -1,0 +1,16 @@
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Ensure awscli is installed
+  apt: name=awscli state=installed update_cache=yes
+
+- name: "ensure user exists"
+  user:
+    name: "{{ user }}"
+
+- name: Ensure directories exist
+  file: path=/home/{{ user }}/.aws state=directory owner={{ user }} group={{ user }} mode=0700
+
+- name: Ensure awscli is configured
+  template: src=config.j2 dest=/home/{{ user }}/.aws/config
