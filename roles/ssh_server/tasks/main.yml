@@ -1,0 +1,45 @@
+---
+
+- name: secure key
+  file: path=/etc/ssh/ssh_host_rsa_key mode=400 owner=root group=root
+
+# The variable `ssh_users` will be used within the template `sshd_config`!
+#
+# `ssh_users` is empty by default (`all.yml` and even the roles defaults) and
+# can be overwritten by specific group_vars or even host_vars files!
+- name: Define ssh users from admins and explicitly defined ssh_users
+  set_fact:
+    ssh_users: "{{ ssh_users|default([]) + [ item.name ] }}"
+  with_items: "{{ admins }}"
+  # the `when` below limits the execution to two conditions that are combined by
+  # a logical `AND`:
+  # First of all if there is an admin defined within the `admins` variable and
+  # it is not empty – this first check doesn't even check if `admins` is an
+  # array or not, it only checks for sth. else than `FALSE`, `NONE`, `EMPTY` or
+  # `UNDEFINED`.
+  # The second condition checks – for each loop through the `admins` array – if
+  # the defined username of the current admin (`item.name`) is not within the
+  # relevant instance of `restricted_admins` array.
+  # The `restricted_admins` array is defined with defaults within the `all.yml`
+  # group_vars file, is fully emptied for the servers of the `alladmins`
+  # inventory group within the `alladmins.yml` group_vars file and can be
+  # overridden for each server in its corresponding host_vars file.
+  when:
+    - admins
+    - item.name not in restricted_admins|default([])
+
+- name: Write sshd config
+  template: src=sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0644 backup=no
+  notify:
+  - restart ssh
+
+- name: Open needed ports in firewall
+  command: ufw allow 60000:61000/udp
+
+- name: Install the package "mosh"
+  apt:
+    name: mosh
+    state: present
+  become: true
+
+...
