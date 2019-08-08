@@ -1,0 +1,2 @@
+awslogs_region: eu-central-1
+awslogs_enabled: true

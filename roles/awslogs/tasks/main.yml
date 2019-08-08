@@ -1,0 +1,26 @@
+- name: Ensure awslogs-agent setup script is installed
+  get_url: url=https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py dest=/var/tmp/awslogs-agent-setup.py
+
+- name: Ensure main config is installed
+  template: src=awslogs.conf.j2 dest=/var/tmp/awslogs.conf owner=root group=root
+  register: main
+
+- name: Ensure agent is installed
+  command: python /var/tmp/awslogs-agent-setup.py --region {{ awslogs_region }} --non-interactive --configfile /var/tmp/awslogs.conf
+
+- name: Ensure application config is installed
+  template: src={{ item }}.conf.j2 dest=/var/awslogs/etc/config/{{ item }}.conf owner=root group=root
+  register: application
+  with_items: "{{ awslogs_application }}"
+  when: awslogs_application is defined
+
+- name: Ensure config is installed
+  template: src=aws.conf.j2 dest=/var/awslogs/etc/aws.conf owner=root group=root
+  when: awslogs_key is defined
+
+- name: Restart service when config changed
+  service: name=awslogs state=restarted
+  when: application|changed or main|changed
+
+- name: Ensure service enablement state
+  service: name=awslogs enabled={{ awslogs_enabled }}
