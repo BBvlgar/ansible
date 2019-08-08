@@ -54,6 +54,8 @@ playbooks and roles since there is a policy of overriding (autoloaded) defaults:
 
 `runtime` > `host_vars` > `group_vars` > `role defaults`
 
+See also [the ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
+
 ## Requirements
 
 @ToDo
