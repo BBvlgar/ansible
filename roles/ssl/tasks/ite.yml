@@ -1,0 +1,20 @@
+- name: Ensure folders exist
+  file: path=/etc/ssl/{{ item }} state=directory owner=root group=root mode=0770
+  with_items:
+    - ite
+
+# 'path' is the relative path from the execution of the playbook
+- name: Check if certificate folder for ite exists on localhost
+  local_action: stat path=./certs/ite/{{ inventory_hostname }}
+  become: no
+  register: ite
+
+- name: Ensure it-economics_CA config for host is installed
+  template: src={{ item }} dest=/etc/ssl/ite/{{ item | basename }} owner=root group=root mode=0400
+  with_items:
+    - "{{ certs_base }}/ite/chain.crt"
+    - "{{ certs_base }}/ite/{{ inventory_hostname }}/{{ inventory_hostname }}.crt"
+    - "{{ certs_base }}/ite/{{ inventory_hostname }}/{{ inventory_hostname }}.key"
+  ignore_errors: true
+  when: ite.stat.exists
+
