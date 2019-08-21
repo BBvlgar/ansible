@@ -1,4 +1,5 @@
 ---
+
 # Handler to handle ssh notifications. Handlers are called by other plays.
 # See http://ansible.cc/docs/playbooks.html for more information about handlers
 - set_fact:
@@ -6,3 +7,5 @@
 
 - name: restart ssh
   service: name=ssh state=restarted
+
+...

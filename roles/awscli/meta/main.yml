@@ -1,4 +1,5 @@
 ---
+
 galaxy_info:
   author: Felix Kazuya, macwinnie
   description: Install the Amazon Command Line Interace
@@ -19,3 +20,5 @@ galaxy_info:
   galaxy_tags: []
 
 dependencies: []
+
+...

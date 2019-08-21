@@ -1,3 +1,5 @@
+---
+
 - name: Ensure awslogs-agent setup script is installed
   get_url: url=https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py dest=/var/tmp/awslogs-agent-setup.py
 
@@ -24,3 +26,5 @@
 
 - name: Ensure service enablement state
   service: name=awslogs enabled={{ awslogs_enabled }}
+
+...

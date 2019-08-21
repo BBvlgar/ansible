@@ -1,5 +1,7 @@
+---
+
 galaxy_info:
-  author: macwinnie <dev@macwinnie.me>
+  author: macwinnie
   description: Deployment role for generic Docker container
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -18,3 +20,5 @@ galaxy_info:
   galaxy_tags:
     - docker
     - deployment
+
+...

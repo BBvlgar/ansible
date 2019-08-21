@@ -1,4 +1,6 @@
-  base_dependencies:
+---
+
+base_dependencies:
   - ntp
   - vi
   - vim
@@ -9,3 +11,4 @@
   - wget
   - sudo
   
+...

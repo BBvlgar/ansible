@@ -1,4 +1,5 @@
 ---
+
 ##
 # Pull command from docker module does not work as expected and
 # has thus been replaced with "docker pull" on the command line
@@ -205,3 +206,5 @@
     command: "{{ app.command | default('') }}"
     init: "{{ app.init | default('no') }}"
   when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+
+...

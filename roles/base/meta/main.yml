@@ -1,3 +1,5 @@
+---
+
 galaxy_info:
   author: Felix Kazuya, macwinnie
   description: Install base dependencies
@@ -16,3 +18,5 @@ galaxy_info:
       - all
 
   galaxy_tags: []
+
+...
