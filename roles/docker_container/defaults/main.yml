@@ -8,7 +8,7 @@ database_network: database
 traefik_network: proxy
 
 pull: missing # "always" would pull newest image
-state: started
-recreate: no
+cnt_state: started
+cnt_recreate: no
 
 ...
