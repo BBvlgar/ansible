@@ -65,29 +65,29 @@ The main variable has to be given as `app` variable to this playbook. This varia
 If this variable is not set, `{{ app.name }}` is used as default – usage see below.
 * `app.directories` is a list of lists that define all Host bind folders / directories.  
 The lists within `{{ app.directories }}` consist out of 2 to 3 strings:
-  * `app.directories.n.0` is the *relative* path that should be bound to the container – so finally it'll look like `{{ docker_home }}/{{ app.shared_home_app }}/{{ app.directories.n.0 }}/`
-  * `app.directories.n.1` is the *absolute* path the `{{ app.directories.n.0 }}` should be bound to within the container
-  * `app.directories.n.2` is optional and can be one value out of `ro`, `rw`, ...
+    * `app.directories.n.0` is the *relative* path that should be bound to the container – so finally it'll look like `{{ docker_home }}/{{ app.shared_home_app }}/{{ app.directories.n.0 }}/`
+    * `app.directories.n.1` is the *absolute* path the `{{ app.directories.n.0 }}` should be bound to within the container
+    * `app.directories.n.2` is optional and can be one value out of `ro`, `rw`, ...
 * `app.mountfiles` is a list of lists. It is meant to define single (configuration) files to be bound to the container as Host bind and every contained list consists again out of multiple string:
-  * `app.mountfiles.n.0` relative path from container folder on host
-  * `app.mountfiles.n.1` absolute bind path within container
-  * `app.mountfiles.n.2` optional bind permissions like `ro`, `rw`, ...
-  * `app.mountfiles.n.3` optional file permissions – defaults to `0755`
+    * `app.mountfiles.n.0` relative path from container folder on host
+    * `app.mountfiles.n.1` absolute bind path within container
+    * `app.mountfiles.n.2` optional bind permissions like `ro`, `rw`, ...
+    * `app.mountfiles.n.3` optional file permissions – defaults to `0755`
 * `app.docker_volumes` is a list of lists. It is meant to define single (configuration) files to be bound to the container as Host bind and every contained list consists again out of multiple strings:
-  * `app.docker_volumes.n.name` name of the volume that should be created – identical name has to be used within `{{ app.volumes }}` to mount a folder from that volume.
-  * `app.docker_volumes.n.state` optional and defaults to `present`, other possible value is `absent` for volume to be removed
+    * `app.docker_volumes.n.name` name of the volume that should be created – identical name has to be used within `{{ app.volumes }}` to mount a folder from that volume.
+    * `app.docker_volumes.n.state` optional and defaults to `present`, other possible value is `absent` for volume to be removed
 * `app.volumes` is a list of strings representing regular binds with the format `absolute_path_on_host:container_path` or `absolute_path_on_host:container_path:permission` to bind / share i.e. the docker socks or `volume_name:container_path` for a volume mount (based on volumes defined by `{{ app.docker_volumes }}`!)
 * `app.networks` is a list of dictionaries for networks, the container has to be added to.  
 Networks are used to let the containers see each other by container name (which is `{{ app.name }}`).  
 Ansible doesn't allow anything like "create if not already existing" – so when using networks there will almost every time be an ignored error, because a network already exists.
 The dictionaries have – at the moment – only one key-value-pair:
-  * `app.networks.n.name` defines the name of the network that will be created.
+    * `app.networks.n.name` defines the name of the network that will be created.
 * `app.git` is a list of dictionaries that defines git repositories to be checked out on to the host.  
 The single dictionaries within this list consist out of two entries:
-  * `app.git.n.repo` is the repository, that should be checked out.  
-  ATTENTION: this role doesn't handle permissions. Either the credentials have to be provided as basic auth parameters (`https://user:pass@server.git/repo` – the server has to support basic auth), the repo has to be accessible public (`https://server.git/repo`) or the executing user on the host has to have installed the proper deploy key for an ssl checkout (`ssh://git@server.git/repo`).
-  * `app.git.n.dest` reflects the destination to which folder on the host the repository should be checked out to. It is again a relative path like in `{{ app.directories.n.0 }}`.  
-  The destination should be reflected within the `{{ app.directories }}` variable to be bound to the container.
+    * `app.git.n.repo` is the repository, that should be checked out.  
+    ATTENTION: this role doesn't handle permissions. Either the credentials have to be provided as basic auth parameters (`https://user:pass@server.git/repo` – the server has to support basic auth), the repo has to be accessible public (`https://server.git/repo`) or the executing user on the host has to have installed the proper deploy key for an ssl checkout (`ssh://git@server.git/repo`).
+    * `app.git.n.dest` reflects the destination to which folder on the host the repository should be checked out to. It is again a relative path like in `{{ app.directories.n.0 }}`.  
+    The destination should be reflected within the `{{ app.directories }}` variable to be bound to the container.
 
 ## Dependencies
 
