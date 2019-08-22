@@ -1,9 +1,9 @@
-# Docker APP Role
+# Docker Stack Role
 
 This Role is meant to rollout web applications, that do not only consist out of
-one container but also should have mounted directories from a (shared) data
-container and / or should have additional containers in their stack like
-databases.
+one container but are a stack of multiple containers and also should have
+mounted directories from a (shared) data container and / or should have
+additional containers in their stack like dedicated databases.
 
 ## Requirements
 
