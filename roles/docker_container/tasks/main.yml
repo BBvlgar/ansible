@@ -132,6 +132,12 @@
   loop_control:
     loop_var: repo
   when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
+  
+# define docker host repository url
+- name: define docker host repo url
+  set_fact:
+    repository_url: "{% if app.registry is defined and app.registry != '' %}{{ app.registry }}/{% endif %}{% if app.repository is defined and app.repository != '' %}{{ app.repository }}/{% endif %}{{ app.image }}:{{ app.version | default('latest') }}"
+  when: (runallapps is defined and runallapps) or (app.run is defined and app.run)
 
 # Same as above for directories – now we ensure that our files that should be
 # bound to the container do exist.
@@ -150,7 +156,7 @@
 
 # pull the currently newest image for the container rollout
 - name: Pull updated images for the container rollout
-  command: "docker pull {% if app.repository is defined and app.repository != '' %}{{ app.repository }}/{% endif %}{{ app.image }}:{{ app.version | default('latest') }}"
+  command: "{{ repository_url }}"
   when: ((app.pull is defined and app.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
         ((runallapps is defined and runallapps) or (app.run is defined and app.run))
 
@@ -181,7 +187,7 @@
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
 - name: Control App container
   docker_container:
-    image: "{% if app.registry is defined and app.registry != '' %}{{ app.registry }}/{% endif %}{% if app.repository is defined and app.repository != '' %}{{ app.repository }}/{% endif %}{{ app.image }}:{{ app.version | default('latest') }}"
+    image: "{{ repository_url }}"
     name: "{{ app.name }}"
     stop_timeout: "{{ app.stop_timeout | default(10) }}"
     hostname: "{{ app.hostname | default(app.name) }}"
