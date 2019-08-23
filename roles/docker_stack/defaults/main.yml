@@ -1,0 +1,47 @@
+---
+
+database_network: "database"
+traefik_network:  "proxy"
+
+postgres_version: "9.6"
+mysql_version:    "5.6"
+
+template_destination: /srv/ansible_templates
+
+mysql_default_root_pw: "Def12345"
+mysql_default_pw: "Def12345"
+
+mysql_cnt:
+  image:    "mysql"
+  version:  "{{ mysql_version }}"
+  name: "_mysql"
+  pull:     yes
+  networks:
+    - name: "{{ database_network }}"
+  env:
+    MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | defaults ( stack.mysql_pw | defaults ( mysql_default_root_pw ) ) }}"
+    MYSQL_DATABASE:       "{{ stack.mysql_database | defaults ( stack.mysql_user ) }}"
+    MYSQL_USER:           "{{ stack.mysql_user }}"
+    MYSQL_PASSWORD:       "{{ stack.mysql_pw | defaults ( mysql_default_pw ) }}"
+
+mysqld:
+  key_buffer_size: 256M
+  max_allowed_packet: 256M
+  innodb_log_file_size: 256M
+  binlog_format: mixed
+  character-set-server: utf8
+  collation-server: utf8_bin
+
+postgres_cnt:
+  image:    "postgres"
+  version:  "{{ postgres_version }}"
+  postname: "_postgres"
+  networks:
+    - name: "{{ database_network }}"
+
+datacontainer:
+  image: busybox
+  restart_policy: no
+  state: present
+
+...

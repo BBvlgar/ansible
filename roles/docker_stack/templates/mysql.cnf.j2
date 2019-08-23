@@ -1,0 +1,7 @@
+[mysqld]
+{% if mysqld is not none %}
+{% for key, value in mysqld.items() %}
+{{ key }}{% if value is not none %}={{ value }}{% endif %}
+
+{% endfor %}
+{% endif %}
