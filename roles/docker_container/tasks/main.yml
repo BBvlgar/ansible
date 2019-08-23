@@ -133,6 +133,12 @@
     loop_var: repo
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
+# define docker host repository url
+- name: define docker host repo url
+  set_fact:
+    repository_url: "{% if container.registry is defined and container.registry != '' %}{{ container.registry }}/{% endif %}{% if container.repository is defined and container.repository != '' %}{{ container.repository }}/{% endif %}{{ container.image }}:{{ container.version | default('latest') }}"
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
 # Same as above for directories – now we ensure that our files that should be
 # bound to the container do exist.
 # If we would not do this, Docker would assume the bind paths to be directories
@@ -150,7 +156,7 @@
 
 # pull the currently newest image for the container rollout
 - name: Pull updated images for the container rollout
-  command: "docker pull {% if container.repository is defined and container.repository != '' %}{{ container.repository }}/{% endif %}{{ container.image }}:{{ container.version | default('latest') }}"
+  command: "{{ repository_url }}"
   when: ((container.pull is defined and container.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
         ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
 
@@ -181,7 +187,7 @@
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
 - name: Control Container
   docker_container:
-    image: "{% if container.registry is defined and container.registry != '' %}{{ container.registry }}/{% endif %}{% if container.repository is defined and container.repository != '' %}{{ container.repository }}/{% endif %}{{ container.image }}:{{ container.version | default('latest') }}"
+    image: "{{ repository_url }}"
     name: "{{ container.name }}"
     stop_timeout: "{{ container.stop_timeout | default(10) }}"
     hostname: "{{ container.hostname | default(container.name) }}"
