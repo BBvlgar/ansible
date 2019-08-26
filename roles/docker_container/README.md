@@ -18,7 +18,7 @@ If there is the need of another parameter, the role has to be updated!
 | `stop_timeout`    | `10` | `{{ container.stop_timeout }}` | integer |
 | `hostname`        | `{{ container.name }}` | `{{ container.hostname }}` | string |
 | `capabilities`    | `[]` | `{{ container.capabilities }}` | list |
-| `state`           | `{{ cnt_state }}` | `{{ `container.state` }}` | string: `absent`, `present`, `stopped`, `started` |
+| `state`           | `{{ cnt_state }}` | `{{ container.state }}` | string: `absent`, `present`, `stopped`, `started` |
 | `env`             | `{}` | `{{ container.env }}` | dictionary |
 | `recreate`        | `{{ cnt_recreate }}` | `{{ container.recreate }}` | string / boolean: `yes`, `no` |
 | `exposed`         | `[]` | `{{ container.expose_ports }}` | list |
@@ -90,6 +90,15 @@ The single dictionaries within this list consist out of two entries:
     ATTENTION: this role doesn't handle permissions. Either the credentials have to be provided as basic auth parameters (`https://user:pass@server.git/repo` – the server has to support basic auth), the repo has to be accessible public (`https://server.git/repo`) or the executing user on the host has to have installed the proper deploy key for an ssl checkout (`ssh://git@server.git/repo`).
     * `container.git.n.dest` reflects the destination to which folder on the host the repository should be checked out to. It is again a relative path like in `{{ container.directories.n.0 }}`.  
     The destination should be reflected within the `{{ container.directories }}` variable to be bound to the container.
+* `container.prepared_files` is a dictionary with two children.  
+  The files will be copied, not moved through this role – a cleanup has to take part in the embedding roles / tasks!
+    * `container.prepared_files.binds`
+        * `container.prepared_files.binds.n.src` is the absolute path on the (remote) server where to find the relevant prepared file
+        * `container.prepared_files.binds.n.dest` has to be an *RELATIVE PATH* to the application docker folder on top (see `container.directories`).
+    * `container.prepared_files.mounts` is meant for copying prepared files, that are present on the server, to a specified location *AFTER* the container was created – the use case is, that one wants to copy templated files to a docker volume through the container.  
+    This variable is again a list that has to be populated with dictionaries with two children:
+        * `container.prepared_files.mounts.n.src` is the absolute path on the (remote) server where to find the relevant prepared file
+        * `container.prepared_files.mounts.n.dest` has to be an *ABSOLUTE PATH* on the container, where the file should be copied to.
 
 ## Dependencies
 

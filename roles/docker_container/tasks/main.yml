@@ -106,6 +106,18 @@
     loop_var: dir
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
+# copy tasks / roles could prepare some (templated) files that have to be
+# moved to their correct destination within Host binds.
+- name: move prepared files
+  copy:
+    src: "{{ cpf.src }}"
+    dest: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ cpf.dest }}"
+    remote_src: yes
+  with_items: "{{ container.prepared_files.binds | default([]) }}"
+  loop_control:
+    loop_var: cpf
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
 # If there is defined one or more git repository to be checked out, prepare the
 # checkout.
 - name: correct git destinations
@@ -210,4 +222,14 @@
     working_dir: "{{ container.working_dir | default('') }}"
     command: "{{ container.command | default('') }}"
     init: "{{ container.init | default('no') }}"
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# previous tasks / roles could prepare some (templated) files that have to be
+# moved to their correct destination within Docker volumes through the currently
+# created docker container.
+- name: copy prepared files
+  command: "docker cp {{ cpf.src }} {{ container.name }}:{{ cpf.dest }}"
+  with_items: "{{ container.prepared_files.mounts | default([]) }}"
+  loop_control:
+    loop_var: cpf
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
