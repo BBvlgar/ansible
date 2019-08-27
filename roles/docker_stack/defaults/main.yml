@@ -9,6 +9,7 @@ mysql_version:    "5.6"
 template_destination: /srv/ansible_templates
 
 mysql_default_root_pw: "Def12345"
+mysql_default_user: "database"
 mysql_default_pw: "Def12345"
 
 mysql_cnt:
@@ -20,8 +21,8 @@ mysql_cnt:
     - name: "{{ database_network }}"
   env:
     MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | defaults ( stack.mysql_pw | defaults ( mysql_default_root_pw ) ) }}"
-    MYSQL_DATABASE:       "{{ stack.mysql_database | defaults ( stack.mysql_user ) }}"
-    MYSQL_USER:           "{{ stack.mysql_user }}"
+    MYSQL_DATABASE:       "{{ stack.mysql_database | defaults ( stack.mysql_user | defaults ( mysql_default_user ) ) }}"
+    MYSQL_USER:           "{{ stack.mysql_user | defaults ( mysql_default_user ) }}"
     MYSQL_PASSWORD:       "{{ stack.mysql_pw | defaults ( mysql_default_pw ) }}"
 
 mysqld:

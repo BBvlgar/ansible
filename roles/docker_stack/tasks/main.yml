@@ -12,6 +12,7 @@
     # datacontainer_volumes:        "{{ datacontainer_volumes        | combine ( [ app.name + "_" + item.name + "_" + index.1 + ":" + item.path ] ) }}"
     # datacontainer_docker_volumes: "{{ datacontainer_docker_volumes | combine ( [ app.name + "_" + item.name + "_" + index.1 ] ) }}"
     additionalcontainers: []
+    mainapplication: {}
     templates_to_be_moved: []
 
 # `include_*` is executed in sequence, `import_*` would be executed before
@@ -28,14 +29,14 @@
 
 - name: 'Combine all container information to let them run'
   set_fact:
-    stackitems: "{{ datacontainer + mainapplication + additionalcontainers }}"
+    stackitems: "{{ [ datacontainer ] + [ mainapplication ] + additionalcontainers }}"
 
-# finally call `docker_container` role for every container that has to be controlled.
+# finally call docker_container role for every container that has to be controlled
 - name: 'Create and manage containers for the Docker stack.'
   include_role:
     name: docker_container
   with_items: "{{ stackitems }}"
-  vars:
-    container: "{{ item }}"
+  loop_control:
+    loop_var: container
 
 ...
