@@ -1,15 +1,21 @@
 ---
 
+- name: 'finalise `mysql_cnt` variable'
+  set_fact:
+    mysql_cnt: "{{ mysql_cnt | combine ({ 'name' : stack.name + '_' + mysql_cnt.name }) }}"
+
 - name: 'add mysql to `additionalcontainers` variable'
   set_fact:
-    mysql_cnt: "{{ mysql_cnt | combine { 'name' : stack.name + '_' + mysql_cnt.name } }}"
-    additionalcontainers: "{{ additionalcontainers | combine ( [ mysql_cnt ] ) }}"
+    additionalcontainers: "{{ additionalcontainers + [ mysql_cnt ] }}"
+
+- name: 'Blubb'
+  debug:
+    msg: '{{ [ mysql_cnt ] }}'
 
 - name: 'prepare configuration path'
   set_fact:
     mysql_templates:
       - "mysqld.cnf"
-    mysql_path: "mysql/config"
     mysql_full_path: "{{ template_destination }}/{{ stack.name }}/{{ mysql_path }}/"
 
 - name: Create needed dirs – if they do not already exist
@@ -26,10 +32,10 @@
 
 - name: 'add template information for further handling'
   set_fact:
-    templates_to_be_moved: "{{ templates_to_be_moved | combine ( {
+    templates_to_be_moved: "{{ templates_to_be_moved | combine ( [{
         'destination': mysql_path,
-        'template': template_destination + '/' + stack.name + '/' + mysql_path + '/' + {{ item/basename }},
-    } ) }}"
+        'template': template_destination + '/' + stack.name + '/' + mysql_path + '/' + item|basename
+    }] ) }}"
   with_items: "{{ mysql_templates }}"
 
 ...

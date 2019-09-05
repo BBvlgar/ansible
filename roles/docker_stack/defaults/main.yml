@@ -12,18 +12,20 @@ mysql_default_root_pw: "Def12345"
 mysql_default_user: "database"
 mysql_default_pw: "Def12345"
 
+mysql_path: "mysql/config"
+
 mysql_cnt:
   image:    "mysql"
   version:  "{{ mysql_version }}"
-  name: "_mysql"
+  name: "mysql"
   pull:     yes
   networks:
     - name: "{{ database_network }}"
   env:
-    MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | defaults ( stack.mysql_pw | defaults ( mysql_default_root_pw ) ) }}"
-    MYSQL_DATABASE:       "{{ stack.mysql_database | defaults ( stack.mysql_user | defaults ( mysql_default_user ) ) }}"
-    MYSQL_USER:           "{{ stack.mysql_user | defaults ( mysql_default_user ) }}"
-    MYSQL_PASSWORD:       "{{ stack.mysql_pw | defaults ( mysql_default_pw ) }}"
+    MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | default ( stack.mysql_pw | default ( mysql_default_root_pw ) ) }}"
+    MYSQL_DATABASE:       "{{ stack.mysql_database | default ( stack.mysql_user | default ( mysql_default_user ) ) }}"
+    MYSQL_USER:           "{{ stack.mysql_user | default ( mysql_default_user ) }}"
+    MYSQL_PASSWORD:       "{{ stack.mysql_pw | default ( mysql_default_pw ) }}"
 
 mysqld:
   key_buffer_size: 256M
@@ -44,5 +46,14 @@ datacontainer:
   image: busybox
   restart_policy: no
   state: present
+
+# DO NOT CHANGE – predefined empty variables
+datacontainer_volumes: []
+datacontainer_docker_volumes: []
+additionalcontainers: []
+mainapplication: {}
+templates_to_be_moved: []
+volumes_helper: []
+docker_volumes_helper: []
 
 ...
