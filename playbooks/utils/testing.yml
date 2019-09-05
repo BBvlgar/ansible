@@ -1,0 +1,21 @@
+#!/usr/bin/env ansible-playbook
+---
+
+- name: "Demo & Testing"
+  hosts: localhost
+
+  vars:
+    stacks:
+      - name: test1
+        mysql: true
+
+  tasks:
+
+    - name: Control containers
+      include_role:
+        name: docker_stack
+      with_items: "{{ stacks }}"
+      loop_control:
+        loop_var: stack
+
+...
