@@ -1,37 +1,58 @@
 ---
 
-database_network: "database"
+###
+## DEFINITIONS
+## general definitions
+###
+
+database_network: "{{ '{{' }} database_network {{ '}}' }}"
 traefik_network:  "proxy"
 
-postgres_version: "9.6"
-mysql_version:    "5.6"
+postgres_version: "{{ stack.postgres_version | default ('9.6') }}"
+mysql_version:    "{{ stack.mysql_version    | default ('5.6') }}"
 
 template_destination: /srv/ansible_templates
+
+
+###
+## DEFINITIONS
+## for MySQL
+###
 
 mysql_default_root_pw: "Def12345"
 mysql_default_user: "database"
 mysql_default_pw: "Def12345"
 
+mysql_path:
+  config: "config"
+  data:   "data"
+
 mysql_cnt:
   image:    "mysql"
+  name:     "mysql"
   version:  "{{ mysql_version }}"
-  name: "_mysql"
   pull:     yes
   networks:
     - name: "{{ database_network }}"
   env:
-    MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | defaults ( stack.mysql_pw | defaults ( mysql_default_root_pw ) ) }}"
-    MYSQL_DATABASE:       "{{ stack.mysql_database | defaults ( stack.mysql_user | defaults ( mysql_default_user ) ) }}"
-    MYSQL_USER:           "{{ stack.mysql_user | defaults ( mysql_default_user ) }}"
-    MYSQL_PASSWORD:       "{{ stack.mysql_pw | defaults ( mysql_default_pw ) }}"
+    MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | default ( stack.mysql_pw | default ( mysql_default_root_pw ) ) }}"
+    MYSQL_DATABASE:       "{{ stack.mysql_database | default ( stack.mysql_user | default ( mysql_default_user ) ) }}"
+    MYSQL_USER:           "{{ stack.mysql_user | default ( mysql_default_user ) }}"
+    MYSQL_PASSWORD:       "{{ stack.mysql_pw | default ( mysql_default_pw ) }}"
 
 mysqld:
-  key_buffer_size: 256M
-  max_allowed_packet: 256M
-  innodb_log_file_size: 256M
-  binlog_format: mixed
-  character-set-server: utf8
-  collation-server: utf8_bin
+  key_buffer_size:      "{{ stack.mysqld_keybuffersize      | default( '256M' ) }}"
+  max_allowed_packet:   "{{ stack.mysqld_maxallowedpacket   | default( '256M' ) }}"
+  innodb_log_file_size: "{{ stack.mysqld_innodblogfilesize  | default( '256M' ) }}"
+  binlog_format:        "{{ stack.mysqld_binlogformat       | default( 'mixed' ) }}"
+  character-set-server: "{{ stack.mysqld_charactersetserver | default( 'utf8' ) }}"
+  collation-server:     "{{ stack.mysqld_collationserver    | default( 'utf8_bin' ) }}"
+
+
+###
+## DEFINITIONS
+## for Postgres
+###
 
 postgres_cnt:
   image:    "postgres"
@@ -40,9 +61,29 @@ postgres_cnt:
   networks:
     - name: "{{ database_network }}"
 
+
+###
+## DEFINITIONS
+## for the datacontainer
+###
+
 datacontainer:
-  image: busybox
   restart_policy: no
-  state: present
+  recreate:       no
+  image:          busybox
+  state:          present
+
+
+###
+## DO NOT CHANGE BLEOW
+## definition of empty variables filled through the role
+###
+
+datacontainer_docker_volumes: []
+datacontainer_volumes:        []
+docker_volumes_helper:        []
+additionalcontainers:         []
+mainapplication:              {}
+volumes_helper:               []
 
 ...
