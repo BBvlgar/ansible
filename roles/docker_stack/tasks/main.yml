@@ -1,5 +1,6 @@
 ---
 
+
 # Tell user, which stack will be worked on
 - debug:
     msg: "Now container stack *{{ stack.name | mandatory }}* will be worked on:"
@@ -18,8 +19,8 @@
   set_fact:
     volumes_helper:        "{{ volumes_helper        | combine() }}"
     docker_volumes_helper: "{{ docker_volumes_helper | combine() }}"
-    # datacontainer_volumes:        "{{ datacontainer_volumes        | combine ( [ app.name + "_" + item.name + "_" + index.1 + ":" + item.path ] ) }}"
-    # datacontainer_docker_volumes: "{{ datacontainer_docker_volumes | combine ( [ app.name + "_" + item.name + "_" + index.1 ] ) }}"
+    #                                                | combine ( [ app.name + "_" + item.name + "_" + index.1 + ":" + item.path ] ) }}"
+    #                                                | combine ( [ app.name + "_" + item.name + "_" + index.1 ] ) }}"
   with_items: "{{ stackitems }}"
 
 - name: 'prepare datacontainer'

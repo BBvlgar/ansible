@@ -8,6 +8,7 @@
     stacks:
       - name: test1
         mysql: true
+        mysqld_collationserver: 'bla'
 
   tasks:
 
