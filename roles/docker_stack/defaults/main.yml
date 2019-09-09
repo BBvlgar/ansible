@@ -5,10 +5,10 @@
 ## general definitions
 ###
 
-postgres_version: "{{ stack.postgres_version | default ('9.6') }}"
-mysql_version:    "{{ stack.mysql_version    | default ('5.6') }}"
+postgres_version:     "{{ stack.postgres_version | default ('9.6') }}"
+mysql_version:        "{{ stack.mysql_version    | default ('5.6') }}"
 
-template_destination: /srv/ansible_templates
+template_destination: "/srv/ansible_templates"
 
 
 ###
@@ -21,14 +21,15 @@ template_destination: /srv/ansible_templates
 database_network: "{{ '{{' }} database_network {{ '}}' }}"
 traefik_network:  "{{ '{{' }} traefik_network {{ '}}' }}"
 
+
 ###
 ## DEFINITIONS
 ## for MySQL
 ###
 
 mysql_default_root_pw: "Def12345"
-mysql_default_user: "database"
-mysql_default_pw: "Def12345"
+mysql_default_user:    "database"
+mysql_default_pw:      "Def12345"
 
 mysql_path:
   config: "config"
@@ -77,8 +78,8 @@ postgres_cnt:
 datacontainer:
   restart_policy: no
   recreate:       no
-  image:          busybox
-  state:          present
+  image:          "busybox"
+  state:          "present"
 
 
 ###
@@ -92,5 +93,6 @@ docker_volumes_helper:        []
 additionalcontainers:         []
 mainapplication:              {}
 volumes_helper:               []
+
 
 ...
