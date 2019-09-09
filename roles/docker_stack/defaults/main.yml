@@ -5,14 +5,21 @@
 ## general definitions
 ###
 
-database_network: "{{ '{{' }} database_network {{ '}}' }}"
-traefik_network:  "proxy"
-
 postgres_version: "{{ stack.postgres_version | default ('9.6') }}"
 mysql_version:    "{{ stack.mysql_version    | default ('5.6') }}"
 
 template_destination: /srv/ansible_templates
 
+
+###
+## NETWORK DEFINITIONS
+## for the default network definitions not to be maintained in different
+## roles parallel, this role is configured to push these variables as
+## fillable variables to the `docker_container` role.
+###
+
+database_network: "{{ '{{' }} database_network {{ '}}' }}"
+traefik_network:  "{{ '{{' }} traefik_network {{ '}}' }}"
 
 ###
 ## DEFINITIONS
