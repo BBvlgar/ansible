@@ -1,6 +1,7 @@
 ---
 
-ssh_port: 22
-nossl:    yes
+ssh_port:           22
+nossl:              yes
+ssh_listen_address: 0.0.0.0
 
 ...

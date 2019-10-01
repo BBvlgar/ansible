@@ -1,11 +1,11 @@
 ###
 ##  ALL servers
 ###
-#  Within the group `server_definitions` all servers / hosts have to be defined
+#  Within the group `define_servers` all servers / hosts have to be defined
 #  once with all their auth information.
 #  With this convention, the other groups can be read easy.
 ###
-[server_definitions]
+[define_servers]
 apps.it-economics.de                    ansible_port=60022
 apps2-mirror.muc.it-economics.de        ansible_port=60022
 # backup-ext.it-economics.de              ansible_port=60022
