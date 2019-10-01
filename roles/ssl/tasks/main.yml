@@ -1,8 +1,11 @@
 ---
+
 - name: Ensure dependencies are installed
-  apt: name={{ item }} state=present update_cache=no
-  with_items:
-    - openssl
+  apt:
+    name:
+      - openssl
+    state: present
+    update_cache: no
 
 - include: tls_install.yml
 
@@ -29,3 +32,5 @@
 - name: Update certificate list
   command: update-ca-certificates
   when: not ansible_os_family == 'SHMZ'
+
+...
