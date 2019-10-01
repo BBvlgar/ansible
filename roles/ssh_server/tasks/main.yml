@@ -1,5 +1,20 @@
 ---
 
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - ufw
+      - mosh
+    state: present
+    update_cache: no
+
+- name: provide ssl certificates to server
+  include_role:
+    name: ssl
+  when:
+    (dockerized is defined or not dockerized) and
+    (nossl is defined or not nossl)
+
 - name: secure key
   file: path=/etc/ssh/ssh_host_rsa_key mode=400 owner=root group=root
 
@@ -35,11 +50,5 @@
 
 - name: Open needed ports in firewall
   command: ufw allow 60000:61000/udp
-
-- name: Install the package "mosh"
-  apt:
-    name: mosh
-    state: present
-  become: true
 
 ...
