@@ -1,0 +1,31 @@
+---
+
+###
+## for this role to be run for the first time on a new pi use this command:
+##
+## ansible-playbook -K -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml
+###
+
+- name: "provisioning raspberries"
+  hosts: raspy
+  become: true
+
+  tasks:
+
+    - name: 'add user `pi` as admin user on Raspberries'
+      set_fact:
+        admins: "{{ admins + raspy_user }}"
+
+    - name: 'update Raspy'
+      include_role:
+        name: update_server
+
+    - name: 'install SSH server things'
+      include_role:
+        name: ssh_server
+
+    - name: 'authorise admin users'
+      include_role:
+        name: admin_user
+
+...
