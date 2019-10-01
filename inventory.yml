@@ -34,6 +34,8 @@ vpn-hq.muc.it-economics.de              ansible_port=60022                      
 vpn.muc.it-economics.de
 build-slave-int-2.muc.it-economics.de   ansible_port=60022
 build-slave-int-1.muc.it-economics.de   ansible_port=60022
+# Raspberries
+r4spy001.it.muc.it-economics.de                                                        ansible_host=10.150.13.209
 
 ###
 ##  All the production hosts are loaded from some of the following groups:
@@ -339,6 +341,9 @@ hs8.it-economics.de
 
 [watchtower]
 hs8.it-economics.de
+
+[raspy]
+r4spy001.it.muc.it-economics.de
 
 # since admins are defined as `admins` variable and directly are restricted by
 # `restricted_admins` variabel within the all.yml group_vars file, there is one
