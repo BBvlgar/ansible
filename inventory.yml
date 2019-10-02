@@ -1,11 +1,11 @@
 ###
 ##  ALL servers
 ###
-#  Within the group `server_definitions` all servers / hosts have to be defined
+#  Within the group `define_servers` all servers / hosts have to be defined
 #  once with all their auth information.
 #  With this convention, the other groups can be read easy.
 ###
-[server_definitions]
+[define_servers]
 apps.it-economics.de                    ansible_port=60022
 apps2-mirror.muc.it-economics.de        ansible_port=60022
 # backup-ext.it-economics.de              ansible_port=60022
@@ -36,6 +36,7 @@ build-slave-int-2.muc.it-economics.de   ansible_port=60022
 build-slave-int-1.muc.it-economics.de   ansible_port=60022
 # Raspberries
 r4spy001.it.muc.it-economics.de                                                        ansible_host=10.150.13.209
+r4spy002.it.muc.it-economics.de                                                        ansible_host=10.150.13.211
 
 ###
 ##  All the production hosts are loaded from some of the following groups:
@@ -344,6 +345,7 @@ hs8.it-economics.de
 
 [raspy]
 r4spy001.it.muc.it-economics.de
+r4spy002.it.muc.it-economics.de
 
 # since admins are defined as `admins` variable and directly are restricted by
 # `restricted_admins` variabel within the all.yml group_vars file, there is one
