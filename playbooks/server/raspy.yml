@@ -3,7 +3,11 @@
 ###
 ## for this role to be run for the first time on a new pi use this command:
 ##
-## ansible-playbook -K -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml
+## ansible-playbook -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml
+##
+## after the first run, the regular call is
+##
+## ansible-playbook -K -i environments/production playbooks/server/raspy.yml
 ###
 
 - name: "provisioning raspberries"
@@ -11,6 +15,21 @@
   become: true
 
   tasks:
+    - name: 'set hostname variable'
+      set_fact:
+        rpyhost: "{{ inventory_hostname.split('.')[0] | lower }}"
+
+    - name: 'change hostname of raspis'
+      hostname:
+        name: "{{ rpyhost }}"
+
+    - name: 'ensure local route in /etc/hosts'
+      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ rpyhost }}" /etc/hosts ; then echo "127.0.1.1       {{ rpyhost }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
+      register: hostchanged
+      changed_when:
+        - '"changed" in hostchanged.stdout'
+      failed_when:
+        - hostchanged.rc != 0
 
     - name: 'add user `pi` as admin user on Raspberries'
       set_fact:
