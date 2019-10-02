@@ -15,6 +15,21 @@
   become: true
 
   tasks:
+    - name: 'set hostname variable'
+      set_fact:
+        rpyhost: "{{ inventory_hostname.split('.')[0] | lower }}"
+
+    - name: 'change hostname of raspis'
+      hostname:
+        name: "{{ rpyhost }}"
+
+    - name: 'ensure local route in /etc/hosts'
+      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ rpyhost }}" /etc/hosts ; then echo "127.0.1.1       {{ rpyhost }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
+      register: hostchanged
+      changed_when:
+        - '"changed" in hostchanged.stdout'
+      failed_when:
+        - hostchanged.rc != 0
 
     - name: 'add user `pi` as admin user on Raspberries'
       set_fact:
