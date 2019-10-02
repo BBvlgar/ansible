@@ -5,7 +5,7 @@ AllowUsers {{ ssh_users|join(" ") }}
 
 # What ports, IPs and protocols we listen for
 Port {{ ssh_port }}
-ListenAddress {{ ansible_default_ipv4.address }}
+ListenAddress {{ ssh_listen_address | default ( ansible_default_ipv4.address ) }}
 
 # Use these options to restrict which interfaces/protocols sshd will bind to
 Protocol 2
