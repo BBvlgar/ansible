@@ -49,7 +49,8 @@
     dest: /usr/share/ca-certificates/it-economics_CA.crt
     mode: '0755'
 
+# add it-e CA only to config if it is not already present
 - name: update certificate chain
-  command: echo "it-economics_CA.crt" >> /etc/ca-certificates.conf && update-ca-certificates
+  shell: cat /etc/ca-certificates.conf | grep -E ^it-economics_CA\.crt$ > /dev/null; if ! [ $? -eq 0 ]; then echo "it-economics_CA.crt" >> /etc/ca-certificates.conf; fi; update-ca-certificates
 
 ...
