@@ -1,0 +1,49 @@
+---
+
+- name: install the latest version of basic toolset
+  package:
+    name:
+      - locales
+      - xmlstarlet
+      - python3
+      - python3-yaml
+      - python3-jinja2
+      - python3-httplib2
+      - python3-paramiko
+      - python3-setuptools
+      - python3-pkg-resources
+      - python3-pip
+      - htop
+      - tree
+      - nano
+      - vim
+      - wget
+      - curl
+      - software-properties-common
+      - libcurl4-gnutls-dev
+      - libexpat1-dev
+      - gettext
+      - libz-dev
+      - libssl-dev
+      - build-essential
+      - autoconf
+      - git
+      - awscli
+      - zip
+      - unzip
+    state: latest
+
+- name: install pip packages, force upgrade
+  pip:
+    name: "{{ item }}"
+    executable: pip3
+    state: latest
+  with_items:
+    - pip
+    # - python3-keyczar
+    # - ansible
+
+- name: update certificate chain
+  command: update-ca-certificates
+
+...
