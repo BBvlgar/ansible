@@ -39,6 +39,10 @@
       include_role:
         name: update_server
 
+    - name: 'install basic toolset'
+      include_role:
+        name: install_basics
+
     - name: 'install SSH server things'
       include_role:
         name: ssh_server
