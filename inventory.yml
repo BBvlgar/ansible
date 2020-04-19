@@ -49,6 +49,12 @@ vm
 aws
 
 ###
+##  All servers have to use credentials
+###
+[credentials:children]
+all
+
+###
 ##  the `servers` group defines dedicated servers for beeing provisioned by
 ##  some playbooks.
 ###
