@@ -38,6 +38,7 @@ build-slave-int-1.muc.it-economics.de   ansible_port=60022
 r4spi001.it.muc.it-economics.de                                                        ansible_host=10.150.13.209
 r4spi002.it.muc.it-economics.de                                                        ansible_host=10.150.13.211
 r4spi003.it.muc.it-economics.de                                                        ansible_host=192.168.3.50
+rc-pi.it.muc.it-economics.de            ansible_port=22       ansible_user=pi          ansible_host=192.168.245.55
 
 ###
 ##  All the production hosts are loaded from some of the following groups:
@@ -344,10 +345,26 @@ hs8.it-economics.de
 [watchtower]
 hs8.it-economics.de
 
-[raspi]
+###
+##  all configured pis of this repo
+###
+[raspi:children]
+raspiregular
+bbpi
+
+###
+##  regular pis that do not have special configurations
+###
+[raspiregular]
 r4spi001.it.muc.it-economics.de
 r4spi002.it.muc.it-economics.de
 r4spi003.it.muc.it-economics.de
+
+###
+##  blackbox pis for it-e locations
+###
+[bbpi]
+rc-pi.it.muc.it-economics.de
 
 # since admins are defined as `admins` variable and directly are restricted by
 # `restricted_admins` variabel within the all.yml group_vars file, there is one
