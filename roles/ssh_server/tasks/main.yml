@@ -43,5 +43,12 @@
 
 - name: Open needed ports in firewall
   command: ufw allow 60000:61000/udp
+  register: ufw_fail
+  ignore_errors: True
+
+- name: 'log message if ufw command fails'
+  fail:
+    msg: 'ufw command failed – probably you want to run `sudo update-alternatives --set iptables /usr/sbin/iptables-legacy` and reboot before you retry (if `update-alternatives --list iptables` shows you two results) ...'
+  when: "'ERROR' in ufw_fail.stderr"
 
 ...
