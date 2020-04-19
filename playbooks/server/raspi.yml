@@ -3,28 +3,28 @@
 ###
 ## for this role to be run for the first time on a new pi use this command:
 ##
-## ansible-playbook -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml
+## ansible-playbook -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspi.yml
 ##
 ## after the first run, the regular call is
 ##
-## ansible-playbook -K -i environments/production playbooks/server/raspy.yml
+## ansible-playbook -K -i environments/production playbooks/server/raspi.yml
 ###
 
 - name: "provisioning raspberries"
-  hosts: raspy
+  hosts: raspi
   become: true
 
   tasks:
     - name: 'set hostname variable'
       set_fact:
-        rpyhost: "{{ inventory_hostname.split('.')[0] | lower }}"
+        rpihost: "{{ inventory_hostname.split('.')[0] | lower }}"
 
     - name: 'change hostname of raspis'
       hostname:
-        name: "{{ rpyhost }}"
+        name: "{{ rpihost }}"
 
     - name: 'ensure local route in /etc/hosts'
-      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ rpyhost }}" /etc/hosts ; then echo "127.0.1.1       {{ rpyhost }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
+      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ rpihost }}" /etc/hosts ; then echo "127.0.1.1       {{ rpihost }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
       register: hostchanged
       changed_when:
         - '"changed" in hostchanged.stdout'
@@ -33,11 +33,15 @@
 
     - name: 'add user `pi` as admin user on Raspberries'
       set_fact:
-        admins: "{{ admins + raspy_user }}"
+        admins: "{{ admins + raspi_user | default([]) }}"
 
-    - name: 'update Raspy'
+    - name: 'update RasPi'
       include_role:
         name: update_server
+
+    - name: 'install basic toolset'
+      include_role:
+        name: install_basics
 
     - name: 'install SSH server things'
       include_role:
