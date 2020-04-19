@@ -1,0 +1,26 @@
+---
+
+###
+## for this role to be run for the first time on a new pi use this command:
+##
+## ansible-playbook -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml
+##
+## after the first run, the regular call is
+##
+## ansible-playbook -K -i environments/production playbooks/server/raspy.yml
+###
+
+# do the base provisioning for a production
+- import_playbook: raspi.yml
+
+- name: "provisioning remote controll raspberries"
+  hosts: bbpi
+  become: true
+
+  tasks:
+
+    - name: 'install additional things for AWS SSM usage'
+      include_role:
+        name: prepare_aws_ssm
+
+...
