@@ -1,1 +1,2 @@
-all.yml   filter=git-crypt diff=git-crypt
+all.yml          filter=git-crypt diff=git-crypt
+credentials.yml  filter=git-crypt diff=git-crypt
