@@ -1,0 +1,33 @@
+---
+
+# prepare tmp directory
+- name: Create /tmp/ssm if it does not exist
+  file:
+    path: /tmp/ssm
+    state: directory
+    mode: '0755'
+
+# download ssm agent installer
+- name: Download SSM agent installer
+  get_url:
+    url: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+    dest: /tmp/ssm/amazon-ssm-agent.deb
+    mode: '0770'
+
+# install ssm agent
+- name: install SSM agent
+  command: dpkg -i /tmp/ssm/amazon-ssm-agent.deb
+
+# stop the SSM agent
+- name: Start service httpd, if not started
+  service:
+    name: amazon-ssm-agent
+    state: stopped
+
+# remove ssm installer
+- name: Remove /tmp/ssm since it is no more needed
+  file:
+    path: /tmp/ssm
+    state: absent
+
+...
