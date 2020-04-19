@@ -40,11 +40,8 @@
         dest: /tmp/teamviewer-host_armhf.deb
         mode: '0770'
     - name: install teamviewer
-      shell: dpkg -i /tmp/teamviewer-host_armhf.deb && apt-get -y --fix-broken install
+      shell: dpkg -i /tmp/teamviewer-host_armhf.deb; apt-get -y --fix-broken install
       ignore_errors: true
-    - name: Update dependencies
-      apt:
-        state: fixed
     - name: Remove teamviewer installer since it is no more needed
       file:
         path: /tmp/teamviewer-host_armhf.deb
