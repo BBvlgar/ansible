@@ -23,4 +23,14 @@
       include_role:
         name: prepare_aws_ssm
 
+    - name: Insert/Update WiFi Configuration
+      blockinfile:
+        path: /etc/wpa_supplicant/wpa_supplicant.conf
+        block: |
+          network={
+            ssid="{{ bbpi.ssid }}"
+            psk="{{ bbpi.wifipw }}"
+            key_mgmt=WPA-PSK
+          }
+
 ...
