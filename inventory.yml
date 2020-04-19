@@ -38,7 +38,7 @@ build-slave-int-1.muc.it-economics.de   ansible_port=60022
 r4spi001.it.muc.it-economics.de                                                        ansible_host=10.150.13.209
 r4spi002.it.muc.it-economics.de                                                        ansible_host=10.150.13.211
 r4spi003.it.muc.it-economics.de                                                        ansible_host=192.168.3.50
-rc-pi.it.muc.it-economics.de            ansible_port=22       ansible_user=pi          ansible_host=192.168.245.55
+rc-pi.it.muc.it-economics.de            ansible_port=22       ansible_user=pi          ansible_host=192.168.245.57
 
 ###
 ##  All the production hosts are loaded from some of the following groups:
@@ -47,12 +47,6 @@ rc-pi.it.muc.it-economics.de            ansible_port=22       ansible_user=pi   
 vm_host
 vm
 aws
-
-###
-##  All servers have to use credentials
-###
-[credentials:children]
-all
 
 ###
 ##  the `servers` group defines dedicated servers for beeing provisioned by
