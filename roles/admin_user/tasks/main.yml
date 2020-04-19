@@ -1,4 +1,11 @@
 ---
+
+# Sometimes it is usefull to allow admin users to be defined per host.
+# For realising that, the variable `hostadmins` can be defined.
+- name: 'merge all admins into the admins variable'
+  set_fact:
+    admins: "{{ admins + hostadmins | default([]) }}"
+
 - name: Grant admin & sudo to admins
   user: name={{ item.name }}
         shell=/bin/bash
