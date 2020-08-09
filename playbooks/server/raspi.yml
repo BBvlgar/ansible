@@ -15,9 +15,13 @@
   become: true
 
   tasks:
+    - name: 'get current hostname fqdn of the server'
+      set_fact:
+        fqdn_hn: "{{ alias_fqdn | default( ansible_host ) | lower }}"
+
     - name: 'set hostname variable'
       set_fact:
-        rpihost: "{{ inventory_hostname.split('.')[0] | lower }}"
+        rpihost: "{{ fqdn_hn.split('.')[0] }}"
 
     - name: 'change hostname of raspis'
       hostname:

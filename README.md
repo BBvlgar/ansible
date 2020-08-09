@@ -56,6 +56,35 @@ playbooks and roles since there is a policy of overriding (autoloaded) defaults:
 
 See also [the ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 
+### The `inventory.yml` file
+
+Since there are situations, where we do not define DNS entries of hosts, we
+define an aditional variable within our inventory file, the `alias_fqdn` on
+which we can fall back on if the hostname defined in `ansible_host` variable
+is an IP address. For that, we realize it the other way round: if `alias_fqdn`
+is not defined, we'll use the `ansible_host` as default fallback.
+
+The variable `ansible_hostname` or `inventory_hostname` will mostly represent
+the host alias.
+
+After these thoughts, we'll have a look on the general structure of the
+inventory.
+
+First of all, we'll have to define a list of all servers with their host specific
+variables and information.  
+After that, we'll group these servers to get meaningful elements for running the
+playbooks on, for example to define the admin and SSH users on them to be installed.
+
+So the file should look like this:
+
+```yml
+[server_definitions]
+short_alias     ansible_user=login    ansible_port=22   ansible_host=fqdn_or_ip   alias_fqdn=fqdn_if_ip_on_host
+
+[regular_admins]
+short_alias
+```
+
 ## Requirements
 
 @ToDo
