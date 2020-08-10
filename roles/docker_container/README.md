@@ -106,8 +106,7 @@ The single dictionaries within this list consist out of two entries:
 
 ## License
 
-BSD
-
+CC-BY
 
 ## Author Information
 

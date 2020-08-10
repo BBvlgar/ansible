@@ -78,8 +78,7 @@ belonging to the stack it'll be the same schema.
 
 ## License
 
-BSD
-
+CC-BY
 
 ## Author Information
 
