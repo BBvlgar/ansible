@@ -1,0 +1,47 @@
+#!/bin/bash -e
+
+dev={{ encrypted_data.device }}
+mp={{ encrypted_data.mount_point }}
+doc={{ encrypted_data.docker_dir|default('docker') }}
+
+function log() {
+  echo $(date): $@
+}
+
+log "Stopping docker service"
+service docker status | grep 'docker stop/waiting' || service docker stop
+
+log "Opening device $dev"
+cryptsetup luksOpen $dev encrypted-data
+
+log "Ensuring mount point exists"
+mkdir -p $mp
+
+log "Mounting $dev as $mp"
+mount /dev/mapper/encrypted-data $mp
+
+for i in $doc root home ; do
+  log "Ensuring $i mount point exists"
+  mkdir -p $mp/$i
+done
+
+log "Bind mounting docker"
+mount --bind $mp/$doc /var/lib/$doc
+
+homes=$(find /home -maxdepth 1 -type d -exec basename {} \; | sed '1d')
+
+for i in root home ; do
+  log "Bind mounting $i"
+  mount --bind $mp/$i /$i
+  log "Ensuring home directories exist"
+  for home in $homes ; do
+    mkdir -p /home/$home
+    chown $home:$home /home/$home
+  done
+done
+
+log "Starting docker service"
+service docker start
+
+log "Verify that all went well"
+docker run --rm hello-world
