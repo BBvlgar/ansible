@@ -22,8 +22,18 @@
     # - python3-keyczar
     # - ansible
 
-- name: update certificate chain
-  command: update-ca-certificates
+- name: download files, e.g. CA certificates
+  get_url:
+    url:   "{{ item.url }}"
+    dest:  "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode:  "{{ item.mode  | default('0755') }}"
+  with_items: "{{ basics_to_download }}"
+  when: basics_to_download is defined
+
+- name:  update certificate chain
+  shell: update-ca-certificates
 
 - name: install configs for unattended upgrades
   template:
