@@ -7,12 +7,13 @@
     admins: "{{ admins + hostadmins | default([]) }}"
 
 - name: Grant admin & sudo to admins
-  user: name={{ item.name }}
-        shell=/bin/bash
-        groups=adm,sudo
-        append=yes
-        state=present
-        password={{ item.password|default() }}
+  user:
+    name:   "{{ item.name }}"
+    shell:  "/bin/bash"
+    groups: "adm,sudo"
+    append: "yes"
+    state:  "present"
+    password: "{{ item.password|default() }}"
   with_items: "{{ admins }}"
   # the `when` below limits the execution to two conditions that are combined by
   # a logical `AND`:
@@ -36,18 +37,20 @@
 # storage location, our setup wants to place the keys within the folder defined
 # by the variable `ssh_authorized_keys_dir`.
 - name: Create parent folder for SSH keys
-  file: path={{ ssh_authorized_keys_dir }}
-        owner=root
-        group=root
-        mode=0755
-        state=directory
+  file:
+    path:  "{{ ssh_authorized_keys_dir }}"
+    owner: "root"
+    group: "root"
+    mode:  "0755"
+    state: "directory"
 
 - name: Create folders for authorized keys
-  file: path={{ ssh_authorized_keys_dir }}/{{ item.name }}
-        owner={{ item.name}}
-        group=root
-        mode=0755
-        state=directory
+  file:
+    path:  "{{ ssh_authorized_keys_dir }}/{{ item.name }}"
+    owner: "{{ item.name}}"
+    group: "root"
+    mode:  "0755"
+    state: "directory"
   with_items: "{{ admins }}"
   when:
     - admins
@@ -62,3 +65,5 @@
   when:
     - admins
     - item.name not in restricted_admins|default([])
+
+...
