@@ -54,9 +54,10 @@
     - item.name not in restricted_admins|default([])
 
 - name: Write ssh public keys to authorized keys files
-  authorized_key: user={{ item.name }}
-                  key={{ item.pub_key }}
-                  path={{ ssh_authorized_keys_dir }}/{{ item.name }}/authorized_keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.pub_key }}"
+    path: "{{ ssh_authorized_keys_dir }}/{{ item.name }}/authorized_keys"
   with_items: "{{ admins }}"
   when:
     - admins
