@@ -1,0 +1,73 @@
+---
+
+- name: Install prerequisites
+  apt:
+    name: "{{ item }}"
+    state: installed
+    update_cache: yes
+  with_items: "{{ install_docker.prerequisites }}"
+
+- name: Add the official Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: "{{ item }}"
+    state: installed
+    update_cache: yes
+  with_items: "{{ install_docker.docker_packages }}"
+
+- name: Verify that docker works
+  command: docker run --rm hello-world
+
+- name: Set pull credentials as root user
+  become: true
+  command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }}
+  when: docker_pull_user is defined and docker_pull_password is defined
+
+- name: Fix python dependencies
+  command: pip install -U setuptools
+
+- name: Install python dependencies
+  command: pip install --upgrade {{ item }}
+  with_items:
+    - pip
+    - virtualenv
+
+- name: Install python dependencies with ignore
+  command: pip install --upgrade {{ item }} --ignore-installed chardet
+  with_items:
+    - docker
+
+- name: Provision AWS-Templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items: "{{ install_docker.aws_templates }}"
+  when: aws_key is defined
+
+# - name: Install mount script when encrypted_data exists
+#   template: src=mount.encrypted_data dest=/usr/local/bin/mount.encrypted_data mode=755 owner=root group=root
+#   when: encrypted_data is defined
+
+- name: Ensure service is (re)started
+  service:
+    name: docker
+    state: restarted
+
+- name: increase aio-max-nr to prevent db_container limit
+  sysctl:
+    name: fs.aio-max-nr
+    value: 1048576
+    state: present
+    reload: yes
+
+...
