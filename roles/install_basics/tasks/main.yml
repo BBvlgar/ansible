@@ -31,5 +31,12 @@
 # add it-e CA only to config if it is not already present
 - name: update certificate chain
   shell: cat /etc/ca-certificates.conf | grep -E ^it-economics_CA\.crt$ > /dev/null; if ! [ $? -eq 0 ]; then echo "it-economics_CA.crt" >> /etc/ca-certificates.conf; fi; update-ca-certificates
+- name: install configs for unattended upgrades
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/apt/apt.conf.d/{{ item }}"
+  with_items:
+    - 10periodic
+    - 50unattended-upgrades
 
 ...
