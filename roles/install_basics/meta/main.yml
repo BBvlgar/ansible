@@ -3,7 +3,7 @@
 galaxy_info:
 
   author: Martin Winter
-  description: install basic tools
+  description: install basic tools and configuration
   company: it-economics GmbH
 
   # If the issue tracker for your role is not on github, uncomment the

@@ -1,37 +1,16 @@
 ---
 
+# the basic toolset within roles default variables can be extended by the
+# usage of the variable `additional_basic_tools` on host or group level.
+- name: 'merge tools to be installed'
+  set_fact:
+    install_tools: "{{ basic_toolset + additional_basic_tools | default([]) }}"
+
 - name: install the latest version of basic toolset
   package:
-    name:
-      - locales
-      - xmlstarlet
-      - python3
-      - python3-yaml
-      - python3-jinja2
-      - python3-httplib2
-      - python3-paramiko
-      - python3-setuptools
-      - python3-pkg-resources
-      - python3-pip
-      - htop
-      - tree
-      - nano
-      - vim
-      - wget
-      - curl
-      - software-properties-common
-      - libcurl4-gnutls-dev
-      - libexpat1-dev
-      - gettext
-      - libz-dev
-      - libssl-dev
-      - build-essential
-      - autoconf
-      - git
-      - awscli
-      - zip
-      - unzip
-    state: latest
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ install_tools }}"
 
 - name: install pip packages, force upgrade
   pip:
@@ -43,14 +22,25 @@
     # - python3-keyczar
     # - ansible
 
-- name: get current it-e CA
+- name: download files, i.e. CA certificates
   get_url:
-    url: http://ca.it-economics.de/it-economics_CA.crt
-    dest: /usr/share/ca-certificates/it-economics_CA.crt
-    mode: '0755'
+    url:   "{{ item.url }}"
+    dest:  "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode:  "{{ item.mode  | default('0755') }}"
+  with_items: "{{ basics_to_download }}"
+  when: basics_to_download is defined
 
-# add it-e CA only to config if it is not already present
 - name: update certificate chain
-  shell: cat /etc/ca-certificates.conf | grep -E ^it-economics_CA\.crt$ > /dev/null; if ! [ $? -eq 0 ]; then echo "it-economics_CA.crt" >> /etc/ca-certificates.conf; fi; update-ca-certificates
+  shell: update-ca-certificates
+
+- name: install configs for unattended upgrades
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/apt/apt.conf.d/{{ item }}"
+  with_items:
+    - 10periodic
+    - 50unattended-upgrades
 
 ...
