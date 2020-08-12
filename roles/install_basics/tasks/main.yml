@@ -22,15 +22,19 @@
     # - python3-keyczar
     # - ansible
 
-- name: get current it-e CA
+- name: download files, i.e. CA certificates
   get_url:
-    url: http://ca.it-economics.de/it-economics_CA.crt
-    dest: /usr/share/ca-certificates/it-economics_CA.crt
-    mode: '0755'
+    url:   "{{ item.url }}"
+    dest:  "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode:  "{{ item.mode  | default('0755') }}"
+  with_items: "{{ basics_to_download }}"
+  when: basics_to_download is defined
 
-# add it-e CA only to config if it is not already present
 - name: update certificate chain
-  shell: cat /etc/ca-certificates.conf | grep -E ^it-economics_CA\.crt$ > /dev/null; if ! [ $? -eq 0 ]; then echo "it-economics_CA.crt" >> /etc/ca-certificates.conf; fi; update-ca-certificates
+  shell: update-ca-certificates
+
 - name: install configs for unattended upgrades
   template:
     src: "{{ item }}.j2"
