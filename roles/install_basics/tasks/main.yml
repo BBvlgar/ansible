@@ -1,5 +1,11 @@
 ---
 
+# the basic toolset within roles default variables can be extended by the
+# usage of the variable `additional_basic_tools` on host or group level.
+- name: 'merge tools to be installed'
+  set_fact:
+    install_tools: "{{ basic_toolset + additional_basic_tools | default([]) }}"
+
 - name: install the latest version of basic toolset
   package:
     name: "{{ item.name }}"
@@ -18,5 +24,13 @@
 
 - name: update certificate chain
   command: update-ca-certificates
+
+- name: install configs for unattended upgrades
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/apt/apt.conf.d/{{ item }}"
+  with_items:
+    - 10periodic
+    - 50unattended-upgrades
 
 ...
