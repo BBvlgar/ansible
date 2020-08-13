@@ -59,6 +59,19 @@
   notify:
     - restart ssh
 
+# SSH has set by default to be started after network.target – but that
+# does not mean it always waits for the network to be up.
+# Since we limit the connection to the host IP, we have to wait until
+# the network is finally up – or the service will not start ...
+- name: override start time of SSH service
+  copy:
+    src:   'ssh.service.d/override.conf'
+    dest:  '/etc/systemd/system/ssh.service.d/'
+    owner: root
+    group: root
+    mode:  '0644'
+  become: yes
+
 - name: prepare for auto-opening UFW ports
   block:
 
