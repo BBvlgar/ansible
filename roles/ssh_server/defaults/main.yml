@@ -1,5 +1,12 @@
 ---
 
+# by default, this role will use user groups for checking SSH permissions
+ssh_users_instead_groups: false
+
+# define the groups permitted to login via SSH
+ssh_groups:
+  - ssh_users
+
 # prepare empty variables for ssh allowed and disallowed users
 ssh_users:   []
 nossh_users: []

@@ -1,7 +1,11 @@
 # See the sshd_config(5) manpage for details
 
-#AllowGroups \\ ssh.groups|join(" ") \\  #AllowUsers overrides AllowGroups
-AllowUsers {{ ssh_users|join(" ") }}
+{% if ssh_users_instead_groups is defined and ssh_users_instead_groups %}
+{# Would override AllowGroups, so only use one of them #}
+AllowUsers {{ ssh_users | join(" ") }}
+{% else %}
+AllowGroups {{ role_ssh_groups | join(" ") }}
+{% endif %}
 
 # What ports, IPs and protocols we listen for
 Port {{ sshd.port }}
