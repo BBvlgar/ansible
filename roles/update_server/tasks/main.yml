@@ -1,27 +1,39 @@
 ---
 
-- name: Apt Update
-  apt:
-    update-cache: yes
+- name: perform updates
+  block:
 
-- name: Aptitude must be present
-  apt:
-    name: aptitude
+    - name: Apt Update
+      apt:
+        update-cache: yes
 
-- name: Check for upgradeable
-  apt:
-    upgrade: 'yes'
-  check_mode: yes
-  register: upgradeable
+    - name: Aptitude must be present
+      apt:
+        name: aptitude
 
-- name: Show me
-  debug:
-    msg: "{{ upgradeable.stdout_lines }}"
+    - name: Check for upgradeable
+      apt:
+        upgrade: 'yes'
+      check_mode: yes
+      register: upgradeable
 
-- name: Update all packages to the latest version
-  apt:
-    upgrade: 'yes'
-    state: latest
+    - name: Show me
+      debug:
+        msg: "{{ upgradeable.stdout_lines }}"
+
+    - name: Waiting for continue
+      pause:
+        prompt: "Should we continue? (yes/no - default: yes)"
+      register: continue_upgrade
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: 'yes'
+        state: latest
+      when:
+        - continue_upgrade.user_input == '' or continue_upgrade.user_input | lower == 'yes'
+
+  become: yes
 
 # # command to install updates and clean up kernel images, etc.
 #

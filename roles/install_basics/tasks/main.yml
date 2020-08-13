@@ -11,6 +11,7 @@
     name: "{{ item.name }}"
     state: "{{ item.state | default( package_state) }}"
   with_items: "{{ install_tools }}"
+  become: yes
 
 - name: install pip packages, force upgrade
   pip:
@@ -32,9 +33,11 @@
     mode:  "{{ item.mode  | default('0755') }}"
   with_items: "{{ basics_to_download }}"
   when: basics_to_download is defined
+  become: yes
 
 - name:  update certificate chain
   shell: update-ca-certificates
+  become: yes
 
 - name: install configs for unattended upgrades
   template:
