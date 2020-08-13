@@ -4,6 +4,4 @@ admins:           []
 user_groups:      []
 disallowed_users: []
 
-ssh_authorized_keys_dir: "/etc/ssh/users"
-
 ...
