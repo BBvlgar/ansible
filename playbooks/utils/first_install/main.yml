@@ -1,0 +1,60 @@
+---
+
+- hosts: 'all:!localhost'
+
+  vars:
+    # disable hostkey check and other things if host is installed first
+    ansible_ssh_extra_args:
+      -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
+  tasks:
+
+    - name: 'get current hostname fqdn of the server'
+      set_fact:
+        fqdn_hn: "{{ alias_fqdn | default( ansible_host ) | lower }}"
+
+    - name: 'set hostname variable'
+      set_fact:
+        hostname_var: "{{ fqdn_hn.split('.')[0] }}"
+
+    - name: 'change hostname of raspis'
+      hostname:
+        name: "{{ hostname_var }}"
+
+    - name: 'ensure local route in /etc/hosts'
+      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ hostname_var }}" /etc/hosts ; then echo "127.0.1.1       {{ hostname_var }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
+      register: hostchanged
+      changed_when:
+        - '"changed" in hostchanged.stdout'
+      failed_when:
+        - hostchanged.rc != 0
+
+    - name: 'update Server'
+      include_role:
+        name: update_server
+
+    - name: 'install basic toolset and configuration'
+      include_role:
+        name: install_basics
+
+    - name: 'install docker tools'
+      include_role:
+        name: docker_host
+      when: docker_host is defined and docker_host
+
+    - name: 'create users and give permissions'
+      include_role:
+        name: admin_user
+
+    - name: 'execute additional installation roles'
+      incluse_role:
+        name: "{{ item.role }}"
+      vars:
+        role_vars: "{{ item.vars }}"
+      with_items: "{{ additional_roles_on_install | default([]) }}"
+
+    - name: 'install SSH server things and permit users to login via SSH'
+      include_role:
+        name: ssh_server
+
+...
