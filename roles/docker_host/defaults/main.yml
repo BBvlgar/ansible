@@ -2,13 +2,15 @@
 
 install_docker:
 
-  tools:
+  prerequisites:
     - name: 'apt-transport-https'
     - name: 'ca-certificates'
     - name: 'curl'
-    - name: 'gnupg-agent'
+    - name: 'gnupg2'
     - name: 'software-properties-common'
     - name: 'python3-pip'
+
+  tools:
     - name: 'docker-ce'
     - name: 'docker-ce-cli'
     # - name: 'containerd.io'

@@ -1,5 +1,11 @@
 ---
 
+- name: Install all prerequisite tools needed for this install routine
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ install_docker.prerequisites }}"
+
 - name: Add the official Docker GPG key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
