@@ -4,30 +4,29 @@
 AllowUsers {{ ssh_users|join(" ") }}
 
 # What ports, IPs and protocols we listen for
-Port {{ ssh_port }}
-ListenAddress {{ ssh_listen_address | default ( ansible_default_ipv4.address ) }}
+Port {{ sshd.port }}
+ListenAddress {{ sshd.listen_address }}
 
 # Use these options to restrict which interfaces/protocols sshd will bind to
-Protocol 2
-# HostKeys for protocol version 2
-HostKey /etc/ssh/ssh_host_rsa_key
-UsePrivilegeSeparation yes
+Protocol {{ sshd.protocol }}
+HostKey {{ sshd.host_key }}
+UsePrivilegeSeparation {{ sshd.use_privilege_separation }}
 
 # Lifetime and size of ephemeral version 1 server key
-KeyRegenerationInterval 3600
-ServerKeyBits 768
+KeyRegenerationInterval {{ sshd.key_regeneration_interval }}
+ServerKeyBits {{ sshd.server_key_bits }}
 
 # Logging
-SyslogFacility AUTH
-LogLevel INFO
+SyslogFacility {{ sshd.syslog_facility }}
+LogLevel {{ sshd.log_level }}
 
 # Authentication:
-LoginGraceTime 120
-PermitRootLogin no
-StrictModes yes
+LoginGraceTime {{ sshd.login_grace_time }}
+PermitRootLogin {{ sshd.permit_root_login }}
+StrictModes {{ sshd.strict_modes }}
 
-RSAAuthentication yes
-PubkeyAuthentication yes
+RSAAuthentication {{ sshd.rsa_authentication }}
+PubkeyAuthentication {{ sshd.pubkey_authentication }}
 {% if ssh_authorized_keys_dir is defined %}
 AuthorizedKeysFile	{{ ssh_authorized_keys_dir }}/%u/authorized_keys
 {% else %}
@@ -35,31 +34,31 @@ AuthorizedKeysFile	.ssh/authorized_keys
 {% endif %}
 
 # Don't read the user's ~/.rhosts and ~/.shosts files
-IgnoreRhosts yes
+IgnoreRhosts {{ sshd.ignore_rhosts }}
 # For this to work you will also need host keys in /etc/ssh_known_hosts
-RhostsRSAAuthentication no
+RhostsRSAAuthentication {{ sshd.rhosts_rsa_authentication }}
 # similar for protocol version 2
-HostbasedAuthentication no
+HostbasedAuthentication {{ sshd.hostbased_authentication }}
 # To enable empty passwords, change to yes (NOT RECOMMENDED)
-PermitEmptyPasswords no
+PermitEmptyPasswords {{ sshd.permit_empty_passwords }}
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
-ChallengeResponseAuthentication no
+ChallengeResponseAuthentication {{ sshd.challenge_response_authentication }}
 # Change to no to disable tunnelled clear text passwords
-PasswordAuthentication no
+PasswordAuthentication {{ sshd.password_authentication }}
 
-X11Forwarding no
-X11DisplayOffset 10
-PrintMotd no
-PrintLastLog yes
-TCPKeepAlive yes
+X11Forwarding {{ sshd.x11_forwarding }}
+X11DisplayOffset {{ sshd.x11_display_offset }}
+PrintMotd {{ sshd.print_motd }}
+PrintLastLog {{ sshd.print_last_log }}
+TCPKeepAlive {{ sshd.tcp_keep_alive }}
 
 # Allow client to pass locale environment variables
-AcceptEnv LANG LC_*
+AcceptEnv {{ sshd.accept_env }}
 
 Subsystem sftp {% if ansible_distribution == "CentOS" or ansible_distribution == "SHMZ" %}/usr/libexec/openssh/sftp-server{% else %}/usr/lib/openssh/sftp-server{% endif %}
 
-UsePAM yes
+UsePAM {{ sshd.use_pam }}
 
-ClientAliveCountMax 0
-ClientAliveInterval 600
+ClientAliveCountMax {{ sshd.client_alive_count_max }}
+ClientAliveInterval {{ sshd.client_alive_interval }}
