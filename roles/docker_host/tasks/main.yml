@@ -1,24 +1,35 @@
 ---
 
-- name: Add the official Docker GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+- name: prepare the installation
+  block:
 
-- name: Add Docker APT repository
-  apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
-    state: present
-    update_cache: yes
+    - name: Install all prerequisite tools needed for this install routine
+      package:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default( package_state) }}"
+      with_items: "{{ install_docker.prerequisites }}"
 
-- name: Install all tools needed for Docker to run
-  package:
-    name: "{{ item.name }}"
-    state: "{{ item.state | default( package_state) }}"
-  with_items: "{{ install_docker.tools }}"
+    - name: Add the official Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-- name: Verify that docker works
-  command: docker run --rm hello-world
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/{{ansible_distribution|lower}} {{ansible_distribution_release}} stable
+        state: present
+        update_cache: yes
+
+    - name: Install all tools needed for Docker to run
+      package:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default( package_state) }}"
+      with_items: "{{ install_docker.tools }}"
+
+    - name: Verify that docker works
+      command: docker run --rm hello-world
+
+  become: yes
 
 - name: Set pull credentials as root user
   become: true
@@ -53,6 +64,7 @@
   service:
     name: docker
     state: restarted
+  become: yes
 
 - name: increase aio-max-nr to prevent db_container limit
   sysctl:
@@ -60,5 +72,6 @@
     value: '1048576'
     state: present
     reload: yes
+  become: yes
 
 ...

@@ -53,6 +53,10 @@
         role_vars: "{{ item.vars }}"
       with_items: "{{ additional_roles_on_install | default([]) }}"
 
+    - name: 'configure basic firewall'
+      include_role:
+        name: firewall
+
     - name: 'install SSH server things and permit users to login via SSH'
       include_role:
         name: ssh_server
