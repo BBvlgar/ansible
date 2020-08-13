@@ -28,11 +28,15 @@
   with_items: "{{ admins }}"
   # the `when` below limits the execution to two conditions that are combined by
   # a logical `AND`:
-  # First of all if there is an admin defined within the `admins` variable and
+  # First of all check, if we really use users instead of groups for ssh
+  # authentification.
+  # Then,  if there is an admin defined within the `admins` variable and
   # it is not empty – this first check doesn't even check if `admins` is an
   # array or not, it only checks for sth. else than `FALSE`, `NONE`, `EMPTY` or
   # `UNDEFINED`.
-  # The second condition checks – for each loop through the `admins` array – if
+  # The third check looks for users that are not allowed to use SSH at all by
+  # definition.
+  # The last condition checks – for each loop through the `admins` array – if
   # the defined username of the current admin (`item.name`) is not within the
   # relevant instance of `disallowed_users` array.
   # The `disallowed_users` array is defined with defaults within the `all.yml`
@@ -40,7 +44,9 @@
   # inventory group within the `alladmins.yml` group_vars file and can be
   # overridden for each server in its corresponding host_vars file.
   when:
+    - ssh_users_instead_groups is defined and ssh_users_instead_groups
     - admins
+    - item.name not in nossh_users|default([])
     - item.name not in disallowed_users|default([])
 
 - name: Write sshd config
