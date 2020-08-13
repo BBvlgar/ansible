@@ -8,8 +8,8 @@
 
 - name: secure key
   file:
-    path:  /etc/ssh/ssh_host_rsa_key
-    mode:  400
+    path:  '/etc/ssh/ssh_host_rsa_key'
+    mode:  '0400'
     owner: root
     group: root
 
@@ -62,7 +62,7 @@
 - name: Open needed ports for Mosh in firewall
   command: ufw allow 60000:61000/udp
   register: ufw_fail
-  ignore_errors: True
+  ignore_errors: yes
 
 - name: 'log message if ufw command fails'
   fail:
