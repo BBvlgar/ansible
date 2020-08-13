@@ -43,4 +43,10 @@ sshd:
   client_alive_count_max:            '0'
   client_alive_interval:             '600'
 
+# dependency tools
+package_state: latest
+ssh_tools:
+  - name: mosh
+  - name: ufw
+
 ...
