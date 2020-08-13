@@ -105,4 +105,6 @@
       with_items: "{{ ssh_users }}"
       when: ssh_users_instead_groups is defined and ssh_users_instead_groups
 
+  become: yes
+
 ...
