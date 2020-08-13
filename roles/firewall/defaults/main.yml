@@ -1,0 +1,27 @@
+---
+
+# default configuration
+ufw_defaults:
+  - direction: 'incoming'
+    policy: 'deny'
+  - direction: 'outgoing'
+    policy: 'allow'
+
+# explicit rules
+global_ufw_rules:
+  # allow SSH
+  - rule: limit
+    port: "{{ ssh_port | default('22') }}"
+  # allow HTTP
+  - rule: allow
+    port: "80"
+  # allow HTTPS
+  - rule: allow
+    port: "443"
+
+package_state: latest
+
+install_packages:
+  - name: ufw
+
+...
