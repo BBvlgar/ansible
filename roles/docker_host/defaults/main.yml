@@ -2,23 +2,23 @@
 
 install_docker:
 
-  prerequisites:
-    - 'apt-transport-https'
-    - 'ca-certificates'
-    - 'curl'
-    - 'gnupg-agent'
-    - 'software-properties-common'
-    - 'python-pip'
-
-  docker_packages:
-    - 'docker-ce'
-    - 'docker-ce-cli'
-    # - 'containerd.io'
+  tools:
+    - name: 'apt-transport-https'
+    - name: 'ca-certificates'
+    - name: 'curl'
+    - name: 'gnupg-agent'
+    - name: 'software-properties-common'
+    - name: 'python3-pip'
+    - name: 'docker-ce'
+    - name: 'docker-ce-cli'
+    # - name: 'containerd.io'
   
   aws_templates:
     - src: aws-logger.conf.j2
       dest: /etc/docker/aws-logger.conf
     - src: docker-defaults.j2
       dest: /etc/default/docker
+
+package_state: latest
 
 ...
