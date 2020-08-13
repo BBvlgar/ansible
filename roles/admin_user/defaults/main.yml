@@ -1,5 +1,9 @@
 ---
 
+admins:            []
+user_groups:       []
 restricted_admins: []
+
+ssh_authorized_keys_dir: "/etc/ssh/users"
 
 ...
