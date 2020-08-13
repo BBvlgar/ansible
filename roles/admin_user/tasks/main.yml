@@ -51,6 +51,7 @@
     group: "root"
     mode:  "0755"
     state: "directory"
+  when: ssh_authorized_keys_dir is defined
 
 - name: Create folders for authorized keys
   file:
@@ -61,16 +62,28 @@
     state: "directory"
   with_items: "{{ admins }}"
   when:
+    - ssh_authorized_keys_dir is defined
     - admins
     - item.name not in disallowed_users|default([])
 
-- name: Write ssh public keys to authorized keys files
+- name: Write ssh public keys to authorized keys files in dedicated destination
   authorized_key:
     user: "{{ item.name }}"
     key: "{{ item.pub_key }}"
     path: "{{ ssh_authorized_keys_dir }}/{{ item.name }}/authorized_keys"
   with_items: "{{ admins }}"
   when:
+    - ssh_authorized_keys_dir is defined
+    - admins
+    - item.name not in disallowed_users|default([])
+
+- name: Write ssh public keys to authorized keys files in users homes
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.pub_key }}"
+  with_items: "{{ admins }}"
+  when:
+    - ssh_authorized_keys_dir is not defined
     - admins
     - item.name not in disallowed_users|default([])
 

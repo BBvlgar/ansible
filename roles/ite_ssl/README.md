@@ -1,6 +1,6 @@
-# `ssh_server`
+# `ite_ssl`
 
-Provision a host as SSH host.
+Installs it-e SSL certificates on servers
 
 
 ## Requirements
@@ -24,9 +24,11 @@ None.
 
   tasks:
 
-    - name: 'install host as SSH host'
+    - name: 'install SSL certificates for it-e'
       include_role:
-        name: ssh_server
+        name: ite_ssl
+      vars:
+        role_vars: "{{ environment_vars_for_this_role }}"
 ...
 ```
 

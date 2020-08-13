@@ -1,0 +1,52 @@
+---
+
+# by default, this role will use user groups for checking SSH permissions
+ssh_users_instead_groups: false
+
+# define the groups permitted to login via SSH
+ssh_groups:
+  - ssh_users
+
+# prepare empty variables for ssh allowed and disallowed users
+ssh_users:   []
+nossh_users: []
+
+# default values for sshd configuration
+sshd:
+  port:                              '{{ ssh_port | default('22') }}'
+  listen_address:                    '{{ ssh_listen_address | default ( ansible_default_ipv4.address ) }}'
+  protocol:                          '2'
+  host_key:                          '/etc/ssh/ssh_host_rsa_key'
+  use_privilege_separation:          'yes'
+  key_regeneration_interval:         '3600'
+  server_key_bits:                   '768'
+  syslog_facility:                   'AUTH'
+  log_level:                         'INFO'
+  login_grace_time:                  '120'
+  permit_root_login:                 'no'
+  strict_modes:                      'yes'
+  rsa_authentication:                'yes'
+  pubkey_authentication:             'yes'
+  ignore_rhosts:                     'yes'
+  rhosts_rsa_authentication:         'no'
+  hostbased_authentication:          'no'
+  permit_empty_passwords:            'no'
+  challenge_response_authentication: 'no'
+  password_authentication:           'no'
+  x11_forwarding:                    'no'
+  x11_display_offset:                '10'
+  print_motd:                        '{{ sshd_print_motd | default("no") }}'
+  print_last_log:                    'yes'
+  tcp_keep_alive:                    'yes'
+  accept_env:                        'LANG LC_*'
+  use_pam:                           'yes'
+  client_alive_count_max:            '0'
+  client_alive_interval:             '600'
+
+# dependency tools
+package_state: latest
+ssh_tools:
+  - name: mosh
+  - name: ufw
+
+...

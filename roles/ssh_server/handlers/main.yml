@@ -1,8 +1,14 @@
 ---
+
 # Handler to handle ssh notifications. Handlers are called by other plays.
 # See http://ansible.cc/docs/playbooks.html for more information about handlers
+
 - set_fact:
     ssh_service_name: "{% if ansible_os_family == 'Debian' %}ssh{% else %}sshd{% endif %}"
 
 - name: restart ssh
-  service: name=ssh state=restarted
+  service:
+    name: "{{ ssh_service_name }}"
+    state: "restarted"
+
+...
