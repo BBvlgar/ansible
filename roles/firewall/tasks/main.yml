@@ -31,8 +31,8 @@
         name:  ufw
         state: restarted
 
-    # - name: enable ufw
-    #   command: ufw --force enable
+    - name: enable ufw
+      command: ufw --force enable
 
   become: true
 
