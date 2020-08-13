@@ -12,6 +12,7 @@ AllowGroups {{ ssh_groups | join(" ") }}
 
 # What ports, IPs and protocols we listen for
 Port {{ sshd.port }}
+{# ToDo: listen on IPv6 #}
 ListenAddress {{ sshd.listen_address }}
 
 # Use these options to restrict which interfaces/protocols sshd will bind to
