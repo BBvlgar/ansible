@@ -59,6 +59,18 @@
   notify:
     - restart ssh
 
+# SSH has set by default to be started after network.target – but that
+# does not mean it always waits for the network to be up.
+# Since we limit the connection to the host IP, we have to wait until
+# the network is finally up – or the service will not start ...
+- name: override start time of SSH service
+  copy:
+    src:   'ssh_service_override.conf'
+    dest:  '/etc/systemd/system/ssh.service.d/override.conf'
+    owner: root
+    group: root
+    mode:  '0644'
+
 - name: Open needed ports for Mosh in firewall
   command: ufw allow 60000:61000/udp
   register: ufw_fail
