@@ -55,14 +55,38 @@
   notify:
     - restart ssh
 
-- name: Open needed ports for Mosh in firewall
-  command: ufw allow 60000:61000/udp
-  register: ufw_fail
-  ignore_errors: True
+- name: prepare for auto-opening UFW ports
+  block:
 
-- name: 'log message if ufw command fails'
-  fail:
-    msg: 'ufw command failed – probably you want to run `sudo update-alternatives --set iptables /usr/sbin/iptables-legacy` and reboot before you retry (if `update-alternatives --list iptables` shows you two results) ...'
-  when: "'ERROR' in ufw_fail.stderr"
+    - name: Copy Mosh Allow UFW script
+      copy:
+        src:   'mosh-allow-ufw.sh'
+        dest:  '/usr/local/bin/mosh-allow-ufw'
+        owner: root
+        group: root
+        mode:  '0755'
+
+    - name: Mosh allow into global bashrc
+      lineinfile:
+        dest:   '/etc/bash.bashrc'
+        line:   'sudo /usr/local/bin/mosh-allow-ufw'
+        regexp: 'mosh-allow-ufw'
+        state:  present
+
+    - name: Mosh allow ssh groups into sudoers
+      lineinfile:
+        dest:  '/etc/sudoers'
+        line:  '%{{ item }} ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/mosh-allow-ufw'
+        state:  present
+      with_items: "{{ ssh_groups }}"
+      when: ssh_users_instead_groups is not defined or not ssh_users_instead_groups
+
+    - name: Mosh allow ssh users into sudoers
+      lineinfile:
+        dest:  '/etc/sudoers'
+        line:  '{{ item }} ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/mosh-allow-ufw'
+        state:  present
+      with_items: "{{ ssh_users }}"
+      when: ssh_users_instead_groups is defined and ssh_users_instead_groups
 
 ...
