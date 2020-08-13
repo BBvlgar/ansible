@@ -31,14 +31,14 @@
   # `UNDEFINED`.
   # The second condition checks – for each loop through the `admins` array – if
   # the defined username of the current admin (`item.name`) is not within the
-  # relevant instance of `restricted_admins` array.
-  # The `restricted_admins` array is defined with defaults within the `all.yml`
+  # relevant instance of `disallowed_users` array.
+  # The `disallowed_users` array is defined with defaults within the `all.yml`
   # group_vars file, is fully emptied for the servers of the `alladmins`
   # inventory group within the `alladmins.yml` group_vars file and can be
   # overridden for each server in its corresponding host_vars file.
   when:
     - admins
-    - item.name not in restricted_admins|default([])
+    - item.name not in disallowed_users|default([])
 
 # The SSH keys for admin users / SSH users are stored within the file
 # `$Home/.ssh/authorized_keys` for each user by default. To centralize that
@@ -62,7 +62,7 @@
   with_items: "{{ admins }}"
   when:
     - admins
-    - item.name not in restricted_admins|default([])
+    - item.name not in disallowed_users|default([])
 
 - name: Write ssh public keys to authorized keys files
   authorized_key:
@@ -72,6 +72,6 @@
   with_items: "{{ admins }}"
   when:
     - admins
-    - item.name not in restricted_admins|default([])
+    - item.name not in disallowed_users|default([])
 
 ...
