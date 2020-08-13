@@ -367,7 +367,7 @@ r4spi003.it.muc.it-economics.de
 rc-pi.it.muc.it-economics.de
 
 # since admins are defined as `admins` variable and directly are restricted by
-# `restricted_admins` variabel within the all.yml group_vars file, there is one
+# `disallowed_users` variable within the all.yml group_vars file, there is one
 # group, the `alladmins` server group, to apply to the servers we want to allow
 # all available admins
 [alladmins]
