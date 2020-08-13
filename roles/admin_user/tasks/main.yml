@@ -14,6 +14,12 @@
     item_groups: "{% for g in role_groups %}{% if item.name in g.users %},{{ g.group }}{% endif %}{% endfor %}"
   with_items: "{{ admins }}"
 
+- name: ensure all groups do exist
+  group:
+    name:  "{{ item.group }}"
+    state: present
+  with_items: "{{ role_groups }}"
+
 - name: Grant admin & sudo to admins
   user:
     name:   "{{ item.name }}"
@@ -37,7 +43,7 @@
   # inventory group within the `alladmins.yml` group_vars file and can be
   # overridden for each server in its corresponding host_vars file.
   when:
-    - admins
+    - admins is defined and admins | length > 0
     - item.name not in disallowed_users|default([])
 
 # The SSH keys for admin users / SSH users are stored within the file
@@ -63,7 +69,7 @@
   with_items: "{{ admins }}"
   when:
     - ssh_authorized_keys_dir is defined
-    - admins
+    - admins is defined and admins | length > 0
     - item.name not in disallowed_users|default([])
 
 - name: Write ssh public keys to authorized keys files in dedicated destination
@@ -74,7 +80,7 @@
   with_items: "{{ admins }}"
   when:
     - ssh_authorized_keys_dir is defined
-    - admins
+    - admins is defined and admins | length > 0
     - item.name not in disallowed_users|default([])
 
 - name: Write ssh public keys to authorized keys files in users homes
@@ -84,7 +90,7 @@
   with_items: "{{ admins }}"
   when:
     - ssh_authorized_keys_dir is not defined
-    - admins
+    - admins is defined and admins | length > 0
     - item.name not in disallowed_users|default([])
 
 ...

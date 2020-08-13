@@ -10,8 +10,8 @@
 
 - name: Check for upgradeable
   apt:
-    upgrade: Yes
-  check_mode: True
+    upgrade: 'yes'
+  check_mode: yes
   register: upgradeable
 
 - name: Show me
@@ -20,7 +20,7 @@
 
 - name: Update all packages to the latest version
   apt:
-    upgrade: yes
+    upgrade: 'yes'
     state: latest
 
 # # command to install updates and clean up kernel images, etc.

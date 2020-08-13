@@ -13,7 +13,7 @@ nossh_users: []
 
 # default values for sshd configuration
 sshd:
-  port:                              '{{ ssh_port | default('22') }}'
+  port:                              '{{ ssh_port | default("22") }}'
   listen_address:                    '{{ ssh_listen_address | default ( ansible_default_ipv4.address ) }}'
   protocol:                          '2'
   host_key:                          '/etc/ssh/ssh_host_rsa_key'
@@ -48,5 +48,6 @@ package_state: latest
 ssh_tools:
   - name: mosh
   - name: ufw
+  - name: lsof
 
 ...

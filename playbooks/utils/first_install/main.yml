@@ -17,7 +17,7 @@
       set_fact:
         hostname_var: "{{ fqdn_hn.split('.')[0] }}"
 
-    - name: 'change hostname of raspis'
+    - name: 'change hostname'
       hostname:
         name: "{{ hostname_var }}"
 
@@ -47,7 +47,7 @@
         name: admin_user
 
     - name: 'execute additional installation roles'
-      incluse_role:
+      include_role:
         name: "{{ item.role }}"
       vars:
         role_vars: "{{ item.vars }}"

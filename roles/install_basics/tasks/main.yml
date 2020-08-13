@@ -14,13 +14,14 @@
 
 - name: install pip packages, force upgrade
   pip:
-    name: "{{ item }}"
+    name: "{{ pip_list }}"
     executable: pip3
     state: latest
-  with_items:
-    - pip
-    # - python3-keyczar
-    # - ansible
+  vars:
+    pip_list:
+      - pip
+      # - python3-keyczar
+      # - ansible
 
 - name: download files, e.g. CA certificates
   get_url:
