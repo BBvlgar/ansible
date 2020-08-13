@@ -28,7 +28,11 @@ StrictModes yes
 
 RSAAuthentication yes
 PubkeyAuthentication yes
+{% if ssh_authorized_keys_dir is defined %}
 AuthorizedKeysFile	{{ ssh_authorized_keys_dir }}/%u/authorized_keys
+{% else %}
+AuthorizedKeysFile	.ssh/authorized_keys
+{% endif %}
 
 # Don't read the user's ~/.rhosts and ~/.shosts files
 IgnoreRhosts yes
