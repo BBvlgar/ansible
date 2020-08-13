@@ -1,4 +1,7 @@
-# See the sshd_config(5) manpage for details
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+Include /etc/ssh/sshd_config.d/*.conf
 
 {% if ssh_users_instead_groups is defined and ssh_users_instead_groups %}
 {# Would override AllowGroups, so only use one of them #}
@@ -23,6 +26,8 @@ LogLevel {{ sshd.log_level }}
 LoginGraceTime {{ sshd.login_grace_time }}
 PermitRootLogin {{ sshd.permit_root_login }}
 StrictModes {{ sshd.strict_modes }}
+MaxAuthTries {{ sshd.max_auth_tries }}
+MaxSessions {{ sshd.max_sessions }}
 
 PubkeyAuthentication {{ sshd.pubkey_authentication }}
 {% if ssh_authorized_keys_dir is defined %}
@@ -56,5 +61,21 @@ Subsystem sftp {% if ansible_distribution == "CentOS" or ansible_distribution ==
 
 UsePAM {{ sshd.use_pam }}
 
+Banner {{ sshd.banner }}
+
 ClientAliveCountMax {{ sshd.client_alive_count_max }}
 ClientAliveInterval {{ sshd.client_alive_interval }}
+
+AllowAgentForwarding   {{ sshd.allow_agent_forwarding }}
+AllowTcpForwarding   {{ sshd.allow_tcp_forwarding }}
+GatewayPorts   {{ sshd.gateway_ports }}
+X11UseLocalhost   {{ sshd.x11_use_localhost }}
+PermitTTY   {{ sshd.permit_tty }}
+PermitUserEnvironment   {{ sshd.permit_user_environment }}
+Compression   {{ sshd.compression }}
+UseDNS   {{ sshd.use_dns }}
+PidFile   {{ sshd.pid_file }}
+MaxStartups   {{ sshd.max_startups }}
+PermitTunnel   {{ sshd.permit_tunnel }}
+ChrootDirectory   {{ sshd.chroot_directory }}
+VersionAddendum   {{ sshd.version_addendum }}
