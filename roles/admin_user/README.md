@@ -51,3 +51,12 @@ None.
 ```sh
 chage -E0 testuser
 ```
+
+## License
+
+CC-BY
+
+
+## Author Information
+
+macwinnie <dev@macwinnie.me>

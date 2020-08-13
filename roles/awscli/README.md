@@ -1,15 +1,12 @@
-AWS CLI
-=========
+# AWS CLI
 
 Installs the AWS Command Line Interface via PIP.
 
-Requirements
-------------
+## Requirements
 
 * Ubuntu
 
-Role Variables
---------------
+## Role Variables
 
 ### user
 
@@ -25,13 +22,11 @@ region: eu-central-1
 ```
 The AWS region used by the command line.
 
-Dependencies
-------------
+## Dependencies
 
 None.
 
-Example Playbook
-----------------
+## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
@@ -40,3 +35,12 @@ Including an example of how to use your role (for instance, with variables passe
       roles:
          - awscli
 ```
+
+## License
+
+CC-BY
+
+## Author Information
+
+Felix Kazuya <dev@felixkazuya.de>
+macwinnie <dev@macwinnie.me>

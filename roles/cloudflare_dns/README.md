@@ -1,10 +1,8 @@
-DNS
-===
+# Cloudflare DNS
 
 Set Cloudflare DNS
 
-Requirements
-------------
+## Requirements
 
 CNAME DNS should not be set.
 
@@ -13,13 +11,19 @@ This role is supposed to be called within other roles – and requires some vari
 * `app.hostname`
 * `traefik_fqdn`
 
-Role Variables
---------------
+## Role Variables
 
 * `cloudflare_api_token`
 * `cloudflare_email`
 
-Dependencies
-------------
+## Dependencies
 
 The `docker_app` role is required as parent role.
+
+## License
+
+CC-BY
+
+## Author Information
+
+macwinnie <dev@macwinnie.me>
