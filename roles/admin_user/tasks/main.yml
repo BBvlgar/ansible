@@ -1,16 +1,24 @@
 ---
 
-# Sometimes it is usefull to allow admin users to be defined per host.
+# Sometimes it is usefull to allow users to be defined per host.
 # For realising that, the variable `hostadmins` can be defined.
-- name: 'merge all admins into the admins variable'
+- name: 'merge all users into the admins variable'
   set_fact:
     admins: "{{ admins + hostadmins | default([]) }}"
+    role_groups: "{{ user_groups + host_user_groups | default([]) }}"
+
+- name: 'fetch groups for users'
+  set_fact:
+    fullgroups: "{{ fullgroups|default({}) | combine ( { item.name : item_groups[1:] } ) }}"
+  vars:
+    item_groups: "{% for g in role_groups %}{% if item.name in g.users %},{{ g.group }}{% endif %}{% endfor %}"
+  with_items: "{{ admins }}"
 
 - name: Grant admin & sudo to admins
   user:
     name:   "{{ item.name }}"
     shell:  "/bin/bash"
-    groups: "adm,sudo"
+    groups: "{{ fullgroups[ item.name ] }}"
     append: "yes"
     state:  "present"
     password: "{{ item.password|default() }}"
