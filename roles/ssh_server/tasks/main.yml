@@ -70,6 +70,7 @@
     owner: root
     group: root
     mode:  '0644'
+  become: yes
 
 - name: prepare for auto-opening UFW ports
   block:
