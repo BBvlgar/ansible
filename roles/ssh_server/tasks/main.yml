@@ -6,13 +6,6 @@
     state: "{{ item.state | default( package_state) }}"
   with_items: "{{ ssh_tools }}"
 
-- name: provide ssl certificates to server
-  include_role:
-    name: ssl
-  when:
-    (dockerized is defined or not dockerized) and
-    (nossl is defined or not nossl)
-
 - name: secure key
   file:
     path:  /etc/ssh/ssh_host_rsa_key
