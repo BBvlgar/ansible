@@ -1,12 +1,5 @@
 ---
 
-- name: Install prerequisites
-  apt:
-    name: "{{ item }}"
-    state: installed
-    update_cache: yes
-  with_items: "{{ install_docker.prerequisites }}"
-
 - name: Add the official Docker GPG key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
@@ -18,12 +11,11 @@
     state: present
     update_cache: yes
 
-- name: Install Docker
-  apt:
-    name: "{{ item }}"
-    state: installed
-    update_cache: yes
-  with_items: "{{ install_docker.docker_packages }}"
+- name: Install all tools needed for Docker to run
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ install_docker.tools }}"
 
 - name: Verify that docker works
   command: docker run --rm hello-world
@@ -33,19 +25,18 @@
   command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }}
   when: docker_pull_user is defined and docker_pull_password is defined
 
-- name: Fix python dependencies
-  command: pip install -U setuptools
-
-- name: Install python dependencies
-  command: pip install --upgrade {{ item }}
-  with_items:
-    - pip
-    - virtualenv
-
-- name: Install python dependencies with ignore
-  command: pip install --upgrade {{ item }} --ignore-installed chardet
-  with_items:
-    - docker
+- name: install pip packages, force upgrade
+  pip:
+    name: "{{ pip_list }}"
+    executable: pip3
+    state: latest
+  vars:
+    pip_list:
+      - setuptools
+      - pip
+      - virtualenv
+      - chardet
+      - docker
 
 - name: Provision AWS-Templates
   template:
@@ -65,8 +56,8 @@
 
 - name: increase aio-max-nr to prevent db_container limit
   sysctl:
-    name: fs.aio-max-nr
-    value: 1048576
+    name:  'fs.aio-max-nr'
+    value: '1048576'
     state: present
     reload: yes
 

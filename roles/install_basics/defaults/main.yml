@@ -37,5 +37,6 @@ basic_toolset:
   - name: python3-pkg-resources
   - name: python3-pip
   - name: openssl
+  - name: bash-completion
 
 ...

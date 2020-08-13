@@ -44,6 +44,10 @@
     - item.name not in nossh_users|default([])
     - item.name not in disallowed_users|default([])
 
+- name: ensure to know which name the SSH service has
+  set_fact:
+    ssh_service_name: "{% if ansible_os_family == 'Debian' %}ssh{% else %}sshd{% endif %}"
+
 - name: Write sshd config
   template:
     src:    sshd_config.j2

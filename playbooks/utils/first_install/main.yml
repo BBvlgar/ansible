@@ -17,7 +17,7 @@
       set_fact:
         hostname_var: "{{ fqdn_hn.split('.')[0] }}"
 
-    - name: 'change hostname of raspis'
+    - name: 'change hostname'
       hostname:
         name: "{{ hostname_var }}"
 
