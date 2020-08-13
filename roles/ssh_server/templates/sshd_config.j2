@@ -4,7 +4,7 @@
 {# Would override AllowGroups, so only use one of them #}
 AllowUsers {{ ssh_users | join(" ") }}
 {% else %}
-AllowGroups {{ role_ssh_groups | join(" ") }}
+AllowGroups {{ ssh_groups | join(" ") }}
 {% endif %}
 
 # What ports, IPs and protocols we listen for
