@@ -34,14 +34,14 @@
   # `UNDEFINED`.
   # The second condition checks – for each loop through the `admins` array – if
   # the defined username of the current admin (`item.name`) is not within the
-  # relevant instance of `restricted_admins` array.
-  # The `restricted_admins` array is defined with defaults within the `all.yml`
+  # relevant instance of `disallowed_users` array.
+  # The `disallowed_users` array is defined with defaults within the `all.yml`
   # group_vars file, is fully emptied for the servers of the `alladmins`
   # inventory group within the `alladmins.yml` group_vars file and can be
   # overridden for each server in its corresponding host_vars file.
   when:
     - admins
-    - item.name not in restricted_admins|default([])
+    - item.name not in disallowed_users|default([])
 
 - name: Write sshd config
   template: src=sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0644 backup=no
