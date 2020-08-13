@@ -1,12 +1,10 @@
 ---
 
 - name: Ensure dependencies are installed
-  apt:
-    name:
-      - ufw
-      - mosh
-    state: present
-    update_cache: no
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ ssh_tools }}"
 
 - name: provide ssl certificates to server
   include_role:
@@ -16,7 +14,11 @@
     (nossl is defined or not nossl)
 
 - name: secure key
-  file: path=/etc/ssh/ssh_host_rsa_key mode=400 owner=root group=root
+  file:
+    path:  /etc/ssh/ssh_host_rsa_key
+    mode:  400
+    owner: root
+    group: root
 
 # The variable `ssh_users` will be used within the template `sshd_config`!
 #
@@ -50,11 +52,17 @@
     - item.name not in disallowed_users|default([])
 
 - name: Write sshd config
-  template: src=sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0644 backup=no
+  template:
+    src:    sshd_config.j2
+    dest:   /etc/ssh/sshd_config
+    owner:  root
+    group:  root
+    mode:   0644
+    backup: no
   notify:
-  - restart ssh
+    - restart ssh
 
-- name: Open needed ports in firewall
+- name: Open needed ports for Mosh in firewall
   command: ufw allow 60000:61000/udp
   register: ufw_fail
   ignore_errors: True
