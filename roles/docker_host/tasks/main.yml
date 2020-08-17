@@ -74,4 +74,22 @@
     reload: yes
   become: yes
 
+# ensure Docker starting after network is online since network
+# shares are used from time to time for binds and mounts
+- name: ensure Docker starting after network by systemd
+  copy:
+    src:   'docker_service_override.conf'
+    dest:  '/etc/systemd/system/docker.service.d/override.conf'
+    owner: root
+    group: root
+    mode:  '0644'
+  become: yes
+
+# normally, this step should not be necessary due to systemd deprecating runlevel –
+# but without it did not work properly ...
+- name: prepare runlevel as well
+  become: true
+  command: rm /etc/rc{1..3}.d/*docker
+  ignore_errors: yes
+
 ...
