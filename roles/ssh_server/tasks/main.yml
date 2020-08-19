@@ -75,36 +75,75 @@
 - name: prepare for auto-opening UFW ports
   block:
 
+    - name: get UFW path
+      command: "which ufw"
+      register: ufw_path
+
+    - name: register UFW path
+      set_fact:
+        ufw_path: ufw_path.stdout
+
+    - name: get lsof path
+      command: "which lsof"
+      register: lsof_path
+
+    - name: register lsof path
+      set_fact:
+        lsof_path: lsof_path.stdout
+
+    - name: check PATH variable
+      command: "echo $PATH"
+      register: path_variable
+
+    - name: ensure startup script will be run instead of original mosh-server script
+      assert:
+        that:
+          - path_variable.stdout is regex( mosh_path_order_regex )
+        fail_msg: |
+          Your systems $PATH variable is not matching the requirements.
+
+          Please ensure to change the mosh.script_path variable ({{ mosh.script_path }}) to a part of your $PATH variable being checked before the mosh.install_path variable ({{ mosh.install_path }})!
+          Otherwise the ports used by mosh cannot be released on the go!
+
+    - name: Prepare mosh startup script
+      template:
+        src:    'mosh-startup.j2'
+        dest:   '{{ mosh.script_path }}/{{ mosh.server_name }}'
+        owner:  root
+        group:  root
+        mode:   '0755'
+        backup: no
+
     - name: Copy Mosh Allow UFW script
-      copy:
-        src:   'mosh-allow-ufw.sh'
-        dest:  '/usr/local/bin/mosh-allow-ufw'
-        owner: root
-        group: root
-        mode:  '0755'
+      template:
+        src:    'mosh-allow-ufw.j2'
+        dest:   '{{ mosh.script_path }}/{{ mosh.script_name }}'
+        owner:  root
+        group:  root
+        mode:   '0755'
+        backup: no
 
-    - name: Mosh allow into global bashrc
-      lineinfile:
-        dest:   '/etc/bash.bashrc'
-        line:   'sudo /usr/local/bin/mosh-allow-ufw'
-        regexp: 'mosh-allow-ufw'
-        state:  present
-
-    - name: Mosh allow ssh groups into sudoers
+    - name: Mosh allow ssh groups into sudoers without password for ufw script
       lineinfile:
         dest:  '/etc/sudoers'
-        line:  '%{{ item }} ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/mosh-allow-ufw'
+        line:  '%{{ item }} ALL=(ALL:ALL) NOPASSWD: {{ mosh.script_path }}/{{ mosh.script_name }}'
         state:  present
       with_items: "{{ ssh_groups }}"
       when: ssh_users_instead_groups is not defined or not ssh_users_instead_groups
 
-    - name: Mosh allow ssh users into sudoers
+    - name: Mosh allow ssh users into sudoers without password for ufw script
       lineinfile:
         dest:  '/etc/sudoers'
-        line:  '{{ item }} ALL=(ALL:ALL) NOPASSWD: /usr/local/bin/mosh-allow-ufw'
+        line:  '{{ item }} ALL=(ALL:ALL) NOPASSWD: {{ mosh.script_path }}/{{ mosh.script_name }}'
         state:  present
       with_items: "{{ ssh_users }}"
       when: ssh_users_instead_groups is defined and ssh_users_instead_groups
+
+    - name: clean up open ports every minute by running a cronjob for root
+      cron:
+        name: "check mosh ports"
+        job: "{{ mosh.script_path }}/{{ mosh.script_name }} cleanup {% if mosh.debug is defined and mosh.debug | bool %}>> {{ logfile }} 2>&1{% else %}> /dev/null{% endif %}"
+        user: "root"
 
   become: yes
 

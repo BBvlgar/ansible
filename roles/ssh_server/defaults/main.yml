@@ -60,5 +60,16 @@ ssh_tools:
   - name: mosh
   - name: ufw
   - name: lsof
+  - name: sudo
+
+mosh:
+  install_path: '{{ mosh_install_path | default("/usr/bin") }}'
+  script_path:  '{{ mosh_script_path | default("/usr/local/bin") }}'
+  script_name:  'mosh-allow-ufw'
+  server_name:  'mosh-server'
+  debug:        '{{ mosh_debug | default("yes") }}'
+  logfile:      '/var/log/mosh_ufw.log'
+
+mosh_path_order_regex: '(^|.*:)({{ mosh.script_path | regex_escape() }}):(.*:)?({{ mosh.install_path | regex_escape() }})(:.*|$)'
 
 ...
