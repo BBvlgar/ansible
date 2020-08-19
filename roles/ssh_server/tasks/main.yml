@@ -81,7 +81,7 @@
 
     - name: register UFW path
       set_fact:
-        ufw_path: ufw_path.stdout
+        ufw_path: "{{ ufw_path.stdout }}"
 
     - name: get lsof path
       command: "which lsof"
@@ -89,7 +89,7 @@
 
     - name: register lsof path
       set_fact:
-        lsof_path: lsof_path.stdout
+        lsof_path: "{{ lsof_path.stdout }}"
 
     - name: check PATH variable
       command: "echo $PATH"
@@ -142,7 +142,7 @@
     - name: clean up open ports every minute by running a cronjob for root
       cron:
         name: "check mosh ports"
-        job: "{{ mosh.script_path }}/{{ mosh.script_name }} cleanup {% if mosh.debug is defined and mosh.debug | bool %}>> {{ logfile }} 2>&1{% else %}> /dev/null{% endif %}"
+        job: "{{ mosh.script_path }}/{{ mosh.script_name }} cleanup {% if mosh.debug is defined and mosh.debug | bool %}>> {{ mosh.logfile }} 2>&1{% else %}> /dev/null{% endif %}"
         user: "root"
 
   become: yes
