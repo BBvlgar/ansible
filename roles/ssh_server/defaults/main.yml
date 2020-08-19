@@ -59,5 +59,6 @@ package_state: latest
 ssh_tools:
   - name: mosh
   - name: ufw
+  - name: lsof
 
 ...
