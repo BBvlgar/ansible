@@ -28,6 +28,10 @@
         - '"changed" in hostchanged.stdout'
       failed_when:
         - hostchanged.rc != 0
+    
+    - name: 'Ensure timezone is set correct'
+      include_role:
+        name: timezone
 
     - name: 'update Server'
       include_role:
