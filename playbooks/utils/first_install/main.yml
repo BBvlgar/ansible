@@ -33,6 +33,11 @@
       include_role:
         name: timezone
 
+    - name: 'apt update - since Ansible could not do anything without this command ...'
+      command:
+        cmd:  'apt-get update'
+        warn: no
+
     - name: 'update Server'
       include_role:
         name: update_server
