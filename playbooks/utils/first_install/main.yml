@@ -41,6 +41,8 @@
     - name: 'update Server'
       include_role:
         name: update_server
+      vars:
+        override_user: 'yes'
 
     - name: 'install basic toolset and configuration'
       include_role:

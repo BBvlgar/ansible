@@ -25,13 +25,17 @@
       pause:
         prompt: "Should we continue? (yes/no - default: yes)"
       register: continue_upgrade
+      when: not override_user | bool
 
     - name: Update all packages to the latest version
       apt:
         upgrade: 'yes'
         state: latest
-      when:
-        - continue_upgrade.user_input == '' or continue_upgrade.user_input | lower == 'yes'
+      when: override_user | bool or
+            continue_upgrade.user_input is defined and (
+              continue_upgrade.user_input == '' or
+              continue_upgrade.user_input | bool
+            )
 
   become: yes
 
