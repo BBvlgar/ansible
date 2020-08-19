@@ -78,8 +78,8 @@
 # shares are used from time to time for binds and mounts
 - name: ensure Docker starting after network by systemd
   copy:
-    src:   'docker_service_override.conf'
-    dest:  '/etc/systemd/system/docker.service.d/override.conf'
+    src:   'docker.service.d/override.conf'
+    dest:  '/etc/systemd/system/docker.service.d/'
     owner: root
     group: root
     mode:  '0644'

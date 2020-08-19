@@ -65,8 +65,8 @@
 # the network is finally up – or the service will not start ...
 - name: override start time of SSH service
   copy:
-    src:   'ssh_service_override.conf'
-    dest:  '/etc/systemd/system/ssh.service.d/override.conf'
+    src:   'ssh.service.d/override.conf'
+    dest:  '/etc/systemd/system/ssh.service.d/'
     owner: root
     group: root
     mode:  '0644'
