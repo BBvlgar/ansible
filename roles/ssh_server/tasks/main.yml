@@ -123,6 +123,17 @@
         mode:   '0755'
         backup: no
 
+    - name: Copy Mosh logrotation definition
+      template:
+        src:    'mosh-logrotate.j2'
+        dest:   '{{ mosh.logrot.path }}/mosh_ufw'
+        owner:  root
+        group:  root
+        mode:   '0644'
+        backup: no
+      when:
+        mosh.debug is defined and mosh.debug | bool
+
     - name: Mosh allow ssh groups into sudoers without password for ufw script
       lineinfile:
         dest:  '/etc/sudoers'
