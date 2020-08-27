@@ -7,9 +7,11 @@ server_definitions
 
 [server_definitions]
 hs1                       ansible_port=60022    ansible_user=root    ansible_host=hs1.it-economics.de
+bamboo-builder            ansible_port=60022    ansible_user=root    ansible_host=bamboo-builder.it-economics.de
 
 [updateableServers]
 hs1
+bamboo-builder
 
 
 
