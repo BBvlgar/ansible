@@ -1,5 +1,6 @@
 ---
 
+# data for plain installing Hetzner root server
 hetzner_install:
   hostname: hs1
   image: "{{ install_base }}/../images/Ubuntu-2004-focal-64-minimal.tar.gz"
@@ -29,6 +30,13 @@ hetzner_install:
 SWRAID 1
 SWRAIDLEVEL 5
 
+# we want to install this server as Docker server
 docker_host: true
+
+# additional mountpoints have to be created
+mountpoints:
+  - fstype: ext4
+    path:   /mnt/backup
+    src:    /dev/sda
 
 ...
