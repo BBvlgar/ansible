@@ -13,6 +13,8 @@ basic_toolset:
   - name: curl
   - name: ntp
   - name: htop
+  - name: iftop
+  - name: iotop
   - name: zsh
   - name: screen
   - name: sudo
@@ -38,5 +40,7 @@ basic_toolset:
   - name: python3-pip
   - name: openssl
   - name: bash-completion
+  - name: sshfs
+  - name: progress
 
 ...
