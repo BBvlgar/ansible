@@ -4,10 +4,11 @@ hetzner_install:
   hostname: hs1
   image: "{{ install_base }}/../images/Ubuntu-2004-focal-64-minimal.tar.gz"
   drives:
-    # have a look – there is another, additional drive!
-    - /dev/sda
-    - /dev/sdb
-    - /dev/sdc
+    # SDA has not to be included to SWRAID
+    # - /dev/sda
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
   partitions:
     - destination: swap
       filesystem:  swap
