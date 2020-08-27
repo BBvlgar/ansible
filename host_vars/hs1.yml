@@ -1,0 +1,33 @@
+---
+
+hetzner_install:
+  hostname: hs1
+  image: "{{ install_base }}/../images/Ubuntu-2004-focal-64-minimal.tar.gz"
+  drives:
+    # have a look – there is another, additional drive!
+    - /dev/sda
+    - /dev/sdb
+    - /dev/sdc
+  partitions:
+    - destination: swap
+      filesystem:  swap
+      size:        40G
+    - destination: /tmp
+      filesystem:  tmpfs
+      size:        20G
+    - destination: /boot
+      filesystem:  ext3
+      size:        4G
+    - destination: /home
+      filesystem:  ext4
+      size:        40G
+    - destination: /
+      filesystem:  ext4
+      size:        all
+  additionals: |
+SWRAID 1
+SWRAIDLEVEL 5
+
+docker_host: true
+
+...
