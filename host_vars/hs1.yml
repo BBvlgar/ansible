@@ -33,10 +33,11 @@ SWRAIDLEVEL 5
 # we want to install this server as Docker server
 docker_host: true
 
-# additional mountpoints have to be created
-mountpoints:
-  - fstype: ext4
-    path:   /mnt/backup
-    src:    /dev/sda
+# it's only a backup volume, so we do not want to permanently mount it
+# # additional mountpoints have to be created
+# mountpoints:
+#   - fstype: ext4
+#     path:   /mnt/backup
+#     src:    /dev/sda
 
 ...
