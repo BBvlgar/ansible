@@ -5,7 +5,7 @@
     workdir: /home/sysadmin/Private/it-economics_CA
 
   vars_files:
-    - environments/{{ env }}/group_vars/credentials.yml 
+    - ../../../../environments/{{ env }}/group_vars/credentials.yml 
 
   tasks:
     - name: Get location of certificate file
