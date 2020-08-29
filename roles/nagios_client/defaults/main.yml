@@ -18,7 +18,7 @@ nagios:
     - "192.168.7.1"
     - "192.168.7.2"
 
-install_tools:
+nagios_install_tools:
   - name: nagios-nrpe-server
   - name: nagios-plugins
 

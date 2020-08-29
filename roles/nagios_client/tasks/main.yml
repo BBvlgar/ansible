@@ -4,7 +4,7 @@
   package:
     name: "{{ package.name }}"
     state: "{{ package.state | default( package_state ) }}"
-  with_items: "{{ install_tools }}"
+  with_items: "{{ nagios_install_tools }}"
   loop_control:
     loop_var: package
   become: yes
