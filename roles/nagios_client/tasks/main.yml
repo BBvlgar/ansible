@@ -76,11 +76,13 @@
     loop_var: rule_proto
 
 - name: test if ufw is active
-  command: "ufw status | grep 'Status: active'"
+  command: "ufw status"
   become: yes
   register: ufw_status
   ignore_errors: yes
-  when: ufw_installed.rc == 0
+  when: 
+    - ufw_installed is defined
+    - ufw_installed.rc == 0
 
 - name: restart ufw
   service:
@@ -88,7 +90,9 @@
     state: restarted
   become: yes
   when:
+    - ufw_installed is defined
     - ufw_installed.rc == 0
-    - ufw_status.rc == 0
+    - ufw_status is defined
+    - ufw_status.stdout is regex( ufw_status_regex )
 
 ...

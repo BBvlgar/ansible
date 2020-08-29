@@ -33,11 +33,11 @@
       service:
         name:  ufw
         state: restarted
-      when: restart_ufw is not defined or restart_ufw | bool
+      when: ( only_install_ufw is defined and ( restart_ufw is not defined or restart_ufw | bool ) ) or only_install_ufw is not defined and restart_ufw is not defined
 
     - name: enable ufw
       command: ufw --force enable
-      when: enable_ufw is not defined or enable_ufw | bool
+      when: ( only_install_ufw is defined and ( enable_ufw is not defined or enable_ufw | bool ) ) or only_install_ufw is not defined and enable_ufw is not defined
 
   become: true
 
