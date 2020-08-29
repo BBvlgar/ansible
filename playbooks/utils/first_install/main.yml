@@ -85,10 +85,6 @@
       include_role:
         name: ssh_server
 
-    - name: 'install nrpe-server'
-      include_role:
-        name: nagios_client
-
     - name: reboot
       reboot:
         reboot_timeout: 300
