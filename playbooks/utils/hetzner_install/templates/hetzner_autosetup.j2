@@ -10,6 +10,6 @@ PART  {{ part.destination }}  {{ part.filesystem }}  {{ part.size }}
 
 IMAGE  {{ hetzner_install.image }}
 
-{% for row in hetzner_install.additionals | default( [] ) %}
-{{ row }}
-{% endfor %}
+{% if hetzner_install.additionals is defined and hetzner_install.additionals != '' %}
+{{ hetzner_install.additionals }}
+{% endif %}
