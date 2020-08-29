@@ -3,8 +3,6 @@
 - hosts: localhost
   vars:
     env: testing
-  vars_files:
-    - ../../../../environments/{{env}}/group_vars/credentials.yml
 
   vars_prompt:
     - name: "admin_user"
