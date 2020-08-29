@@ -113,10 +113,11 @@ PART /home ext4 all
 ## examples:
 #
 # local: /path/to/image/filename.tar.gz
-# ftp:   ftp://<user>:<password>@hostname/path/to/image/filename.tar.bz2
-# http:  http://<user>:<password>@hostname/path/to/image/filename.tbz
-# https: https://<user>:<password>@hostname/path/to/image/filename.tbz
 # nfs:   hostname:/path/to/image/filename.tgz
+## FTP, HTTP, HTTPS can use regular user:password@ syntax
+# ftp:   ftp://hostname/path/to/image/filename.tar.bz2
+# http:  http://hostname/path/to/image/filename.tbz
+# https: https://hostname/path/to/image/filename.tbz
 #
 # for validation of the image, place the detached gpg-signature
 # and your public key in the same directory as your image file.
@@ -178,7 +179,7 @@ Since the server is in rescue mode, the playbook ignores host key checks, etc.
 Now, we want to run the task. From your Ansible root directory, please run some command like this:
 
 ```sh
-ansible-playbook -i environments/mwinter playbooks/utils/testing.yml --limit "server_alias" --user root --ask-pass
+ansible-playbook -i environments/production playbooks/utils/testing.yml --limit "server_alias" --user root --ask-pass
 ```
 
 You'll have to define some things:
