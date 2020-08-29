@@ -4,7 +4,7 @@
   vars:
     env: testing
   vars_files:
-    - ../../../environments/{{env}}/group_vars/manage_user_secrets.yml
+    - ../../../environments/{{env}}/group_vars/credentials.yml
 
   vars_prompt:
     - name: "admin_user"

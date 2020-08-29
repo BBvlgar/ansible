@@ -25,8 +25,5 @@
 # Revoke SSL certificate
 - import_playbook: ssl.yml
 
-# Find user accounts on production machines
-#- import_playbook: local_user_accounts.yml
-
 # Backup emails
 - import_playbook: email.yml

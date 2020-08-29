@@ -1,21 +1,13 @@
 ---
-- hosts: pki
+- hosts: pki.muc
   vars:
     env: testing
     workdir: /home/sysadmin/Private/it-economics_CA
 
   vars_files:
-    - ../../../environments/{{env}}/group_vars/manage_user_secrets.yml
+    - environments/{{ env }}/group_vars/credentials.yml 
 
   tasks:
-#    - name: Make sure ecryptfs is mounted
-#      shell: mount | grep ecryptfs
-#      register: ecryptfs_mounted
-#      ignore_errors: yes
-
-#    - pause: prompt="Please mount the sysadmin ecryptfs before proceeding, then press enter"
-#      when: ecryptfs_mounted|failed
-
     - name: Get location of certificate file
       shell: find {{ workdir }}/internal {{ workdir }}/external -name "it-economics_{{ hostvars.get('localhost').get('email') }}.crt" | grep "{{ workdir }}"
       register: cert
