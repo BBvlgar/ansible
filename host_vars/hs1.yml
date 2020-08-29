@@ -11,22 +11,18 @@ hetzner_install:
     - /dev/nvme1n1
     - /dev/nvme2n1
   partitions:
-    - destination: swap
-      filesystem:  swap
-      size:        40G
-    - destination: /tmp
-      filesystem:  tmpfs
-      size:        20G
     - destination: /boot
       filesystem:  ext3
       size:        4G
-    - destination: /home
-      filesystem:  ext4
-      size:        40G
-    - destination: /
-      filesystem:  ext4
+    - destination: lvm
+      filesystem:  vg0
       size:        all
   additionals: |
+    LV vg0   swap   swap     swap         40G
+    LV vg0   tmp    /tmp     reiserfs     20G
+    LV vg0   home   /home    ext4         40G
+    LV vg0   root   /        ext4         all
+
     SWRAID 1
     SWRAIDLEVEL 5
 
