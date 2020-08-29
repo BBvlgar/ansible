@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Check if file backup for source $1 from host $4 is up to date
+# @params
+# $1 source directory on remote host
+# $2 target directory on local host
+# $3 user on remote host
+# $4 address of remote host (ip or url)
+# $5 port on remote host
+
+PAST_MONTHS=6
+SOURCE_DIR=/mnt/backup
+DEST_DIR=/mnt/data/nas3-backups
+
+fileVerify() {
+  local source="$1"
+  local target="$2"
+  local past_months="$3"
+  local logfile=$(mktemp)
+  local rsync_output=$(mktemp)
+  local files=$(mktemp)
+  local status=1
+  
+  # Get date of past month
+  local start_date=$( date -d "$past_months month ago" +%F )
+
+  # Find all files modified in this and current-past_months
+  cd $source ; find . -newermt $start_date -type f | sort -r > $files
+  
+  rsync -rvn --files-from $files --size-only "$source" "$target" --exclude="logs/**" > $rsync_output 2>/dev/null
+  status=$?
+  
+  if [ $status -eq 0 ] ; then
+    # Delete rsync output (first and last two lines)
+    if [ -z "$(cat $rsync_output | head -n -2 | sed '1d' | sed '/is uptodate/d' )" ] ; then
+      # Nothing to do
+  rm -fr $rsync_output
+  echo "All NAS3 backups are UP-TO-DATE ($(date +%F))"
+        return 0
+    else
+      # Backup not complete, exit with status != 0 (for nagios)
+  logfile=/var/log/check_nas3_backup.$(date +%F)
+  cp $rsync_output $logfile
+  echo "Backup not complete - see $logfile for details"
+  rm -fr $rsync_output
+        return 1
+    fi
+  else
+    # Verification failed because of rsync error
+    rm -fr $rsync_output
+    echo "Error while verifying NAS3 backup"
+    return 2
+  fi
+}
+
+fileVerify "$SOURCE_DIR" "$DEST_DIR" "$PAST_MONTHS"
+exit $?

@@ -1,0 +1,13 @@
+---
+
+nagios:
+  port: 5666
+  user: nagios
+
+install_tools:
+  - name: nagios-nrpe-server
+  - name: nagios-plugins
+
+package_state: latest
+
+...

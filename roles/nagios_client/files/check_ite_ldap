@@ -1,0 +1,79 @@
+#!/usr/bin/perl -w
+use File::Compare;
+use strict;
+
+# it-economics GmbH
+# Date: 21.11.2012
+
+my @error=();
+my $server = $ARGV[0];
+my $timestamp = &createTimeStamp;
+# Nagios codes
+my %NAGIOSCODES = (
+	'OK'        => 0,
+	'WARNING'   => 1,
+	'CRITICAL'  => 2,
+	'UNKNOWN'   => 3,
+	'DEPENDENT' => 4
+);
+
+&checkLDAP;
+my $error = @error;
+if ($error == 0){
+	&nagios_return("OK", "LDAP OK (Datum: $timestamp)");
+}
+else{
+	&nagios_return("CRITICAL", "Datum: $timestamp - Anzahl nicht laufender LDAP Server: " . ($error) . " - Festgestellt bei: " . "@error");
+}
+
+sub checkLDAP{
+	my $test = system("ldapwhoami -H ldap://$server -D uid=test,ou=people,dc=it-economics,dc=de -w test");
+	if ($test eq '12544'){
+		
+	}
+	else{
+		push(@error,$server);
+	}
+}
+
+sub createTimeStamp{
+	my ($sec,$min,$hour,$mday,$mon,$year,
+          $wday,$yday,$isdst)=localtime(time);
+	my $pyear = $year + 1900;
+	my $imon = $mon + 1;
+	
+	my $pmon = "";
+	
+	if(length($imon) == 1){
+		$pmon = "0".$imon;
+	}
+	else{
+		$pmon = $imon;
+	}
+	my $pday = "";
+	if(length($mday) == 1){
+		$pday = "0".$mday;
+	}
+	else{
+		$pday = $mday;
+	}
+	my $times = $pyear . "-" . $pmon . "-" . $pday;
+	return $times;
+	
+}
+
+sub nagios_return($$) {
+        my ($ret, $message) = @_;
+        my ($retval, $retstr);
+        if (defined($NAGIOSCODES{$ret})) {
+                $retval = $NAGIOSCODES{$ret};
+                $retstr = $ret;
+        } else {
+                $retstr = 'UNKNOWN';
+                $retval = $NAGIOSCODES{$retstr};
+                $message = "WTF is return code '$ret'??? ($message)";
+        }
+        $message = "$retstr - $message\n";
+        print $message;
+        exit $retval;
+}
