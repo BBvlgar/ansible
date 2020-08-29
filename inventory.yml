@@ -81,8 +81,8 @@ freepbx
 hs1
 monitoring.muc
 monitoring
-vpn
-bamboo
+jumphost
+bamboo-server
 s3
 proxmox
 training
@@ -127,10 +127,11 @@ s3
 [directory]
 dockerhost
  
-[directory-guest]
+[directory_guest]
 dockerhost
  
-[directory-test]
+[directory_test]
+dockerhost
  
 [achievo]
 hs2
@@ -162,10 +163,10 @@ dockerhost
 [secrets]
 dockerhost
  
-[teamsurvey-dashboard]
+[teamsurvey_dashboard]
 dockerhost
  
-[teamsurvey-api]
+[teamsurvey_api]
 dockerhost
  
 [kdc01]
@@ -174,7 +175,7 @@ dockerhost
 [phonestat]
 dockerhost
  
-[events-app-backend]
+[events_app_backend]
 dockerhost
  
 [ldap01]
@@ -186,13 +187,13 @@ dockerhost
 [ldapGuest]
 dockerhost
  
-[roominfo-service]
+[roominfo_service]
 dockerhost
  
 [memorysourceexport]
 dockerhost
  
-[atlassian-quote]
+[atlassian_quote]
 dockerhost
  
 [crowd]
@@ -209,7 +210,7 @@ dockerhost
 www
 hs1
  
-[social-partner]
+[social_partner]
 s3
  
 [radius]
@@ -220,9 +221,6 @@ s3
 ## Infrastructural Stuff
 ####
 [vpn]
-jumphost
- 
-[jumphost]
 jumphost
  
 [mysql_slave]
