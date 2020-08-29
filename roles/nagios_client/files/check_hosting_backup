@@ -1,0 +1,72 @@
+#!/usr/bin/php
+<?php
+
+function setPath($backupPath,$customer,$app){
+  $content= <<<EOF
+TARGET='file://$backupPath/$customer/$app'
+SOURCE='dummy'
+GPG_KEY='disabled'
+EOF;
+  file_put_contents("$backupPath/duply/conf", $content);
+}
+
+if(sizeof($argv)< 3 || $argv[1] == NULL || $argv[2] == NULL){
+  echo "Parameter Missing! Usage: check_hosting_backup customer application\n";
+  exit(1);
+}
+
+$customerInput=$argv[1];
+$applicationInput=$argv[2];
+
+$maxFullBackupAge=14;
+$maxBackupAge=1;
+$backupPath="/mnt/backup/nas4-backup/hosting";
+
+$lastBackupDate=NULL;
+$now = new \DateTime();
+
+$output=array();
+$exitcode=NULL;
+
+
+setPath($backupPath,$customerInput,$applicationInput);
+
+exec ("duply $backupPath/duply status",$output,$exitcode);
+if ($exitcode!=0){
+  exit($exitcode);
+}
+
+$result = "";
+
+foreach ($output as $line) {
+//    echo "Line: " . $line . "\n";
+
+    //last full backup
+    if(strpos($line, 'Letzte vollständige Sicherung') !== false || strpos($line, 'Last full backup date') !== false ) {
+         //get date of last fullbackup  (should not be older than 2 weeks)
+         $date = substr($line,strpos($line,':'));
+         $dateparsed = date_parse($date);
+         $date = $dateparsed['year']."-".$dateparsed['month']."-".$dateparsed['day'];
+         $datetime = new \DateTime($date);
+	 $result .= $line . "\n";
+         if($datetime->diff($now)->days > $maxFullBackupAge) {
+           //lastBackup is older than expected
+           echo "($customerInput->$applicationInput) Last Full-Backup ($date) is older than expected (more than $maxFullBackupAge days)".$result;
+           exit(2); //Full-Backup too old -> critical
+         }
+
+    }else if(strpos($line, 'Chain end time') !== false || strpos($line, 'Letzte Sicherung in dieser Kette') !== false){
+      $backupdate = substr($line,strpos($line,':'));
+      $backupdatepared = date_parse($backupdate);
+      $backupdate = $backupdatepared['year']."-".$backupdatepared['month']."-".$backupdatepared['day'];
+      $lastBackupDate = new \DateTime($backupdate);
+    }
+}
+if($lastBackupDate == NULL || $lastBackupDate->diff($now)->days > $maxBackupAge){
+ //if no incremental is found or is older than 1 day
+  echo "($customerInput->$applicationInput) Last backup in last chain ($backupdate) is too old (older than $maxBackupAge)".$result;
+  exit(2);
+}
+echo "OK ".$result;
+exit(0);
+?>

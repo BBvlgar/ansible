@@ -1,0 +1,39 @@
+---
+
+- name: merge global_ufw_rules and host_ufw_rules into ufw_rules
+  set_fact:
+    ufw_rules: "{{ global_ufw_rules | default([]) }} + {{ host_ufw_rules | default([]) }}"
+
+- name: root block
+  block:
+
+    - name: Install ufw as firewall
+      package:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default( package_state ) }}"
+      with_items: "{{ install_packages }}"
+
+    - name: Configure ufw defaults
+      ufw:
+        direction: "{{ item.direction }}"
+        policy:    "{{ item.policy }}"
+      with_items: "{{ ufw_defaults }}"
+
+    - name: Configure ufw rules
+      ufw:
+        rule:  "{{ item.rule }}"
+        port:  "{{ item.port }}"
+        proto: "{{ item.proto | default('tcp') }}"
+      with_items: "{{ ufw_rules }}"
+
+    - name: restart ufw
+      service:
+        name:  ufw
+        state: restarted
+
+    - name: enable ufw
+      command: ufw --force enable
+
+  become: true
+
+...

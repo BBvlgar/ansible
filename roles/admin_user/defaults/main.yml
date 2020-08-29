@@ -1,5 +1,7 @@
 ---
 
-restricted_admins: []
+admins:           []
+user_groups:      []
+disallowed_users: []
 
 ...

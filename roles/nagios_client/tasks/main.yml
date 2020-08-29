@@ -1,0 +1,42 @@
+---
+
+- name: Ensure dependencies are installed
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state ) }}"
+  with_items: "{{ install_tools }}"
+  become: yes
+
+- name: Ensure folder exists
+  file: 
+    path: "{{ item }}" 
+    state: directory 
+    owner: "{{ nagios.user }}" 
+    group: "{{ nagios.user }}" 
+  with_items:
+    - /usr/lib/nagios
+    - /var/run/nagios
+
+- name: Ensure plugins are installed
+  copy: 
+    src: "{{ item }}" 
+    dest: "/usr/lib/nagios/plugins/{{ item|basename }}" 
+    mode: 0755
+  with_fileglob:
+    - ./*
+
+- name: Ensure config is installed
+  template: 
+    src: nrpe.cfg.j2 
+    dest: /etc/nagios/nrpe.cfg 
+    mode: 0644 
+    owner: root 
+    group: root
+  notify: restart nrpe
+
+- name: Ensure nagios-nrpe-server on client is restarted
+  service: 
+    name: nagios-nrpe-server 
+    state: restarted
+
+...

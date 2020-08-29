@@ -1,0 +1,34 @@
+---
+
+# 'path' is the relative path from the execution of the playbook
+- name: Check if certificate folder exists on localhost
+  local_action:
+    module: stat
+    path:   "./certs/{{ role_vars.directory }}/{{ role_vars.fqdn }}"
+  become: no
+  register: localefile
+
+- name: Ensure folders exist
+  file:
+    path:  "/etc/ssl/{{ role_vars.directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode:  '0770'
+  when: localefile.stat.exists
+
+- name: Ensure it-economics_CA config for host is installed
+  template:
+    src:   "{{ item }}"
+    dest:  "/etc/ssl/{{ role_vars.directory }}/{{ item | basename }}"
+    owner: root
+    group: root
+    mode:  '0400'
+  with_items:
+    - "{{ certs_base }}/{{ role_vars.directory }}/chain.crt"
+    - "{{ certs_base }}/{{ role_vars.directory }}/{{ role_vars.fqdn }}/{{ role_vars.fqdn }}.crt"
+    - "{{ certs_base }}/{{ role_vars.directory }}/{{ role_vars.fqdn }}/{{ role_vars.fqdn }}.key"
+  ignore_errors: true
+  when: localefile.stat.exists
+
+...

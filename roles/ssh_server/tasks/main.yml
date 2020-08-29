@@ -1,22 +1,17 @@
 ---
 
 - name: Ensure dependencies are installed
-  apt:
-    name:
-      - ufw
-      - mosh
-    state: present
-    update_cache: no
-
-- name: provide ssl certificates to server
-  include_role:
-    name: ssl
-  when:
-    (dockerized is defined or not dockerized) and
-    (nossl is defined or not nossl)
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ ssh_tools }}"
 
 - name: secure key
-  file: path=/etc/ssh/ssh_host_rsa_key mode=400 owner=root group=root
+  file:
+    path:  '/etc/ssh/ssh_host_rsa_key'
+    mode:  '0400'
+    owner: root
+    group: root
 
 # The variable `ssh_users` will be used within the template `sshd_config`!
 #
@@ -28,34 +23,139 @@
   with_items: "{{ admins }}"
   # the `when` below limits the execution to two conditions that are combined by
   # a logical `AND`:
-  # First of all if there is an admin defined within the `admins` variable and
+  # First of all check, if we really use users instead of groups for ssh
+  # authentification.
+  # Then,  if there is an admin defined within the `admins` variable and
   # it is not empty – this first check doesn't even check if `admins` is an
   # array or not, it only checks for sth. else than `FALSE`, `NONE`, `EMPTY` or
   # `UNDEFINED`.
-  # The second condition checks – for each loop through the `admins` array – if
+  # The third check looks for users that are not allowed to use SSH at all by
+  # definition.
+  # The last condition checks – for each loop through the `admins` array – if
   # the defined username of the current admin (`item.name`) is not within the
-  # relevant instance of `restricted_admins` array.
-  # The `restricted_admins` array is defined with defaults within the `all.yml`
+  # relevant instance of `disallowed_users` array.
+  # The `disallowed_users` array is defined with defaults within the `all.yml`
   # group_vars file, is fully emptied for the servers of the `alladmins`
   # inventory group within the `alladmins.yml` group_vars file and can be
   # overridden for each server in its corresponding host_vars file.
   when:
+    - ssh_users_instead_groups is defined and ssh_users_instead_groups
     - admins
-    - item.name not in restricted_admins|default([])
+    - item.name not in nossh_users|default([])
+    - item.name not in disallowed_users|default([])
+
+- name: ensure to know which name the SSH service has
+  set_fact:
+    ssh_service_name: "{% if ansible_os_family == 'Debian' %}ssh{% else %}sshd{% endif %}"
 
 - name: Write sshd config
-  template: src=sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0644 backup=no
+  template:
+    src:    sshd_config.j2
+    dest:   /etc/ssh/sshd_config
+    owner:  root
+    group:  root
+    mode:   0644
+    backup: no
   notify:
-  - restart ssh
+    - restart ssh
 
-- name: Open needed ports in firewall
-  command: ufw allow 60000:61000/udp
-  register: ufw_fail
-  ignore_errors: True
+# SSH has set by default to be started after network.target – but that
+# does not mean it always waits for the network to be up.
+# Since we limit the connection to the host IP, we have to wait until
+# the network is finally up – or the service will not start ...
+- name: override start time of SSH service
+  copy:
+    src:   'ssh.service.d/override.conf'
+    dest:  '/etc/systemd/system/ssh.service.d/'
+    owner: root
+    group: root
+    mode:  '0644'
+  become: yes
 
-- name: 'log message if ufw command fails'
-  fail:
-    msg: 'ufw command failed – probably you want to run `sudo update-alternatives --set iptables /usr/sbin/iptables-legacy` and reboot before you retry (if `update-alternatives --list iptables` shows you two results) ...'
-  when: "'ERROR' in ufw_fail.stderr"
+- name: prepare for auto-opening UFW ports
+  block:
+
+    - name: get UFW path
+      command: "which ufw"
+      register: ufw_path
+
+    - name: register UFW path
+      set_fact:
+        ufw_path: "{{ ufw_path.stdout }}"
+
+    - name: get lsof path
+      command: "which lsof"
+      register: lsof_path
+
+    - name: register lsof path
+      set_fact:
+        lsof_path: "{{ lsof_path.stdout }}"
+
+    - name: check PATH variable
+      command: "echo $PATH"
+      register: path_variable
+
+    - name: ensure startup script will be run instead of original mosh-server script
+      assert:
+        that:
+          - path_variable.stdout is regex( mosh_path_order_regex )
+        fail_msg: |
+          Your systems $PATH variable is not matching the requirements.
+
+          Please ensure to change the mosh.script_path variable ({{ mosh.script_path }}) to a part of your $PATH variable being checked before the mosh.install_path variable ({{ mosh.install_path }})!
+          Otherwise the ports used by mosh cannot be released on the go!
+
+    - name: Prepare mosh startup script
+      template:
+        src:    'mosh-startup.j2'
+        dest:   '{{ mosh.script_path }}/{{ mosh.server_name }}'
+        owner:  root
+        group:  root
+        mode:   '0755'
+        backup: no
+
+    - name: Copy Mosh Allow UFW script
+      template:
+        src:    'mosh-allow-ufw.j2'
+        dest:   '{{ mosh.script_path }}/{{ mosh.script_name }}'
+        owner:  root
+        group:  root
+        mode:   '0755'
+        backup: no
+
+    - name: Copy Mosh logrotation definition
+      template:
+        src:    'mosh-logrotate.j2'
+        dest:   '{{ mosh.logrot.path }}/mosh_ufw'
+        owner:  root
+        group:  root
+        mode:   '0644'
+        backup: no
+      when:
+        mosh.debug is defined and mosh.debug | bool
+
+    - name: Mosh allow ssh groups into sudoers without password for ufw script
+      lineinfile:
+        dest:  '/etc/sudoers'
+        line:  '%{{ item }} ALL=(ALL:ALL) NOPASSWD: {{ mosh.script_path }}/{{ mosh.script_name }}'
+        state:  present
+      with_items: "{{ ssh_groups }}"
+      when: ssh_users_instead_groups is not defined or not ssh_users_instead_groups
+
+    - name: Mosh allow ssh users into sudoers without password for ufw script
+      lineinfile:
+        dest:  '/etc/sudoers'
+        line:  '{{ item }} ALL=(ALL:ALL) NOPASSWD: {{ mosh.script_path }}/{{ mosh.script_name }}'
+        state:  present
+      with_items: "{{ ssh_users }}"
+      when: ssh_users_instead_groups is defined and ssh_users_instead_groups
+
+    - name: clean up open ports every minute by running a cronjob for root
+      cron:
+        name: "check mosh ports"
+        job: "{{ mosh.script_path }}/{{ mosh.script_name }} cleanup {% if mosh.debug is defined and mosh.debug | bool %}>> {{ mosh.logfile }} 2>&1{% else %}> /dev/null{% endif %}"
+        user: "root"
+
+  become: yes
 
 ...

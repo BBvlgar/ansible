@@ -1,0 +1,57 @@
+---
+
+- name: 'set data paths'
+  set_fact:
+    cnt_cnf_path:  "{{ mysql_cnt.name }}/{{ mysql_path.config }}"
+    cnt_data_path: "{{ mysql_cnt.name }}/{{ mysql_path.data }}"
+
+- name: 'finalise `mysql_cnt` variable'
+  set_fact:
+    mysql_cnt: "{{ mysql_cnt | stackcontainername( mysql_cnt.name, stack ) }}"
+
+- name: 'add mysql to `additionalcontainers` variable'
+  set_fact:
+    additionalcontainers: "{{ additionalcontainers + [ mysql_cnt ] }}"
+
+- name: 'Blubb'
+  debug:
+    msg: '{{ [ mysql_cnt ] }}'
+
+- name: 'prepare configuration path'
+  set_fact:
+    mysql_templates:
+      - "mysqld.cnf"
+    cnt_cnf_tpl_path: "{{ template_destination }}/{{ stack.name }}/{{ cnt_cnf_path }}/"
+
+- name: Create needed dirs – if they do not already exist
+  file:
+    path: "{{ cnt_cnf_tpl_path }}"
+    state: directory
+    mode: "0755"
+
+- name: 'Ensure MySQL configs are placed well'
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ cnt_cnf_tpl_path }}{{ item|basename }}"
+  with_items: "{{ mysql_templates }}"
+
+- name: 'empty helper list'
+  set_fact:
+    tpltbm: []
+
+- name: 'add template information for further handling'
+  set_fact:
+    tpltbm: "{{ tpltbm | combine ( [{
+        'destination': cnt_cnf_path,
+        'template': cnt_cnf_tpl_path + '/' + item|basename
+    }] ) }}"
+  with_items: "{{ mysql_templates }}"
+
+- name: 'put helper to container definition'
+  set_fact:
+    mysql_cnt: "{{ mysql_cnt | combine ( { 'templates_to_be_moved': tpltbm } ) }}"
+
+- debug:
+    msg: "{{ mysql_cnt.templates_to_be_moved }}"
+
+...

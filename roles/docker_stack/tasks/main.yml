@@ -1,0 +1,44 @@
+---
+
+
+# Tell user, which stack will be worked on
+- debug:
+    msg: "Now container stack *{{ stack.name | mandatory }}* will be worked on:"
+
+# `include_*` is executed in sequence, `import_*` would be executed before
+# starting all tasks. So we shuold use `include_*`.
+- name: 'prepare mysql container'
+  include_tasks: add_mysql.yml
+  when: (stack.mysql is defined and stack.mysql)
+
+- name: 'combine all additionalcontainers and the mainapplication'
+  set_fact:
+    stackitems: "{{ additionalcontainers + [ mainapplication ] }}"
+
+- name: 'fetch all mounts for datacontainer'
+  set_fact:
+    volumes_helper:        "{{ volumes_helper        | combine() }}"
+    docker_volumes_helper: "{{ docker_volumes_helper | combine() }}"
+    #                                                | combine ( [ app.name + "_" + item.name + "_" + index.1 + ":" + item.path ] ) }}"
+    #                                                | combine ( [ app.name + "_" + item.name + "_" + index.1 ] ) }}"
+  with_items: "{{ stackitems }}"
+
+- name: 'prepare datacontainer'
+  set_fact:
+    datacontainer: "{{ datacontainer | combine ( { 'volumes' : volumes_helper, 'docker_volumes' : docker_volumes_helper } ) }}"
+
+- name: 'Combine all container information to let them run'
+  set_fact:
+    stackitems: "{{ [ datacontainer ] + stackitems }}"
+
+- name: 'Blubb'
+  debug:
+    msg: '{{ stackitems }}'
+
+# # finally call docker_container role for every container that has to be controlled
+# - name: 'Create and manage containers for the Docker stack.'
+#   include_role:
+#     name: docker_container
+#   with_items: "{{ stackitems }}"
+#   loop_control:
+#     loop_var: container

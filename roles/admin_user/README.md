@@ -1,14 +1,14 @@
-Admin User
-=========
-Creates users specified in `admins` dictionary and grants admin, sudo and SSH public key access.
+# Admin User
+
+Creates users specified in `admins` dictionary and grants permissions based on groups and gives SSH public key access.
 Fails when `admins` is not set.
 
-Requirements
-------------
+## Requirements
+
 None.
 
-Role Variables
---------------
+## Role Variables
+
 ### admins
 ```
 admins:
@@ -29,12 +29,12 @@ ssh_authorized_keys_dir: /etc/ssh/
 ```
 The directory all SSH keys will be installed into and which is then read by sshd.
 
-Dependencies
-------------
+## Dependencies
+
 None.
 
-Example Playbook
-----------------
+## Example Playbook
+
 ```
 - name: add admin users
   hosts: servers
@@ -42,4 +42,12 @@ Example Playbook
 
   roles:
     - { role: admin_user, admins: "{{ myAdminDictionary }}" }
+```
+
+## ToDos
+
+[Disable users](https://www.thegeekdiary.com/unix-linux-how-to-lock-or-disable-an-user-account/)
+
+```sh
+chage -E0 testuser
 ```
