@@ -25,7 +25,7 @@ server_definitions
 s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de
 bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
 jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de
-pki.muc                    ansible_port=60022            ansible_host=pki.muc.it-economics.de
+pki.muc                    ansible_port=22            ansible_host=pki.muc.it-economics.de
 ## Do not Touch Systems Muc
 #nas4
 #s2
