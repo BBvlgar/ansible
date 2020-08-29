@@ -1,7 +1,7 @@
 ---
 
 nagios:
-  port: 5666
+  port: "5666"
   user: nagios
   allowed_ips:
     - "127.0.0.1"
