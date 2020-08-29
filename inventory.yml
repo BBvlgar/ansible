@@ -43,7 +43,7 @@ bareos-ext                  ansible_port=60022           ansible_host=bareos-ext
 ## Hetzner Cloud Server
 ###
 hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de
-bamboo                      ansible_port=60022           ansible_host=bamboo.it-economics.de
+bamboo-server               ansible_port=60022           ansible_host=bamboo.it-economics.de
 bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de
 #training                   ansible_port=60022            ansible_host=
 bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
@@ -148,7 +148,7 @@ dockerhost
 [bitbucket]
  
 [bamboo]
-bamboo
+bamboo-server
  
 [survey]
 dockerhost
