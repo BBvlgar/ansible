@@ -27,8 +27,8 @@ hetzner_install:
       filesystem:  ext4
       size:        all
   additionals: |
-SWRAID 1
-SWRAIDLEVEL 5
+    SWRAID 1
+    SWRAIDLEVEL 5
 
 # we want to install this server as Docker server
 docker_host: true
