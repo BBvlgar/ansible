@@ -17,7 +17,7 @@ nrpe_group={{ nagios.user }}
 
 # NOTE: This option is ignored if NRPE is running under either inetd or xinetd
 # Will also be enforced by UFW
-allowed_hosts=127.0.0.1,192.168.2.221,10.0.2.2,82.135.62.124,87.139.241.239,78.47.68.141,212.114.221.222,192.168.3.15,0.0.0.0,192.168.2.120,3.125.97.169,192.168.7.1,192.168.7.2
+allowed_hosts={{ nagios.allowed_ips | join(',') }}
 
 # *** ENABLING THIS OPTION IS A SECURITY RISK! ***
 # Read the SECURITY file for information on some of the security implications
