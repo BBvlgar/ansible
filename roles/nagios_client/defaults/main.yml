@@ -21,7 +21,7 @@ nagios_default_commands:
 nagios_default_command_file_paths:
   - '*'
 
-install_tools:
+nagios_install_tools:
   - name: nagios-nrpe-server
   - name: nagios-plugins
 
