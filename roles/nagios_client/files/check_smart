@@ -1,0 +1,140 @@
+#!/bin/bash
+
+# Return codes
+OK=0
+WARN=1
+CRIT=2
+UNK=3
+
+WARN_THRES=10
+CRIT_THRES=20
+
+OUTPUT=""
+
+# Safety checks
+#if [ $(id -u) -ne 0 ] ; then
+#        echo "You must be root to execute this script"
+#        exit $UNK
+#fi
+
+# Supported controllers
+SUP_CONTR="megaraid 3ware areca cciss hpt"
+# Installed controller
+INST_CONTR=""
+
+USAGE="Usage is: check_smart [device path] [verbose|silent|debug]"
+
+getController() {
+	sup_contr="$1"
+	# Get LSPCI output
+	lspci_out=$(lspci | grep "RAID bus controller" 3>&1 2>&1)
+
+	# Check if more than one controller is installed
+	if [ $(echo "$lspci_out" | wc -l) -gt 1 ] ; then
+		# Currently not supported
+		exit $UNK
+	fi
+
+	# Find out which controller is installed
+	for i in $sup_contr ; do
+		if echo "$lspci_out" | tr '[A-Z]' '[a-z]' | grep $i > /dev/null; then
+			echo $i
+			break;
+		fi
+	done
+}
+
+check() {
+	option="$1"
+	number="$2"
+	status=""
+	for i in $number ; do
+	  if ! [ -z $option ] && [ $option = "verbose" ] ; then
+		sudo smartctl -a -d "$INST_CONTR",$i /dev/sda
+	  else
+#		serial=$(sudo smartctl -a -d "$INST_CONTR",$i /dev/sda | grep Serial | awk '{print $NF}')
+		OUTPUT+="/dev/sda$i "
+		rsector=$(sudo smartctl -a -d "$INST_CONTR",$i /dev/sda | grep "Reallocated_Sector")
+		rsector_count=$(echo "$rsector" | awk '{print $NF}')
+		
+		OUTPUT+=" $rsector_count;"
+
+		rsector_array=$(echo $rsector_array $rsector_count)
+	  fi
+	done
+
+	rsector_max=$(echo "$rsector_array" | tr ' ' '\n' | sort -n | tail -n 1)
+        if [ $rsector_max -gt $WARN_THRES ] && [ $rsector_max -lt $CRIT_THRES ] ; then
+                return $WARN
+        elif [ $rsector_max -gt $CRIT_THRES ] ; then
+        	return $CRIT
+        else
+		return $OK
+	fi
+}
+
+getDriveNumbers() {
+	device=$1
+	for i in {1..10} ; do
+		if sudo smartctl -d "$INST_CONTR",$i $device > /dev/null ; then
+			validNumbers="$(echo $validNumbers $i)"
+		fi
+	done
+
+	if ! [ -z "$validNumbers" ] ; then
+		echo $validNumbers
+		return $OK
+	else
+		return $WARN
+	fi
+}
+
+#################### main
+# Check if supported controller is found
+INST_CONTR=$(getController $SUP_CONTR)
+# Get valid hard drive numbers
+NUMBERS=$(getDriveNumbers "$1")
+
+# Check if $1 is a valid device
+if ! [ -z $1 ] && ! stat $1 > /dev/null 3>&1 2>&1; then
+	echo "$1 is not a suitable device"
+	echo "$USAGE"
+	exit $UNK
+fi
+
+# check if NUMBERS are really numbers
+if [ -z "$NUMBERS" ] ; then
+	NUMBERS="ERROR"
+fi
+
+for i in $NUMBERS ; do
+	case $i in
+	''|*[!0-9]*)
+		echo "No suitable partitions found on RAID Controller $INST_CONTR in Range {1..10}"
+		echo "$USAGE"
+		exit $UNK
+		;;
+	    *)
+		;;
+	esac
+done
+
+case $2 in
+	debug)
+		set -x
+		check "stub" "$NUMBERS"
+		echo $OUTPUT
+		exit $?
+	;;
+	verbose)
+		check "verbose" "$NUMBERS"
+		echo $OUTPUT
+		exit $?
+	;;
+	*)
+		check "silent" "$NUMBERS"
+		echo $OUTPUT
+		exit $?
+	;;
+esac
+#################### \main
