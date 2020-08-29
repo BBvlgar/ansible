@@ -24,4 +24,6 @@ nagios_install_tools:
 
 package_state: latest
 
+ufw_status_regex: '.*Status{{ ":" }} active.*'
+
 ...
