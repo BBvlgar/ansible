@@ -56,31 +56,39 @@
     name: nagios-nrpe-server
     state: restarted
 
-- name: test if ufw is installed and active
-  command: "ufw status | grep 'Status: active'"
+- name: test if ufw is installed
+  command: "which ufw"
   become: yes
-  register: ufw_status
+  register: ufw_installed
   ignore_errors: yes
 
 - name: Configure ufw rules
   ufw:
     rule:  "allow"
     port:  "{{ nagios.port }}"
-    proto: "tcp"
+    proto: "{{ rule_proto }}"
   become: yes
-  when: ufw_status.rc == 0
+  when: ufw_installed.rc == 0
+  with_items:
+    - "tcp"
+    - "udp"
+  loop_control:
+    loop_var: rule_proto
 
-- name: Configure ufw rules
-  ufw:
-    rule:  "allow"
-    port:  "{{ nagios.port }}"
-    proto: "udp"
+- name: test if ufw is active
+  command: "ufw status | grep 'Status: active'"
   become: yes
-  when: ufw_status.rc == 0
+  register: ufw_status
+  ignore_errors: yes
+  when: ufw_installed.rc == 0
 
 - name: restart ufw
   service:
     name:  ufw
     state: restarted
+  become: yes
+  when:
+    - ufw_installed.rc == 0
+    - ufw_status.rc == 0
 
 ...
