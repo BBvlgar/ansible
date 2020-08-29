@@ -1,7 +1,7 @@
 ---
 
 nagios:
-  port: 5666
+  port: "5666"
   user: nagios
 
 nagios_default_allowed_hosts:
