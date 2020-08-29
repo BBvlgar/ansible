@@ -2,47 +2,54 @@
 
 - name: Ensure dependencies are installed
   package:
-    name: "{{ item.name }}"
-    state: "{{ item.state | default( package_state ) }}"
+    name: "{{ package.name }}"
+    state: "{{ package.state | default( package_state ) }}"
   with_items: "{{ install_tools }}"
+  loop_control:
+    loop_var: package
   become: yes
 
 - name: Ensure folder exists
   file: 
-    path: "{{ item }}" 
-    state: directory 
-    owner: "{{ nagios.user }}" 
-    group: "{{ nagios.user }}" 
+    path: "{{ folder }}"
+    state: directory
+    owner: "{{ nagios.user }}"
+    group: "{{ nagios.user }}"
   with_items:
     - /usr/lib/nagios
     - /var/run/nagios
+  loop_control:
+    loop_var: folder
 
 - name: Ensure plugins are installed
   copy: 
-    src: "{{ item }}" 
-    dest: "/usr/lib/nagios/plugins/{{ item|basename }}" 
+    src: "{{ filename }}"
+    dest: "/usr/lib/nagios/plugins/{{ filename | basename }}"
     mode: 0755
   with_fileglob:
     - ./*
+  loop_control:
+    loop_var: filename
 
 - name: Ensure config is installed
   template: 
     src: nrpe.cfg.j2 
-    dest: /etc/nagios/nrpe.cfg 
-    mode: 0644 
-    owner: root 
+    dest: /etc/nagios/nrpe.cfg
+    mode: 0644
+    owner: root
     group: root
   notify: restart nrpe
 
 - name: Ensure nagios-nrpe-server on client is restarted
   service: 
-    name: nagios-nrpe-server 
+    name: nagios-nrpe-server
     state: restarted
 
 - name: test if ufw is installed and active
   command: "ufw status | grep 'Status: active'"
   become: yes
   register: ufw_status
+  ignore_errors: yes
 
 - name: Configure ufw rules
   ufw:
