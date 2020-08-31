@@ -1,5 +1,10 @@
 - hosts: localhost
   become: false
+  vars:
+    noSSL:
+      - "12700"
+      - "11403"
+      - "11402"
   tasks:
     # Deploy CRT to LDAP
     - block:    
@@ -29,4 +34,4 @@
 
       - name: Ensure ldif file is removed
         file: path={{ tempFile }}.ldif state=absent
-      when: user.registration.contract.employerId != '12700'
+      when: user.registration.contract.employerId not in noSSL
