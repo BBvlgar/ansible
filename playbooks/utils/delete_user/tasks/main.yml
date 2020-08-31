@@ -16,8 +16,8 @@
     - debug: msg="Please use the following password for the email account {{hostvars.get('localhost').get('email') }} {{ hostvars.get('localhost').get('email_password') }}"
     - pause: prompt="Deleting user __ {{hostvars.get('localhost').get('username') }} __ from system __ {{ hostvars.get('localhost').get('ldap_url') }} __, do you want to continue?"
 
-#- name: disable achievo account
-#  import_playbook: achievo.yml
+- name: disable achievo account
+  import_playbook: achievo.yml
 
 # Delete ldap account
 - import_playbook: ldap.yml

@@ -15,8 +15,8 @@
 - name: Create ldap account
   include: ldap.yml
 
-#- name: Create achievo account
-#  import_playbook: achievo.yml
+- name: Create achievo account
+  import_playbook: achievo.yml
 
 - name: Generate SSL certificate
   import_playbook: ssl.yml
