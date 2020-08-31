@@ -19,8 +19,8 @@
 
 - name: Ensure it-economics_CA config for host is installed
   template:
-    src:   "{{ item }}"
-    dest:  "/etc/ssl/{{ role_vars.directory }}/{{ item | basename }}"
+    src:   "{{ ca_file }}"
+    dest:  "/etc/ssl/{{ role_vars.directory }}/{{ ca_file | basename }}"
     owner: root
     group: root
     mode:  '0400'
@@ -29,6 +29,8 @@
     - "{{ certs_base }}/{{ role_vars.directory }}/{{ role_vars.fqdn }}/{{ role_vars.fqdn }}.crt"
     - "{{ certs_base }}/{{ role_vars.directory }}/{{ role_vars.fqdn }}/{{ role_vars.fqdn }}.key"
   ignore_errors: true
+  loop_control:
+    loop_var: ca_file
   when: localefile.stat.exists
 
 ...

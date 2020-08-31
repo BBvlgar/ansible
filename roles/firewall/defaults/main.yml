@@ -24,4 +24,6 @@ package_state: latest
 install_packages:
   - name: ufw
 
+ufw_status_regex: '.*Status{{ ":" }} active.*'
+
 ...
