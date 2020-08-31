@@ -1,0 +1,38 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+  become: true
+  vars:
+    env: testing
+    noMailAccount:
+      - "12700"
+      - "11403"
+      - "11402"
+
+  tasks:
+    - block:
+      - name: Start selenium container
+        docker_container:
+          name: selenium_tmmittelstand
+          image: selenium/standalone-chrome-debug:3.141.59-titanium
+          volumes:
+            - "/dev/shm:/dev/shm"
+          ports:
+            - "4445:4444"
+            - "5901:5900"
+
+      - name: Take a short break
+        pause:
+          seconds: 30
+
+      - name: Copy generation script
+        copy: src=../files/tm-mittelstand_create-user.py dest=/tmp/tm-mittelstand_create-user.py mode=755
+
+      - name: Create User via tm-mittelstand
+        shell: /tmp/tm-mittelstand_create-user.py {{ user.registration.user.name }} {{ user.registration.user.firstname }} {{ user.registration.user.mail }} {{ user.registration.user.password }} {{ admin_user }} {{ tmmittelstand_password }}
+
+      - name: Remove selenium container
+        docker_container:
+          name: selenium_tmmittelstand
+          state: absent
+      when: user.registration.contract.employerId not in noMailAccount

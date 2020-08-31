@@ -1,4 +1,4 @@
-- hosts: bareos-int.muc.it-economics.de
+- hosts: bareos-int
   become: true
   vars:
     maildir: /mnt/backup/nas4-backup/mail
@@ -13,16 +13,9 @@
     register: offlineimap_exists
     ignore_errors: yes
 
-#  - name: Download offlineimap
-#    git: repo=git://github.com/spaetz/offlineimap.git dest=/usr/local/bin/offlineimap version=v6.5.4
-#    become: true
-#    when: offlineimap_exists|failed
-
-#  - name: Install offlineimap
-#    file: src=/usr/local/bin/offlineimap/offlineimap.py dest=/usr/bin/offlineimap state=link
-
   - name: Generate offlineimap template
     template: src=../templates/offlineimaprc.j2 dest=/tmp/offlineimap_{{ hostvars.get('localhost').get('username') }}
+    when: '"it-economics" in mail'    
 
   # TODO RUN ASYNC and wait for finish
   - name: Run offlineimap for given user
@@ -30,15 +23,21 @@
     async: 18000
     poll: 120
     ignore_errors: yes
+    when: '"it-economics" in mail'
 
   - name: Create tar file and move it to /tmp/{{ hostvars.get('localhost').get('email') }}.tar.gz
     command: tar cfz /{{ maildir }}/{{ mail_uniq }} /tmp/{{ hostvars.get('localhost').get('username') }}_mail
+    async: 18000
+    poll: 120    
+    when: '"it-economics" in mail'
 
   - name: Cleanup mails
     file: path=/tmp/{{ hostvars.get('localhost').get('username') }}_mail state=absent
-
+    when: '"it-economics" in mail'
+    
   - name: Cleanup offline imap
     file: path=/tmp/offlineimap_{{ hostvars.get('localhost').get('username') }} state=absent
+    when: '"it-economics" in mail'
 
   - name: Test encryption key
     shell: echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg -d --passphrase-fd 0 {{ maildir }}/DONOTDELETE.gpg | grep test
@@ -46,12 +45,13 @@
 
   - name: Encrypt tar.gz
     shell: echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg -c --passphrase-fd 0 {{ maildir }}/{{ mail_uniq }}
-    when: encryption issuccess
+    when: '"it-economics" in mail and encryption is success'
 #    no_log: yes
 
   - name: Ensure unecrypted files are removed
     file: path={{ maildir }}/{{ mail_uniq }} state=absent
-
+    when: '"it-economics" in mail'
+    
   - name: Fail when encryption key was wrong
     fail: msg="Encryption key is wrong"
     when: encryption is failed

@@ -8,7 +8,7 @@ CA_PASSWD="$4"          # ca private key passphrase
 KEY_PASSWD="$5"         # new certificate private key passphrase
 
 # GLOBAL VARS
-PKI_ROOT=~/Private/it-economics_CA
+PKI_ROOT=/home/sysadmin/Private/it-economics_CA
 PKI_ROOT_CA=$PKI_ROOT/ca/it-economics_CA.crt
 KEY_ROOT=$PKI_ROOT/$TYPE/$EMAIL
 REQEXTS=local_ca_${TYPE}_reqexts
@@ -118,3 +118,4 @@ esac
 
 
 cd -
+
