@@ -1,5 +1,4 @@
 [all:children]
-server_definitions
 
 ####
 ## This first "real" group defines all servers and all needed server properties.
@@ -25,18 +24,18 @@ server_definitions
 s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de
 bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
 jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de
-pki.muc                    ansible_port=60022            ansible_host=pki.muc.it-economics.de
+pki.muc                    ansible_port=22            ansible_host=pki.muc.it-economics.de
 ## Do not Touch Systems Muc
 #nas4
 #s2
 #s4
 #proxmox                    ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
-#apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
+apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
  
 ###
 ## Hetzner Root Servers
 ###
-hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de                    ansible_user=root
+hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de                  
 bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de
  
 ###
@@ -54,7 +53,7 @@ bareos                      ansible_port=60022           ansible_host=bareos.it-
 bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de
 dockerhost                  ansible_port=22              ansible_host=dockerhost.aws.it-economics.de         ansible_user=ubuntu
 website                     ansible_port=22              ansible_host=website.aws.it-economics.de            ansible_user=ubuntu
-freepbx                     ansible_port=60022           ansible_host=freepbx.it-economics.de
+freepbx                     ansible_port=60022           ansible_host=pbx.it-economics.de
 monitoring                  ansible_port=22              ansible_host=monitoring.it-economics.de             ansible_user=ubuntu
  
 ###
@@ -73,32 +72,25 @@ teamviewer-pi.sofia
  
  
 [updatableServers]
-apps2-mirror.muc
 bareos-ext
 bareos-int
 bareos
-freepbx
 hs1
-monitoring.muc
-monitoring
 jumphost
 bamboo-server
+bamboo-builder
 s3
-proxmox
-training
-website
-dockerhost
 jumphost
-atlassian-pi.muc
-hass-pi.muc
-okr-pi.muc
-teamviewer-pi.muenster
-teamviewer-pi.fra
-okr-pi.dus
-teamviewer-pi.dus
-teamviewer-pi.karlsruhe
-teamviewer-pi.bonn
-teamviewer-pi.sofia
+#atlassian-pi.muc
+#hass-pi.muc
+#okr-pi.muc
+#teamviewer-pi.muenster
+#teamviewer-pi.fra
+#okr-pi.dus
+#teamviewer-pi.dus
+#teamviewer-pi.karlsruhe
+#teamviewer-pi.bonn
+#teamviewer-pi.sofia
  
  
 [production:children]
