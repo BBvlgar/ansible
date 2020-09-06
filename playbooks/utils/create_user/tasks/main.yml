@@ -29,7 +29,6 @@
 
 - name: Cleanup temp files
   import_playbook: cleanup.yml
-
 - name: Create Mail account
   include: tm-mittelstand.yml
 
