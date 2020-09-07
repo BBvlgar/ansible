@@ -10,7 +10,6 @@
   tasks:
     - set_fact:
         user: "{{ hostvars.get('localhost').get('user') }}"
-        keydir: "{{ hostvars.get(groups['pki'][0]).get('keydir') }}"
     - block:    
       - block:
         # Deploy P12
