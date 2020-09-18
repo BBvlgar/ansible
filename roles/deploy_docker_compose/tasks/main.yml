@@ -1,0 +1,28 @@
+---
+- debug:
+    msg: "{{ app }}"
+
+- name: recreate or rollout services
+  docker_compose:
+    project_src: "{{ composerFilePath }}/{{ app.key }}"
+    state: present
+    build: no
+    pull: yes
+    recreate: always
+  register: output
+  when: remote == true
+
+- name: recreate or rollout services
+  docker_compose:
+    project_src: "{{ composerFilePath }}/{{ app.key }}"
+    state: present
+    build: no
+    pull: yes
+    recreate: always
+  register: output
+  delegate_to: localhost
+  when: remote != true
+
+- debug:
+    var: output
+...

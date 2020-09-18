@@ -24,3 +24,4 @@ __pycache__
 screenshot_login.png
 screenshot_usercreate.png
 screenshot_usercreated.png
+docker-compose/*
