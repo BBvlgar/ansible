@@ -16,45 +16,52 @@
 ##          User user
 ##          ProxyCommand ssh -W %h:%p jumphostalias
 ####
+
+### 
+## To understand the magic, please read the docu:
+## https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+## https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Proxies_and_Jump_Hosts
+### 
 [server_definitions]
  
 ###
 ## Munich Servers
 ###
-s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de
-bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
-jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de
-pki.muc                    ansible_port=22            ansible_host=pki.muc.it-economics.de
+s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de																
+bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de														
+jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de															
+pki.muc                    ansible_port=22            	 ansible_host=pki.muc.it-economics.de																
 ## Do not Touch Systems Muc
 #nas4
 #s2
 #s4
-#proxmox                    ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
-apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
+#proxmox                   ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
+apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de        												 
  
 ###
 ## Hetzner Root Servers
 ###
-hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de                  
-bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de
+hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de        															          
+bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de															
  
 ###
 ## Hetzner Cloud Server
 ###
-hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de
-bamboo-server               ansible_port=60022           ansible_host=bamboo.it-economics.de
-bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de
+hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de																	
+bamboo-server               ansible_port=60022           ansible_host=bamboo.it-economics.de																
+bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de														
 #training                   ansible_port=60022            ansible_host=
-bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
+bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de																
+dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022 
  
 ###
 ## AWS Servers (intern)
 ###
-bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de
-dockerhost                  ansible_port=22              ansible_host=dockerhost.aws.it-economics.de         ansible_user=ubuntu
-website                     ansible_port=22              ansible_host=website.aws.it-economics.de            ansible_user=ubuntu
-freepbx                     ansible_port=60022           ansible_host=pbx.it-economics.de
-monitoring                  ansible_port=22              ansible_host=monitoring.it-economics.de             ansible_user=ubuntu
+bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	 ansible_user=ubuntu							
+dockerhost                  ansible_port=22              ansible_host=ip-10-0-1-58.eu-central-1.compute.internal         ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
+website                     ansible_port=22              ansible_host=website.aws.it-economics.de            ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
+freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		             ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022' 
+monitoring                  ansible_port=22              ansible_host=nagios.aws.it-economics.de             ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
  
 ###
 ## PIs
@@ -72,15 +79,21 @@ teamviewer-pi.sofia
  
  
 [updatableServers]
+monitoring
 bareos-ext
 bareos-int
 bareos
 hs1
+hs2
 jumphost
 bamboo-server
 bamboo-builder
 s3
+bastion
 jumphost
+dockerhost
+freepbx
+website
 #atlassian-pi.muc
 #hass-pi.muc
 #okr-pi.muc
@@ -104,6 +117,8 @@ pis
 [aws_non_ami]
  
 [docker_hosts]
+dockerhost
+dockerhost-abn 
  
 [personio_backup]
  
