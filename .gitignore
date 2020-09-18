@@ -21,3 +21,5 @@ environments/*
 .vagrant
 .DS_Store
 __pycache__
+docker-compose/*
+!docker-compose/.gitkeep
