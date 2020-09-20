@@ -459,6 +459,6 @@ applications:
 
 composerFilePath: "/srv/docker-compose/"
 remote: true
-
+traefik_network: proxy
 ...
 
