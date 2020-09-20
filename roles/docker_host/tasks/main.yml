@@ -48,6 +48,7 @@
       - virtualenv
       - chardet
       - docker
+      - docker-compose
 
 - name: Provision AWS-Templates
   template:
