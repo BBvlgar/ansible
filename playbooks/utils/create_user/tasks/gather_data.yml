@@ -94,15 +94,9 @@
       fail: "msg='Please correct the contract type which is set to >{{ data.meta.fields.customfield_12107.value }}< with and end date of >{{ user.registration.contract.enddate }}< in the ticket {{ ticket_number }}'"
       when: ( data.meta.fields.customfield_12107.id == "11806" and user.registration.contract.enddate == "" ) or ( data.meta.fields.customfield_12107.id == "11807" and user.registration.contract.enddate != "" )
 
-    - name: Copy generation script
-      copy: src=../files/openldap_passwd.py dest=/tmp/openldap_passwd.py mode=755
-
     - name: Hash password
-      shell: cd /tmp ; python -c "import openldap_passwd ; print openldap_passwd.make_secret('{{ user.registration.user.password }}')" | base64
+      shell: "slappasswd -h {SSHA} -s {{ user.registration.user.password }} | base64"
       register: password
-
-    - name: Delete generation script
-      file: path=/tmp/openldap_passwd.py state=absent
 
     # Workaround to generate utf-8 from unicode and then encode it in base64
     - name: Base64 encode variables
