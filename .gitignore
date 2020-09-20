@@ -18,6 +18,7 @@ environments/*
 *.retry
 .logintask
 .directory
+.save
 .vagrant
 .DS_Store
 __pycache__

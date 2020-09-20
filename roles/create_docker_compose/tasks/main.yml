@@ -2,6 +2,7 @@
 
 - debug:
     msg: "{{ app }}"
+  when: debug == true
 
 - name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists"
   file: 

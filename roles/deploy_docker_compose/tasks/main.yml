@@ -2,6 +2,13 @@
 
 - debug:
     msg: "{{ app }}"
+  when: debug == true
+
+- name: Create traefik network
+  docker_network:
+    name: "{{ traefik_network }}"
+    state: present
+  when: traefik_network is defined
 
 - name: recreate or rollout services
   docker_compose:
@@ -26,5 +33,6 @@
 
 - debug:
     var: output
+  when: debug == true
 
 ...

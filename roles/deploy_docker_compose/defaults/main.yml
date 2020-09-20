@@ -2,5 +2,6 @@
 
 composerFilePath: "docker-compose"
 remote: false
+debug: false
 
 ...
