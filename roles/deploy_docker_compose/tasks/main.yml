@@ -4,11 +4,32 @@
     msg: "{{ app }}"
   when: debug == true
 
-- name: Create traefik network
+- name: remote -  Create traefik network
+  docker_network:
+    name: "{{ traefik_network }}"
+    state: present
+  when: traefik_network is defined and remote == true  
+
+- name: remote -Create internal network
+  docker_network:
+    name: "{{ internal_network }}"
+    state: present
+  when: internal_network is defined and remote == true
+
+- name: localhost - Create traefik network
   docker_network:
     name: "{{ traefik_network }}"
     state: present
   when: traefik_network is defined
+  delegate_to: localhost
+  when: remote != true and traefik_network is defined
+
+- name: localhost - Create internal network
+  docker_network:
+    name: "{{ internal_network }}"
+    state: present
+  delegate_to: localhost
+  when: remote != true and internal_network is defined
 
 - name: recreate or rollout services
   docker_compose:

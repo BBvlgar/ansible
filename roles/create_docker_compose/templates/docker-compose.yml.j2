@@ -12,6 +12,10 @@ services:
     {% if (container.labels is defined) and (container.labels | length() > 0) %}{% for label in container.labels %}  - {{ label }}
     {% endfor %}{% endif %}{% if (container.environment is defined) and (container.environment | length() >0) %}environment:
     {% for var_name, var_value in container.environment.items() %}  {{ var_name }}: '{{ var_value }}'
+    {% endfor %}{% endif %}{% if (container.networks is defined) and (container.networks | length() > 0) %}networks:
+    {% for network in container.networks %}  - {{ network }}
+    {% endfor %}{% endif %}{% if (container.ports is defined) and (container.ports | length() > 0) %}ports:
+    {% for port in container.ports %}  - "{{ port }}"
     {% endfor %}{% endif %}{% if (container.network_mode is defined) %}network_mode: {{ container.network_mode }} 
     {% endif %}
 
@@ -20,4 +24,7 @@ services:
 networks:
   default:
     external: 
-      name: "{{ traefik_network }}"
+      name: {{ internal_network }}
+  proxy:
+    external: 
+      name: {{ traefik_network }}
