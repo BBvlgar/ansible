@@ -2,6 +2,21 @@
 
 docker_host: true
 
+traefik-config:
+  traefik_stack:
+    traefik:
+      name: traefik.dockerhost
+      image: traefik:v1.7
+      restartPolicy: always
+      ports:
+        - "8443:8443"
+        - "443:443"
+        - "80:80"
+        - "8080:8080"
+      volumes:
+        - "/mnt/shared/applications/traefik.dockerhost/traefik.toml:/etc/traefik/traefik.toml"
+        - "/var/run/docker.sock:/var/run/docker.sock"    
+
 applications:
   appstore_stack:
     appstore:
@@ -21,7 +36,8 @@ applications:
         - "traefik.protocol=http"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
 
     appstore_ssh:
       name: appstore_ssh
@@ -33,7 +49,9 @@ applications:
       labels:
         - "traefik.enable=false"
       ports:
-      - "50022:22"
+        - "50022:22"
+      networks:
+        - default
 
   atlassian-quote_stack:
     atlassian-quote:
@@ -57,8 +75,8 @@ applications:
         LDAP_Group:          'cn=vs_atlassian,ou=groups,dc=it-economics,dc=de'
         LDAP_BindDN:         "{{ ldap_directory_user }}"
         LDAP_BindPassword:   "{{ ldap_directory_pass }}"
-      network_mode: proxy
-
+      networks:
+        - proxy
 
   crowd_stack:
     crowd:
@@ -75,7 +93,8 @@ applications:
         - "traefik.frontend.rule=Host:crowd.it-economics.de"
         - "traefik.port=8095"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   directory-guest_stack:
     directory-guest:
@@ -83,10 +102,10 @@ applications:
       image: iteconomics/directory:latest
       restartPolicy: always
       volumes:
-      - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
-      - "/mnt/shared/applications/certs/data/templates:/var/www/html/storage/app/templates"
-      - "/mnt/shared/applications/directory-test/config/.env:/var/www/html/.env"
-      - "/mnt/shared/applications/directory-test/database.sqlite:/var/www/html/database/database.sqlite"
+        - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
+        - "/mnt/shared/applications/certs/data/templates:/var/www/html/storage/app/templates"
+        - "/mnt/shared/applications/directory-test/config/.env:/var/www/html/.env"
+        - "/mnt/shared/applications/directory-test/database.sqlite:/var/www/html/database/database.sqlite"
       labels:
         - "traefik.backend=directory-guest"
         - "traefik.docker.network=proxy"
@@ -96,7 +115,8 @@ applications:
         - "traefik.protocol=http"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
 
   directory-test_stack:
     directory-test:
@@ -115,7 +135,8 @@ applications:
         - "traefik.protocol=http"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
 
   directory_stack:
     directory:
@@ -138,7 +159,8 @@ applications:
       environment:
         START_CRON: 1
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
 
   teamsurvey-dashboard_stack:
     teamsurvey-dashboard:
@@ -153,7 +175,8 @@ applications:
         traefik.protocol: http
       environment:
         GRAPHQL_ENDPOINT: "https://teamsurvey-api.it-economics.de/graphql"
-      network_mode: proxy
+      networks:
+        - proxy
 
   vcard_stack:
     vcard:
@@ -170,7 +193,9 @@ applications:
         - "traefik.protocol=http"
       environment:
         MODS: "proxy proxy_http auth_basic authnz_ldap authz_core rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
+        - default
 
     vcardserver:
       name: vcardserver
@@ -181,6 +206,8 @@ applications:
         - "/mnt/shared/applications/vcard/data:/data"
       labels:
         - "traefik.enable=false"
+      networks:
+        - default
 
     vcardsync:
       name: vcardsync
@@ -196,7 +223,8 @@ applications:
         LDAP_PASSWORD: "{{ ldap_directory_pass }}"
         LDAP_URL: "{{ ldap_url }}"
         LDAP_USERNAME: "{{ ldap_directory_user }}"
-        network_mode: proxy
+      networks:
+        - default
 
   surveyappproxy_stack:
     surveyappproxy:
@@ -214,7 +242,8 @@ applications:
         - "traefik.protocol=http"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - proxy
 
   share_stack:
     share:
@@ -232,7 +261,8 @@ applications:
         - "traefik.frontend.rule=Host:share.it-economics.de"
         - "traefik.port=80"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   share-secrets_stack:
     share-secrets:
@@ -249,7 +279,8 @@ applications:
         - "traefik.frontend.rule=Host:secrets.it-economics.de"
         - "traefik.port=80"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   roominfo-service_stack:
     roominfo-service:
@@ -265,7 +296,8 @@ applications:
         - "traefik.frontend.rule=Host:roominfo-service.it-economics.de"
         - "traefik.port=80"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   portainer_stack:
     portainer:
@@ -282,7 +314,8 @@ applications:
         - "traefik.frontend.rule=Host:portainer.it-economics.de"
         - "traefik.port=9000"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   phonestat_stack:
     phonestat:
@@ -298,7 +331,8 @@ applications:
         - "traefik.frontend.rule=Host:phonestat.it-economics.de"
         - "traefik.port=80"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   passcard_stack:
     passcard:
@@ -314,7 +348,8 @@ applications:
         - "traefik.frontend.rule=Host:passcard.it-economics.de"
         - "traefik.port=80"
         - "traefik.protocol=http"
-      network_mode: proxy
+      networks:
+        - proxy
 
   memorysourceexport_stack:
     memorysourceexport:
@@ -334,7 +369,8 @@ applications:
         LDAP_Host: "{{ ldap_url }}"
         LDAP_BASE_DN: "{{ ldap_base_dn }}"
         LDAP_BindPassword: "{{ ldap_directory_pass }}"
-      network_mode: proxy
+      networks:
+        - proxy
 
   ldap01_stack:
     ldap01:
@@ -364,7 +400,9 @@ applications:
       labels:
         - "traefik.enable=false"
       ports:
-      - "50022:22"
+        - "50636:636"
+      networks:
+        - proxy
 
   ldap-test_stack:
     ldap-test:
@@ -379,7 +417,9 @@ applications:
       labels:
         - "traefik.enable=false"
       ports:
-       - "636:636"
+        - "636:636"
+      networks:
+        - proxy
 
   ldap-certs_stack:
     ldap-certs:
@@ -395,6 +435,8 @@ applications:
         - "traefik.enable=false"
       ports:
         - "60636:636"
+      networks:
+        - proxy
 
   kdc01_stack:
     kdc01:
@@ -413,6 +455,8 @@ applications:
         - "749:749/udp"
         - "88:88/tcp"
         - "88:88/udp"
+      networks:
+        - proxy
 
   limesurvey_stack:
     limesurvey:
@@ -455,10 +499,13 @@ applications:
         LIMESURVEY_DEBUG: '0'
         ADMIN_THEME_NAME: iteconomics
         DEFAULT_TEMPLATE: iteconomics
-      network_mode: proxy
+      networks:
+        - proxy
 
 composerFilePath: "/srv/docker-compose/"
 remote: true
 traefik_network: proxy
+internal_network: internal
+
 ...
 
