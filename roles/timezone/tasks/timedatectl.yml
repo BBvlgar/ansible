@@ -7,16 +7,23 @@
   # Don't spam verbose log with this output
   no_log: true
 
+- name: Get current timezone
+  command: "timedatectl | grep \"Time zone\""
+  register: timedatectl
+  ignore_errors: true
+  # Don't spam verbose log with this output
+  no_log: true
+
 - name: Check if timezone is valid
   fail:
     msg: "Invalid timezone given, given timezone was {{ timezone }}\"."
   when: timezone_list.stdout is defined and timezone not in timezone_list.stdout
 
-- name: Set timezone
+- name: "Set timezone to {{ timezone }}"
   shell: "timedatectl set-timezone {{ timezone }}; timedatectl"
   register: timedatectl_utc
   changed_when: "timedatectl_utc.stdout is defined and 'Time zone: UTC' in timedatectl_utc.stdout"
-  when: "timedatectl.stdout is defined and 'Time zone: UTC' not in timedatectl.stdout"
+  when: "timedatectl.stdout is defined and timezone not in timedatectl.stdout"
 
 - name: Set hardware clock to use or not use local RTC
   shell: "timedatectl set-local-rtc {% if timezone_use_local_rtc %}1{% else %}0{% endif %} && timedatectl || true"
