@@ -1,6 +1,7 @@
 ---
 
 - hosts: 'all:!localhost'
+  become: yes
 
   vars:
     # disable hostkey check and other things if host is installed first
@@ -28,7 +29,7 @@
         - '"changed" in hostchanged.stdout'
       failed_when:
         - hostchanged.rc != 0
-    
+
     - name: 'Ensure timezone is set correct'
       include_role:
         name: timezone
@@ -49,7 +50,7 @@
       command:
         cmd:  'apt-get update'
         warn: no
-      become: true
+      become: yes
 
     - name: 'update Server'
       include_role:
@@ -98,6 +99,6 @@
     - name: reboot
       reboot:
         reboot_timeout: 300
-      ignore_errors: true
+      ignore_errors: yes
 
 ...
