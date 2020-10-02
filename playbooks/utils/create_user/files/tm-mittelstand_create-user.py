@@ -104,7 +104,7 @@ def createUser(browser, lastname, firstname, mail, password):
     browser.find_element_by_id("ctl00_ContentPlaceHolder_btnSave").click()
 
     WebDriverWait(browser, 180).until(
-        EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'created successfully')]"))
+        EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolder_lblSuccessMessage"))
     )
 
     browser.save_screenshot("screenshot_usercreated.png")
