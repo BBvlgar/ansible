@@ -42,5 +42,7 @@ basic_toolset:
   - name: bash-completion
   - name: sshfs
   - name: progress
+  - name: jq
+  - name: acl
 
 ...
