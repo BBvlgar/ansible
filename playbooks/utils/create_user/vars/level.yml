@@ -17,8 +17,6 @@ internal: &internal
 
 sopra: &sopra
   << : *base
-  ? confluence-extern
-  ? jira-extern
 
 ####### tracks
 ### management
@@ -150,15 +148,11 @@ management_-_partner:
 
 extern_-_freelancer:
   << : *base
-  ? confluence-extern
   ? lvl_freelancer
-  ? jira-extern
 
 extern_-_subcontractor:
   << : *base
-  ? confluence-extern
   ? lvl_freelancer
-  ? jira-extern
 
 ########### BG
 ###BG TEC

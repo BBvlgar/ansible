@@ -36,3 +36,4 @@
           name: selenium_tmmittelstand
           state: absent
       when: user.registration.contract.employerId not in noMailAccount
+      ignore_errors: yes
