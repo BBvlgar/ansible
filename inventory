@@ -17,57 +17,57 @@
 ##          ProxyCommand ssh -W %h:%p jumphostalias
 ####
 
-### 
+###
 ## To understand the magic, please read the docu:
 ## https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
 ## https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Proxies_and_Jump_Hosts
-### 
+###
 [server_definitions]
- 
+
 ###
 ## Munich Servers
 ###
-s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de																
-bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de														
-jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de															
-pki.muc                    ansible_port=22            	 ansible_host=pki.muc.it-economics.de																
+s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de
+bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
+jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de
+pki.muc                    ansible_port=22               ansible_host=pki.muc.it-economics.de
 ## Do not Touch Systems Muc
-#nas4
-#s2
-#s4
-#proxmox                   ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
-apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de        												 
- 
+# nas4
+# s2
+# s4
+# proxmox                   ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
+apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
+
 ###
 ## Hetzner Root Servers
 ###
-hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de        															          
-bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de															
- 
+hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de
+bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de
+
 ###
 ## Hetzner Cloud Server
 ###
-hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de																	
-bamboo-server               ansible_port=60022           ansible_host=bamboo.it-economics.de																
-bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de														
-#training                   ansible_port=60022            ansible_host=
-bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de																
-dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022 
- 
+hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de
+bamboo-server               ansible_port=60022           ansible_host=bamboo.it-economics.de
+bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de
+# training                   ansible_port=60022            ansible_host=
+bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
+dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022
+s3-restore-2020-10-14       ansible_port=22              ansible_user=root          ansible_host=195.201.122.75
+
 ###
 ## AWS Servers (intern)
 ###
-bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	 ansible_user=ubuntu							
-dockerhost                  ansible_port=22              ansible_host=ip-10-0-1-58.eu-central-1.compute.internal         ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
-website                     ansible_port=22              ansible_host=website.aws.it-economics.de            ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
-freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		             ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022' 
-monitoring                  ansible_port=22              ansible_host=nagios.aws.it-economics.de             ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22' 
- 
+bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	        ansible_user=ubuntu
+dockerhost                  ansible_port=22              ansible_host=ip-10-0-1-58.eu-central-1.compute.internal    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+website                     ansible_port=22              ansible_host=website.aws.it-economics.de                   ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		                    ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022'
+monitoring                  ansible_port=22              ansible_host=nagios.aws.it-economics.de                    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+
 ###
 ## PIs
 ###
 atlassian-pi.muc
-hass-pi.muc
 okr-pi.muc
 teamviewer-pi.muenster
 teamviewer-pi.fra
@@ -76,8 +76,9 @@ teamviewer-pi.dus
 teamviewer-pi.karlsruhe
 teamviewer-pi.bonn
 teamviewer-pi.sofia
- 
- 
+sensor.muc                  ansible_port=22              ansible_host=sensor.muc.it-economics.de
+
+
 [updatableServers]
 monitoring
 bareos-ext
@@ -94,149 +95,161 @@ jumphost
 dockerhost
 freepbx
 website
-#atlassian-pi.muc
-#hass-pi.muc
-#okr-pi.muc
-#teamviewer-pi.muenster
-#teamviewer-pi.fra
-#okr-pi.dus
-#teamviewer-pi.dus
-#teamviewer-pi.karlsruhe
-#teamviewer-pi.bonn
-#teamviewer-pi.sofia
- 
- 
+# atlassian-pi.muc
+# hass-pi.muc
+# okr-pi.muc
+# teamviewer-pi.muenster
+# teamviewer-pi.fra
+# okr-pi.dus
+# teamviewer-pi.dus
+# teamviewer-pi.karlsruhe
+# teamviewer-pi.bonn
+# teamviewer-pi.sofia
+s3-restore-2020-10-14
+
+
 [production:children]
 ssh_hosts
 pis
- 
+
 [ssh_hosts]
- 
+
 [pis]
- 
+
 [aws_non_ami]
- 
+
 [docker_hosts]
 dockerhost
-dockerhost-abn 
- 
+dockerhost-abn
+
 [personio_backup]
- 
+
 [native_ldap_client]
- 
- 
+
+
 ####
 ## Dockered Applications
 ####
 [dms]
 s3
- 
+
 [directory]
 dockerhost
- 
+
 [directory_guest]
 dockerhost
- 
+
 [directory_test]
 dockerhost
- 
+
 [achievo]
 hs2
- 
+
 [vcard]
 dockerhost
- 
+
 [appstore]
 dockerhost
- 
+
 [jira]
- 
+
 [confluence]
- 
+
 [bitbucket]
- 
+
 [bamboo]
 bamboo-server
- 
+
 [survey]
 dockerhost
- 
+
 [survey]
 dockerhost
- 
+
 [vcard]
 dockerhost
- 
+
 [secrets]
 dockerhost
- 
+
 [teamsurvey_dashboard]
 dockerhost
- 
+
 [teamsurvey_api]
 dockerhost
- 
+
 [kdc01]
 dockerhost
- 
+
 [phonestat]
 dockerhost
- 
+
 [events_app_backend]
 dockerhost
- 
+
 [ldap01]
 dockerhost
- 
+
 [ldapCerts]
 dockerhost
- 
+
 [ldapGuest]
 dockerhost
- 
+
 [roominfo_service]
 dockerhost
- 
+
 [memorysourceexport]
 dockerhost
- 
+
 [atlassian_quote]
 dockerhost
- 
+
 [crowd]
 dockerhost
- 
+
 [nextcloud]
 dockerhost
- 
+
 [skillmatrix]
 dockerhost
- 
+
 [portainer]
 dockerhost
 www
 hs1
- 
+
 [social_partner]
 s3
- 
+
 [radius]
 s3
 
-
 [certs_download]
 dockerhost
- 
- 
+
+[raspi]
+atlassian-pi.muc
+okr-pi.muc
+teamviewer-pi.muenster
+teamviewer-pi.fra
+okr-pi.dus
+teamviewer-pi.dus
+teamviewer-pi.karlsruhe
+teamviewer-pi.bonn
+teamviewer-pi.sofia
+sensor.muc
+
 ####
 ## Infrastructural Stuff
 ####
+
 [vpn]
 jumphost
- 
+
 [mysql_slave]
- 
- 
+
+
 ####
 ## Admin Permission Definitions
 ####
