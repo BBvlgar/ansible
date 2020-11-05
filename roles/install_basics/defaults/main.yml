@@ -44,5 +44,6 @@ basic_toolset:
   - name: progress
   - name: jq
   - name: acl
+  - name: rsync
 
 ...
