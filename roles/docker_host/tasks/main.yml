@@ -1,6 +1,7 @@
 ---
 
 - name: prepare the installation
+  become: yes
   block:
 
     - name: Install all prerequisite tools needed for this install routine
@@ -26,13 +27,33 @@
         state: "{{ item.state | default( package_state) }}"
       with_items: "{{ install_docker.tools }}"
 
+- name: define Docker service overrides
+  become: yes
+  block:
+
+    - name: stop Docker service
+      service:
+        name: docker
+        state: stopped
+
+    - name: set docker servic override file in place
+      template:
+        src: "docker_service_override.conf.j2"
+        dest: "/etc/systemd/system/docker.service.d/override.conf"
+        owner: root
+        group: root
+        mode:  '0644'
+
+    - name: start Docker service
+      service:
+        name: docker
+        state: started
+
     - name: Verify that docker works
       command: docker run --rm hello-world
 
-  become: yes
-
 - name: Set pull credentials as root user
-  become: true
+  become: yes
   command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }}
   when: docker_pull_user is defined and docker_pull_password is defined
 
@@ -75,26 +96,16 @@
     reload: yes
   become: yes
 
-# ensure Docker starting after network is online since network
-# shares are used from time to time for binds and mounts
-- name: ensure Docker starting after network by systemd
-  copy:
-    src:   'docker.service.d/override.conf'
-    dest:  '/etc/systemd/system/docker.service.d/'
-    owner: root
-    group: root
-    mode:  '0644'
-  become: yes
-
 # normally, this step should not be necessary due to systemd deprecating runlevel –
 # but without it did not work properly ...
 - name: prepare runlevel as well
-  become: true
+  become: yes
   command: rm /etc/rc{1..3}.d/*docker
+  # may throw an exception if the runlevel files do not exist ...
   ignore_errors: yes
 
 - name: Retrieve latest docker-compose information
-  uri: 
+  uri:
     url: "https://api.github.com/repos/docker/compose/releases/latest"
     method: "GET"
     return_content: yes
