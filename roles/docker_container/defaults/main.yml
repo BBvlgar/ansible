@@ -11,4 +11,6 @@ pull: missing # "always" would pull newest image
 cnt_state: started
 cnt_recreate: no
 
+# docker_root: /var/lib/docker
+
 ...
