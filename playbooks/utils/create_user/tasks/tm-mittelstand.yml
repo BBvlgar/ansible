@@ -14,7 +14,7 @@
       - name: Start selenium container
         docker_container:
           name: selenium_tmmittelstand
-          image: selenium/standalone-chrome-debug:3.141.59-titanium
+          image: selenium/standalone-firefox:83.0
           volumes:
             - "/dev/shm:/dev/shm"
           ports:

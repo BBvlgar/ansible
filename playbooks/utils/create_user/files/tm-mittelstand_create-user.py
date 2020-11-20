@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import Select
 
 import time
 import sys
@@ -25,7 +26,6 @@ def WebElement_clearAndType(self, text):
 WebElement.clearAndType = WebElement_clearAndType
 
 def login(brower, admin_user, admin_pwd):
-    print("login")
     browser.get(baseURL + "/Login.aspx")
     element = WebDriverWait(browser, 60).until(
         EC.presence_of_element_located((By.XPATH, "//input[@id='ctl00_ContentPlaceHolder_Login1_UserName']"))
@@ -35,16 +35,20 @@ def login(brower, admin_user, admin_pwd):
 
     browser.find_element_by_id("ctl00_ContentPlaceHolder_Login1_Password").clearAndType(admin_pwd)
 
-    browser.save_screenshot("screenshot_login.png")
-
     browser.find_element_by_id('ctl00_ContentPlaceHolder_Login1_LoginButton').click()
     time.sleep(20)
+
+    select = Select(browser.find_element_by_id('ctl00_languageSelector'))
+    select.select_by_value('de-DE')
+
+    time.sleep(15)
+
 
 def createUser(browser, lastname, firstname, mail, password):
     browser.get(baseURL + "/ActiveDirectory/AdUser/AdUser_Overview.aspx?ContainerId=69353")
 
     time.sleep(10)
-
+    
     browser.get(baseURL + "/CommonPages/AddEditUser.aspx?ContainerId=69353&PageType=aduser&PageMode=new")
 
     username = mail.split('@')[0]
@@ -79,10 +83,10 @@ def createUser(browser, lastname, firstname, mail, password):
     browser.find_element_by_xpath("//input[@id='ctl00_ContentPlaceHolder_psOrder_cbPlan_Input']").click()
 
     element = WebDriverWait(browser, 60).until(
-        EC.presence_of_element_located((By.XPATH, "//li[contains(text(),'Office 365 Business Premium (German Cloud)')]"))
+        EC.presence_of_element_located((By.XPATH, "//li[contains(text(),'Office 365 Business Premium')]"))
     )
 
-    browser.find_element_by_xpath("//li[contains(text(),'Office 365 Business Premium (German Cloud)')]").click()
+    browser.find_element_by_xpath("//li[contains(text(),'Office 365 Business Premium')]").click()
 
     # Select AGB
     element = WebDriverWait(browser, 60).until(
@@ -99,20 +103,17 @@ def createUser(browser, lastname, firstname, mail, password):
 
     time.sleep(2)
 
-    browser.save_screenshot("screenshot_usercreate.png")
-
     browser.find_element_by_id("ctl00_ContentPlaceHolder_btnSave").click()
 
     WebDriverWait(browser, 180).until(
         EC.presence_of_element_located((By.ID, "ctl00_ContentPlaceHolder_lblSuccessMessage"))
     )
 
-    browser.save_screenshot("screenshot_usercreated.png")
 
 
 if sys.argv and len(sys.argv) > 3:
     # browser = webdriver.Firefox()
-    browser = webdriver.Remote(command_executor='http://127.0.0.1:4445/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+    browser = webdriver.Remote(command_executor='http://127.0.0.1:4445/wd/hub', desired_capabilities=DesiredCapabilities.FIREFOX)
 
     lastname    = sys.argv[1]
     firstname   = sys.argv[2]
