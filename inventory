@@ -58,11 +58,12 @@ s3-restore-2020-10-14       ansible_port=22              ansible_user=root      
 ###
 ## AWS Servers (intern)
 ###
-bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	        ansible_user=ubuntu
+bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	    ansible_user=ubuntu
 dockerhost                  ansible_port=22              ansible_host=ip-10-0-1-58.eu-central-1.compute.internal    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 website                     ansible_port=22              ansible_host=website.aws.it-economics.de                   ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
-freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		                    ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022'
+freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		            ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022'
 monitoring                  ansible_port=22              ansible_host=nagios.aws.it-economics.de                    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+newdockerhost               ansible_port=60022           ansible_host=newDockerhost                                                                                                     ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 
 ###
 ## PIs
@@ -121,6 +122,7 @@ pis
 [docker_hosts]
 dockerhost
 dockerhost-abn
+newdockerhost
 
 [personio_backup]
 
