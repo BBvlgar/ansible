@@ -156,6 +156,77 @@ extern_-_subcontractor:
   ? lvl_freelancer
 
 ########### BG
+##SAP Consulting
+sap_-_junior_sap_consultant:
+  << : *internal
+  ? lvl_junior-sap-consultant
+
+sap_-_sap_consultant:
+  << : *internal
+  ? lvl_sap-consultant
+
+sap_-_advanced_sap_consultant:
+  << : *internal
+  ? lvl_advanced-sap-consultant
+
+sap_-_senior_sap_consultant:
+  << : *internal
+  ? lvl_senior-sap-consultant
+
+sap_-_expert_sap_consultant:
+  << : *internal
+  ? lvl_expert-sap-consultant
+
+sap_-_sap_lead:
+  << : *internal
+  ? lvl_sap-lead
+
+sap_-_senior_sap_lead:
+  << : *internal
+  ? lvl_senior-sap-lead
+
+sap_-_manager_sap:
+  << : *internal
+  ? lvl_manager-sap
+
+sap_-_senior_manager_sap:
+  << : *internal
+  ? lvl_senior-manager-sap
+
+sap_-_sap_architect:
+  << : *internal
+  ? lvl_sap-architect
+
+sap_-_senior_sap_architect:
+  << : *internal
+  ? lvl_senior-sap-architect
+
+##ABAP Development
+sap_-_junior_abap_developer:
+  << : *internal
+  ? lvl_junior-abap-developer
+
+sap_-_abap_developer:
+  << : *internal
+  ? lvl_abap-developer
+
+sap_-_advanced_abap_developer:
+  << : *internal
+  ? lvl_advanced-abap-developer
+
+sap_-_senior_abap_developer:
+  << : *internal
+  ? lvl_senior-abap-developer
+
+sap_-_expert_abap_developer:
+  << : *internal
+  ? lvl_expert-abap-developer
+
+sap_-_lead_abap_developer:
+  << : *internal
+  ? lvl_lead-abap-developer
+
+
 ###BG TEC
 technologie_-_junior_software_developer:
   << : *internal
