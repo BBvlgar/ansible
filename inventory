@@ -53,7 +53,6 @@ bamboo-builder              ansible_port=60022           ansible_host=bamboo-bui
 # training                   ansible_port=60022            ansible_host=
 bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
 dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022
-s3-restore-2020-10-14       ansible_port=22              ansible_user=root          ansible_host=195.201.122.75
 
 ###
 ## AWS Servers (intern)
