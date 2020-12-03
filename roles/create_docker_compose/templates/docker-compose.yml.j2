@@ -9,7 +9,7 @@ services:
     {% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
     {% for volume in container.volumes %}  - {{ volume }}
     {% endfor %}{% endif %}labels:
-    {% if (container.labels is defined) and (container.labels | length() > 0) %}{% for label in container.labels %}  - {{ label }}
+    {% if (container.labels is defined) and (container.labels | length() > 0) %}{% for label in container.labels %}  {{ label }}
     {% endfor %}{% endif %}{% if (container.environment is defined) and (container.environment | length() >0) %}environment:
     {% for var_name, var_value in container.environment.items() %}  {{ var_name }}: '{{ var_value }}'
     {% endfor %}{% endif %}{% if (container.networks is defined) and (container.networks | length() > 0) %}networks:
@@ -22,9 +22,13 @@ services:
 {% endfor %}
 
 networks:
-  default:
-    external: 
-      name: {{ internal_network }}
-  proxy:
-    external: 
+  frontend:
+    external:
+      name: {{ DOCKER_WORLDNET }}
+  backbone:
+    external:
       name: {{ traefik_network }}
+  database:
+    external:
+      name: {{ DOCKER_DBNET }}
+
