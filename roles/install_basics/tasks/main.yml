@@ -13,6 +13,27 @@
   with_items: "{{ install_tools }}"
   become: yes
 
+- name: ensure usage of Python3 on host
+  become: yes
+  block:
+
+    - name: check default version of Python
+      command: "python --version"
+      register: python_version
+
+    - name: register helper variable
+      set_fact:
+        py2default: '{{ python_version.stderr | regex_search("(Python 2\..*)|(not found)") | default(False, boolean=True) }}'
+
+    - name: check if Python3 is installed
+      command: "which python3"
+      register: py3path
+      when: py2default
+
+    - name: Update Alternatives
+      command: "update-alternatives --install /usr/bin/python python {{ py3path.stdout }} 10"
+      when: py2default
+
 - name: install pip packages, force upgrade
   pip:
     name: "{{ pip_list }}"
