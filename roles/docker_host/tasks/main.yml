@@ -36,6 +36,11 @@
         name: docker
         state: stopped
 
+    - name: ensure directory exists
+      file:
+        path: "/etc/systemd/system/docker.service.d/"
+        state: directory
+
     - name: set docker servic override file in place
       template:
         src: "docker_service_override.conf.j2"
