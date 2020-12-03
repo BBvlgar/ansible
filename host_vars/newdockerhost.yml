@@ -1,8 +1,103 @@
 ---
-
 docker_host: true
-
 applications:
+  events-app_stack:
+    events-app-backend:
+      name: events-app-backend
+      image: iteconomics/events-backend:latest
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications/appstore/web/certs:/certs"
+        - "/mnt/shared/applications/appstore/web/config:/etc/apache2/sites-enabled"
+        - "/mnt/shared/applications/appstore/data:/var/www/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.events-app-backend.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.events-app-backend_http.rule: 'Host(`events-app-backend.it-economics.de`)'"
+        - "traefik.http.routers.events-app-backend_http.entrypoints: 'web'"
+        - "traefik.http.routers.events-app-backend_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.events-app-backend.rule: 'Host(`events-app-backend.it-economics.de`)'"
+        - "traefik.http.routers.events-app-backend.entrypoints: 'websecure'"
+        - "traefik.http.routers.events-app-backend.tls: 'true'"
+        - "traefik.http.routers.events-app-backend.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.events-app-backend.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.events-app-backend.tls.domains[0].sans: '*.it-economics.de'"
+      environment:
+        DATABASE_HOSTNAME: "events-app-backend_db"
+        DATABASE_PASSWORD: "42+y)m(9MFa4QP"
+        DATABASE_USER: "events-app"
+        DATABASE_DB: "iteevents"
+      networks:
+        - "database"
+        - "backbone"
+
+    events-app-backend_db:
+      name: events-app-backend_db
+      image: postgres:11.1
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications/events/database/:/var/lib/postgresql/data"
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        POSTGRES_USER: "events-app"
+        POSTGRES_PASSWORD: "42+y)m(9MFa4QP"
+        POSTGRES_DB: iteevents
+      networks:
+        - database
+
+  skillmatrix_stack:
+    skillmatrix-service:
+      name: skillmatrix-service            
+      image: iteconomics/mindmap-service:24
+      restartPolicy: always      
+      environment:
+        POSTGRESQL_URL: "jdbc:postgresql://hre1vrt7i07k54.cmeuro3rr38y.eu-central-1.rds.amazonaws.com:5432/mindmapdb"
+        POSTGRESQL_USER: "mindmap"
+        POSTGRESQL_PASSWORD: "pcqfJDMmDW7W_N4fjDUe22HK922YLDr"
+        STATIC_CONTENT_PATH: /usr/share/nginx/html
+      volumes:
+        - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.skillmatrix-service.loadbalancer.server.port: '8085'"
+        - "traefik.http.routers.skillmatrix-service_http.rule: 'Host(`skillmatrix-service.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix-service_http.entrypoints: 'web'"
+        - "traefik.http.routers.skillmatrix-service_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.skillmatrix-service.rule: 'Host(`skillmatrix-service.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix-service.entrypoints: 'websecure'"
+        - "traefik.http.routers.skillmatrix-service.tls: 'true'"
+        - "traefik.http.routers.skillmatrix-service.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.skillmatrix-service.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.skillmatrix-service.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+        - "database" 
+
+    skillmatrix-gui:
+      name: skillmatrix-gui                  
+      image: iteconomics/d3-skills-mindmap:23
+      volumes:
+        - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
+      restartPolicy: always      
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.skillmatrix.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.skillmatrix_http.rule: 'Host(`skillmatrix.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix_http.entrypoints: 'web'"
+        - "traefik.http.routers.skillmatrix_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.skillmatrix.rule: 'Host(`skillmatrix.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix.entrypoints: 'websecure'"
+        - "traefik.http.routers.skillmatrix.tls: 'true'"
+        - "traefik.http.routers.skillmatrix.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.skillmatrix.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.skillmatrix.tls.domains[0].sans: '*.it-economics.de'"
+      environment:
+        VUE_APP_BACKEND_URL: https://skillmatrix-service.it-economics.de
+      networks:
+        - "backbone"
+        - "database" 
+
   appstore_stack:
     appstore:
       name: appstore
@@ -13,15 +108,21 @@ applications:
         - "/mnt/shared/applications/appstore/web/config:/etc/apache2/sites-enabled"
         - "/mnt/shared/applications/appstore/data:/var/www/html"
       labels:
-        - "traefik.backend=appstore"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:appstore.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.appstore.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.appstore_http.rule: 'Host(`appstore.it-economics.de`)'"
+        - "traefik.http.routers.appstore_http.entrypoints: 'web'"
+        - "traefik.http.routers.appstore_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.appstore.rule: 'Host(`appstore.it-economics.de`)'"
+        - "traefik.http.routers.appstore.entrypoints: 'websecure'"
+        - "traefik.http.routers.appstore.tls: 'true'"
+        - "traefik.http.routers.appstore.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.appstore.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.appstore.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
 
     appstore_ssh:
       name: appstore_ssh
@@ -31,9 +132,11 @@ applications:
         - "/mnt/shared/applications/appstore/ssh/authorized_keys:/root/.ssh/authorized_keys"
         - "/mnt/shared/applications/appstore/data:/var/www/html"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
       - "50022:22"
+      networks:
+        - "backbone"
 
   atlassian-quote_stack:
     atlassian-quote:
@@ -41,23 +144,30 @@ applications:
       image: iteconomics/atlassian-quote:latest
       restartPolicy: always
       labels:
-        - "traefik.backend=Atlassian Quote Tool"
-        - "traefik.frontend.rule=Host:atlassian-quote.it-economics.de"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.docker.network={{ traefik_network }}"
-        - "traefik.port=80"
-        - "traefik.protocol=http2"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.atlassian-quote.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.atlassian-quote_http.rule: 'Host(`atlassian-quote.it-economics.de`)'"
+        - "traefik.http.routers.atlassian-quote_http.entrypoints: 'web'"
+        - "traefik.http.routers.atlassian-quote_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.atlassian-quote.rule: 'Host(`atlassian-quote.it-economics.de`)'"
+        - "traefik.http.routers.atlassian-quote.entrypoints: 'websecure'"
+        - "traefik.http.routers.atlassian-quote.tls: 'true'"
+        - "traefik.http.routers.atlassian-quote.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.atlassian-quote.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.atlassian-quote.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         OpenID_ClientSecret: 'ckdIg/mzxvH0vbb15xZ/tO5TJzHc+khWxLTtxMzdHYY='
         OpenID_ClientID:     'a2543f80-c71f-4c0e-b2b1-9e5081542bc6'
         OpenID_MetaDataURL:  'https://login.microsoftonline.com/41567caa-2f7d-4d52-8ed3-eb6b36fd70dd/v2.0/.well-known/openid-configuration'
         OpenID_RedirectURL:  'https://atlassian-quote.it-economics.de/redirect_uri/'
         OpenID_Mailpost:     '@it-economics.de'
-        LDAP_Host:           "{{ ldap_url }}"
+        LDAP_Host:           "ldap://ldap01:389/ou=people,dc=it-economics,dc=de?uid??(objectclass=*)"
         LDAP_Group:          'cn=vs_atlassian,ou=groups,dc=it-economics,dc=de'
         LDAP_BindDN:         "{{ ldap_directory_user }}"
         LDAP_BindPassword:   "{{ ldap_directory_pass }}"
-      network_mode: proxy
+      networks:
+        - "backbone"
+        - "database"
 
 
   crowd_stack:
@@ -69,13 +179,19 @@ applications:
         - "/mnt/shared/applications/crowd/conf/server.xml:/opt/atlassian/crowd/apache-tomcat/conf/server.xml"
         - "/mnt/shared/applications/crowd/data:/var/atlassian/application-data/crowd"
       labels:
-        - "traefik.backend=crowd"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:crowd.it-economics.de"
-        - "traefik.port=8095"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.crowd.loadbalancer.server.port: '8095'"
+        - "traefik.http.routers.crowd_http.rule: 'Host(`crowd.it-economics.de`)'"
+        - "traefik.http.routers.crowd_http.entrypoints: 'web'"
+        - "traefik.http.routers.crowd_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.crowd.rule: 'Host(`crowd.it-economics.de`)'"
+        - "traefik.http.routers.crowd.entrypoints: 'websecure'"
+        - "traefik.http.routers.crowd.tls: 'true'"
+        - "traefik.http.routers.crowd.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.crowd.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.crowd.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
 
   directory-guest_stack:
     directory-guest:
@@ -83,20 +199,25 @@ applications:
       image: iteconomics/directory:latest
       restartPolicy: always
       volumes:
-      - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
-      - "/mnt/shared/applications/certs/data/templates:/var/www/html/storage/app/templates"
-      - "/mnt/shared/applications/directory-test/config/.env:/var/www/html/.env"
-      - "/mnt/shared/applications/directory-test/database.sqlite:/var/www/html/database/database.sqlite"
+        - "/mnt/shared/applications/directory-guest/config/.env:/var/www/html/.env"
+        - "/mnt/shared/applications/directory-guest/database.sqlite:/var/www/html/database/database.sqlite"
       labels:
-        - "traefik.backend=directory-guest"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:directory-guest.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.directory-guest.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.directory-guest_http.rule: 'Host(`directory-guest.it-economics.de`)'"
+        - "traefik.http.routers.directory-guest_http.entrypoints: 'web'"
+        - "traefik.http.routers.directory-guest_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.directory-guest.rule: 'Host(`directory-guest.it-economics.de`)'"
+        - "traefik.http.routers.directory-guest.entrypoints: 'websecure'"
+        - "traefik.http.routers.directory-guest.tls: 'true'"
+        - "traefik.http.routers.directory-guest.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.directory-guest.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.directory-guest.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
+        - "database"
 
   directory-test_stack:
     directory-test:
@@ -104,18 +225,27 @@ applications:
       image: iteconomics/directory:latest
       restartPolicy: always
       volumes:
-        - "/mnt/shared/applications/directory-guest/config/.env:/var/www/html/.env"
-        - "/mnt/shared/applications/directory-guest/database.sqlite:/var/www/html/database/database.sqlite"
+        - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
+        - "/mnt/shared/applications/certs/data/templates:/var/www/html/storage/app/templates"
+        - "/mnt/shared/applications/directory-test/config/.env:/var/www/html/.env"
+        - "/mnt/shared/applications/directory-test/database.sqlite:/var/www/html/database/database.sqlite"
       labels:
-        - "traefik.backend=directory-test"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:directory-test.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.directory-test.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.directory-test_http.rule: 'Host(`directory-test.it-economics.de`)'"
+        - "traefik.http.routers.directory-test_http.entrypoints: 'web'"
+        - "traefik.http.routers.directory-test_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.directory-test.rule: 'Host(`directory-test.it-economics.de`)'"
+        - "traefik.http.routers.directory-test.entrypoints: 'websecure'"
+        - "traefik.http.routers.directory-test.tls: 'true'"
+        - "traefik.http.routers.directory-test.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.directory-test.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.directory-test.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
+        - "database"
 
   directory_stack:
     directory:
@@ -129,16 +259,23 @@ applications:
         - "/mnt/shared/applications/certs/data/templates:/var/www/html/storage/app/templates"
         - "/mnt/shared/applications/directory/cronjobs:/etc/cron.d/docker"
       labels:
-        - "traefik.backend=directory"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:directory.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.directory.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.directory_http.rule: 'Host(`directory.it-economics.de`)'"
+        - "traefik.http.routers.directory_http.entrypoints: 'web'"
+        - "traefik.http.routers.directory_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.directory.rule: 'Host(`directory.it-economics.de`)'"
+        - "traefik.http.routers.directory.entrypoints: 'websecure'"
+        - "traefik.http.routers.directory.tls: 'true'"
+        - "traefik.http.routers.directory.tls.certresolver: 'letsencrypt'" 
+        - "traefik.http.routers.directory.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.directory.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         START_CRON: 1
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
+        - "database"
 
   teamsurvey-dashboard_stack:
     teamsurvey-dashboard:
@@ -146,14 +283,21 @@ applications:
       image: iteconomics/teamsurvey-dashboard:latest
       restartPolicy: always
       labels:
-        traefik.backend: "Teamsurvey Dashboard"
-        traefik.frontend.rule: "Host:teamsurvey.it-economics.de"
-        traefik.frontend.entryPoints: http,https
-        traefik.port: "80"
-        traefik.protocol: http
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurvey-dashboard.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.rule: 'Host(`teamsurvey.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurvey-dashboard.rule: 'Host(`teamsurvey.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls: 'true'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         GRAPHQL_ENDPOINT: "https://teamsurvey-api.it-economics.de/graphql"
-      network_mode: proxy
+      networks:
+        - "backbone"
 
   vcard_stack:
     vcard:
@@ -161,26 +305,36 @@ applications:
       image: iteconomics/apache:latest
       restartPolicy: always
       volumes:
-        - "/mnt/shared/applications/vcard/data:/data"
+        - /mnt/shared/applications/vcard/web/proxy.conf:/etc/apache2/sites-enabled/000-default.conf:ro
       labels:
-        - "traefik.backend?it-e vcard server"
-        - "traefik.frontend.rule=Host:vcard.it-economics.de"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.vcard.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.vcard_http.rule: 'Host(`vcard.it-economics.de`)'"
+        - "traefik.http.routers.vcard_http.entrypoints: 'web'"
+        - "traefik.http.routers.vcard_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.vcard.rule: 'Host(`vcard.it-economics.de`)'"
+        - "traefik.http.routers.vcard.entrypoints: 'websecure'"
+        - "traefik.http.routers.vcard.tls: 'true'"
+        - "traefik.http.routers.vcard.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.vcard.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.vcard.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         MODS: "proxy proxy_http auth_basic authnz_ldap authz_core rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
 
     vcardserver:
       name: vcardserver
       image: tomsquest/docker-radicale:latest
       restartPolicy: always
       volumes:
+        - "/mnt/shared/applications/vcard/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh"
         - "/mnt/shared/applications/vcard/config:/config"
         - "/mnt/shared/applications/vcard/data:/data"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
+      networks:
+        - "backbone"
 
     vcardsync:
       name: vcardsync
@@ -189,7 +343,7 @@ applications:
       volumes:
         - "/mnt/shared/applications/vcard/data:/data"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       environment:
         ITE_CONTACT_DIR: '/data/collections/collection-root/'
         ITE.EXPORTCONTACTDIR: '/data/collections/collection-root/'
@@ -206,15 +360,21 @@ applications:
       volumes:
         - "/mnt/shared/applications/teamsurveyrest.it-economics.de/nginx.conf:/etc/nginx/nginx.conf"
       labels:
-        - "traefik.backend=surveyappproxy"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:teamsurveyrest.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurveyrest.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.teamsurveyrest_http.rule: 'Host(`teamsurveyrest.it-economics.de`)'"
+        - "traefik.http.routers.teamsurveyrest_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurveyrest_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurveyrest.rule: 'Host(`teamsurveyrest.it-economics.de`)'"
+        - "traefik.http.routers.teamsurveyrest.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurveyrest.tls: 'true'"
+        - "traefik.http.routers.teamsurveyrest.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurveyrest.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.teamsurveyrest.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         MODS: "ssl ldap authnz_ldap php7.0 rewrite headers"
-      network_mode: proxy
+      networks:
+        - "backbone"
 
   share_stack:
     share:
@@ -226,13 +386,21 @@ applications:
         - "/mnt/shared/applications/share/data/config:/var/www/html/config"
         - "/mnt/shared/applications/share/data/data:/var/www/html/data"
       labels:
-        - "traefik.backend=share.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:share.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.share.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.share_http.rule: 'Host(`share.it-economics.de`)'"
+        - "traefik.http.routers.share_http.entrypoints: 'web'"
+        - "traefik.http.routers.share_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.share.rule: 'Host(`share.it-economics.de`)'"
+        - "traefik.http.routers.share.entrypoints: 'websecure'"
+        - "traefik.http.routers.share.tls: 'true'"
+        - "traefik.http.routers.share.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.share.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.share.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+        - "database"
+
 
   share-secrets_stack:
     share-secrets:
@@ -243,13 +411,21 @@ applications:
         - "/mnt/shared/applications/share-secrets/apache/apache.j2:/templates/apache.j2"
         - "/mnt/shared/applications/share-secrets/html:/var/www/html/public"
       labels:
-        - "traefik.backend=secrets.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:secrets.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.secrets.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.secrets_http.rule: 'Host(`secrets.it-economics.de`)'"
+        - "traefik.http.routers.secrets_http.entrypoints: 'web'"
+        - "traefik.http.routers.secrets_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.secrets.rule: 'Host(`secrets.it-economics.de`)'"
+        - "traefik.http.routers.secrets.entrypoints: 'websecure'"
+        - "traefik.http.routers.secrets.tls: 'true'"
+        - "traefik.http.routers.secrets.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.secrets.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.secrets.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+      environment:
+        APACHE_PUBLIC_DIR: '/var/www/html/public'
 
   roominfo-service_stack:
     roominfo-service:
@@ -259,13 +435,19 @@ applications:
       volumes:
         - "/mnt/shared/applications/roominfo-service/config/.env:/var/www/html/.env"
       labels:
-        - "traefik.backend=roominfo-service.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:roominfo-service.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.roominfo-service.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.roominfo-service_http.rule: 'Host(`roominfo-service.it-economics.de`)'"
+        - "traefik.http.routers.roominfo-service_http.entrypoints: 'web'"
+        - "traefik.http.routers.roominfo-service_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.roominfo-service.rule: 'Host(`roominfo-service.it-economics.de`)'"
+        - "traefik.http.routers.roominfo-service.entrypoints: 'websecure'"
+        - "traefik.http.routers.roominfo-service.tls: 'true'"
+        - "traefik.http.routers.roominfo-service.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.roominfo-service.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.roominfo-service.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
 
   portainer_stack:
     portainer:
@@ -276,13 +458,19 @@ applications:
             - '/var/run/docker.sock:/var/run/docker.sock'
             - '/mnt/shared/applications/portainer/data:/data'
       labels:
-        - "traefik.backend=portainer.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:portainer.it-economics.de"
-        - "traefik.port=9000"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"
+        - "traefik.http.routers.portainer_http.rule: 'Host(`portainer.it-economics.de`)'"
+        - "traefik.http.routers.portainer_http.entrypoints: 'web'"
+        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.portainer.rule: 'Host(`portainer.it-economics.de`)'"
+        - "traefik.http.routers.portainer.entrypoints: 'websecure'"
+        - "traefik.http.routers.portainer.tls: 'true'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.portainer.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
 
   phonestat_stack:
     phonestat:
@@ -292,13 +480,21 @@ applications:
       volumes:
         - "/mnt/shared/applications/phonestat/telefonstatus:/var/www/html"
       labels:
-        - "traefik.backend=phonestat.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:phonestat.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.phonestat.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.phonestat_http.rule: 'Host(`phonestat.it-economics.de`)'"
+        - "traefik.http.routers.phonestat_http.entrypoints: 'web'"
+        - "traefik.http.routers.phonestat_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.phonestat.rule: 'Host(`phonestat.it-economics.de`)'"
+        - "traefik.http.routers.phonestat.entrypoints: 'websecure'"
+        - "traefik.http.routers.phonestat.tls: 'true'"
+        - "traefik.http.routers.phonestat.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.phonestat.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.phonestat.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+      environment:
+        APACHE_PUBLIC_DIR: /var/www/html/public
 
   passcard_stack:
     passcard:
@@ -308,13 +504,19 @@ applications:
       volumes:
         - "/mnt/shared/applications/passcard/data:/var/www/html/storage"
       labels:
-        - "traefik.backend=passcard.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:passcard.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
-      network_mode: proxy
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.passcard.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.passcard_http.rule: 'Host(`passcard.it-economics.de`)'"
+        - "traefik.http.routers.passcard_http.entrypoints: 'web'"
+        - "traefik.http.routers.passcard_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.passcard.rule: 'Host(`passcard.it-economics.de`)'"
+        - "traefik.http.routers.passcard.entrypoints: 'websecure'"
+        - "traefik.http.routers.passcard.tls: 'true'"
+        - "traefik.http.routers.passcard.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.passcard.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.passcard.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
 
   memorysourceexport_stack:
     memorysourceexport:
@@ -322,19 +524,25 @@ applications:
       image: iteconomics/memorysourceexport:latest
       restartPolicy: always
       labels:
-        - "traefik.backend=memory.it-economics.de"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:memory.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.memory.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.memory_http.rule: 'Host(`memory.it-economics.de`)'"
+        - "traefik.http.routers.memory_http.entrypoints: 'web'"
+        - "traefik.http.routers.memory_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.memory.rule: 'Host(`memory.it-economics.de`)'"
+        - "traefik.http.routers.memory.entrypoints: 'websecure'"
+        - "traefik.http.routers.memory.tls: 'true'"
+        - "traefik.http.routers.memory.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.memory.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.memory.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         LDAP_BindDN: "{{ ldap_directory_user }}"
         AUTH_USERS_JSON: '{ "vCardUser": "TAwW97z3QJKj8DRMVNT4&v*fISz2X$iH8@lcqYKHlN" }'
         LDAP_Host: "{{ ldap_url }}"
         LDAP_BASE_DN: "{{ ldap_base_dn }}"
         LDAP_BindPassword: "{{ ldap_directory_pass }}"
-      network_mode: proxy
+      networks:
+        - "backbone"
 
   ldap01_stack:
     ldap01:
@@ -347,9 +555,11 @@ applications:
         - "/mnt/shared/applications/ldap01/data/import:/import"
         - "/mnt/shared/applications/ldap01/data/data:/var/lib/ldap"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
         - "20636:636"
+      networks:
+        - "database"
 
   ldap-guest_stack:
     ldap-guest:
@@ -362,9 +572,11 @@ applications:
         - "/mnt/shared/applications/ldap-guest/data/import:/import"
         - "/mnt/shared/applications/ldap-guest/data/data:/var/lib/ldap"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
-      - "50022:22"
+        - "636:636"
+      networks:
+        - "database"
 
   ldap-test_stack:
     ldap-test:
@@ -377,9 +589,11 @@ applications:
         - "/mnt/shared/applications/ldap-test/data/import:/import"
         - "/mnt/shared/applications/ldap-test/data/data:/var/lib/ldap"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
-       - "636:636"
+       - "40636:636"
+      networks:
+        - "database"
 
   ldap-certs_stack:
     ldap-certs:
@@ -392,9 +606,11 @@ applications:
         - "/mnt/shared/applications/ldap-certs/data/import:/import"
         - "/mnt/shared/applications/ldap-certs/data/data:/var/lib/ldap"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
         - "60636:636"
+      networks:
+        - "database"
 
   kdc01_stack:
     kdc01:
@@ -405,7 +621,7 @@ applications:
         - "/dev/urandom:/dev/urandom"
         - "/mnt/shared/applications/kdc01/config:/kdc"
       labels:
-        - "traefik.enable=false"
+        - "traefik.enable: false"
       ports:
         - "464:464/tcp"
         - "464:464/udp"
@@ -413,6 +629,8 @@ applications:
         - "749:749/udp"
         - "88:88/tcp"
         - "88:88/udp"
+      networks:
+        - "database"        
 
   limesurvey_stack:
     limesurvey:
@@ -423,12 +641,17 @@ applications:
         - "/mnt/shared/applications/survey/data/admin_theme:/var/www/html/upload/admintheme/iteconomics"
         - "/mnt/shared/applications/survey/data/template:/var/www/html/upload/themes/survey/iteconomics"
       labels:
-        - "traefik.backend=survey"
-        - "traefik.docker.network=proxy"
-        - "traefik.frontend.entryPoints=http,https"
-        - "traefik.frontend.rule=Host:survey.it-economics.de"
-        - "traefik.port=80"
-        - "traefik.protocol=http"
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.survey.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.survey_http.rule: 'Host(`survey.it-economics.de`)'"
+        - "traefik.http.routers.survey_http.entrypoints: 'web'"
+        - "traefik.http.routers.survey_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.survey.rule: 'Host(`survey.it-economics.de`)'"
+        - "traefik.http.routers.survey.entrypoints: 'websecure'"
+        - "traefik.http.routers.survey.tls: 'true'"
+        - "traefik.http.routers.survey.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.survey.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.survey.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         DB_HOST: "ite-mariadb.cmeuro3rr38y.eu-central-1.rds.amazonaws.com"
         DB_NAME: limesurvey
@@ -455,10 +678,11 @@ applications:
         LIMESURVEY_DEBUG: '0'
         ADMIN_THEME_NAME: iteconomics
         DEFAULT_TEMPLATE: iteconomics
-      network_mode: proxy
+      networks:
+        - "backbone"
 
-composerFilePath: "/mnt/shared/compose/dockerhost/"
-remote: false
+composerFilePath: "/mnt/shared/compose/dockerhost"
+remote: true
 
 ...
 
