@@ -45,5 +45,7 @@ basic_toolset:
   - name: jq
   - name: acl
   - name: rsync
+  - name: python-setuptools
+  - name: mailutils
 
 ...
