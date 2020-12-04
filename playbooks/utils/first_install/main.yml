@@ -96,6 +96,11 @@
         enable_ufw: "yes"
         restart_ufw: "yes"
 
+    - name: 'install sophos antivirus'
+      include_role:
+        name: sophos_install
+      when: sophos_install is defined and sophos_install
+
     - name: reboot
       reboot:
         reboot_timeout: 300

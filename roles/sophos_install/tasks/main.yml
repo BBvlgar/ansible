@@ -1,0 +1,21 @@
+---
+
+- name: Download Sophos Installers
+  get_url: url={{ item }} dest=/var/tmp
+  with_items:
+    - "{{ sophos_av_url }}"
+
+- name: Changing perm of install fieles, adding "a+x"
+  file: dest=/var/tmp/{{ item }} mode=a+x
+  with_items:
+    - "SophosInstall.sh"
+
+- name: Install Sophos AV
+  shell: bash /var/tmp/SophosInstall.sh
+
+- name: Cleanup
+  file: path=/var/tmp/{{ item }} state=absent
+  with_items:
+    - "SophosInstall.sh"
+
+...
