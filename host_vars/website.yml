@@ -1,0 +1,105 @@
+---
+docker_host: true
+applications:
+  website_stack:
+    traefik:
+      name: traefik
+      image: traefik:latest
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.routers.api_http.rule: 'Host(`traefik-www.it-economics.de`)'"
+        - "traefik.http.routers.api_http.service: 'api@internal'"
+        - "traefik.http.routers.api_http.entrypoints: 'web'"
+        - "traefik.http.routers.api_http.middlewares: 'auth@file'"
+        - "traefik.http.routers.api.rule: 'Host(`traefik-www.it-economics.de`)'"
+        - "traefik.http.routers.api.entrypoints: 'websecure'"
+        - "traefik.http.routers.api.middlewares: 'auth@file'"
+        - "traefik.http.routers.api.tls: 'true'"
+        - "traefik.http.routers.api.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.api.service: 'api@internal'"
+        - "traefik.http.services.traefik.loadbalancer.server.port: '8080'"
+      environment:
+        - "CLOUDFLARE_EMAIL=admins@it-economics.de"
+        - "CLOUDFLARE_API_KEY=ecd1c6068bcb721a94aeb892a5fb6aadddcde"
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/mnt/shared/applications/traefik.website/web/certs:/certs:ro"
+        - "/mnt/shared/applications/traefik.website/traefik.yaml:/etc/traefik/traefik.yaml"
+        - "/mnt/shared/applications/traefik.website/provider.yaml:/etc/traefik/provider.yaml"
+        - "/mnt/shared/applications/traefik.website/acme:/acme"
+        - "/mnt/shared/applications/traefik.website/logs:/var/log/traefik"
+      network_mode: "host"
+
+
+    wordpress:
+      image: iteconomics/wordpress:latest
+      container_name: website
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.routers.website_http.rule: 'Host(`www.it-economics.de`) || Host(`it-economics.de`)'"
+        - "traefik.http.routers.website_http.entrypoints: 'web'"
+        - "traefik.http.routers.website.rule: 'Host(`www.it-economics.de`) || Host(`it-economics.de`)'"
+        - "traefik.http.routers.website.entrypoints: 'websecure'"
+        - "traefik.http.routers.website.tls: 'true'"
+        - "traefik.http.routers.website.tls.certresolver: 'letsencrypt'"
+      environment:
+        - "WORDPRESS_DB_HOST=ite-mariadb.cmeuro3rr38y.eu-central-1.rds.amazonaws.com"
+        - "WORDPRESS_DB_NAME=website"
+        - "WORDPRESS_DB_USER=website"
+        - "WORDPRESS_DB_PASSWORD=Gg0hpIhe&nLkmbGpE!ed"
+        - "WORDPRESS_TABLE_PREFIX=wpdomels_"
+        - "WORDPRESS_DEBUG=false"
+      volumes:
+        - "/mnt/shared/applications/website/logs:/var/log/apache2"
+        - "/mnt/shared/applications/website/wordpress/.htaccess:/var/www/html/.htaccess"
+        - "/mnt/shared/applications/website/wordpress/assets:/var/www/html/assets"
+        - "/mnt/shared/applications/website/wordpress/wp-content:/var/www/html/wp-content"
+        - "/mnt/shared/applications/website/upload.ini:/usr/local/etc/php/conf.d/upload.ini"
+      networks:
+          backbone:
+
+    portainer:
+      image: portainer/portainer-ce:latest
+      container_name: portainer
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"
+        - "traefik.http.routers.portainer_http.rule: 'Host(`portainer-www.it-economics.de`)'"
+        - "traefik.http.routers.portainer_http.entrypoints: 'web'"
+        - "traefik.http.routers.portainer.rule: 'Host(`portainer-www.it-economics.de`)'"
+        - "traefik.http.routers.portainer.entrypoints: 'websecure'"
+        - "traefik.http.routers.portainer.tls: 'true'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/mnt/shared/applications/portainer/data:/data"
+      networks:
+        backbone:
+
+    ssh:
+      image: felixkazuyade/worksuite:latest
+      container_name: worksuite
+      restartPolicy: always
+      labels:
+      ports:
+        - "222:22"
+      environment:
+        - "ROOT_PASSWORD=Def12345"
+        - "UBUNTU_PASSWORD=ChangeMeByEnv"
+        - "CRON=true"
+      volumes:
+        - "/mnt/shared/applications/website/wordpress:/mnt/website"
+        - "/mnt/shared/applications/website/ssh/authorized_keys:/root/.ssh/authorized_keys"
+        - "/mnt/shared/applications/website/crontab:/var/spool/cron/crontabs"
+        - "/mnt/shared/applications/website/www-data-id_rsa:/var/www/.ssh"
+      labels:
+        - "traefik.enable: 'false'"     
+
+composerFilePath: "/mnt/shared/compose/website"
+remote: true
+
+...
+
