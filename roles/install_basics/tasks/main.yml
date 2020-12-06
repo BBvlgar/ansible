@@ -33,6 +33,7 @@
     - name: Update Alternatives
       command: "update-alternatives --install /usr/bin/python python {{ py3path.stdout }} 10"
       when: py2default
+  ignore_errors: yes
 
 - name: install pip packages, force upgrade
   pip:
