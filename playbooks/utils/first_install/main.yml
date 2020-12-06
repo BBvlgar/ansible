@@ -58,6 +58,13 @@
       vars:
         override_user: 'yes'
 
+    - name: 'install sophos antivirus'
+      include_role:
+        name: sophos_install
+      when:
+        - sophos_av_url is defined
+        - sophos_av_url | length > 0
+
     - name: 'install basic toolset and configuration'
       include_role:
         name: install_basics
@@ -95,10 +102,6 @@
         only_install_ufw: "no"
         enable_ufw: "yes"
         restart_ufw: "yes"
-
-    - name: 'install sophos antivirus'
-      include_role:
-        name: sophos_install
 
     - name: reboot
       reboot:
