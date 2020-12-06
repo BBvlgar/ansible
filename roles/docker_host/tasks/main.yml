@@ -27,6 +27,11 @@
         state: "{{ item.state | default( package_state) }}"
       with_items: "{{ install_docker.tools }}"
 
+  rescue:
+
+    - name: Install docker via install script
+      command: "curl -sSL https://get.docker.com | sh"
+
 - name: define Docker service overrides
   become: yes
   block:
@@ -41,7 +46,7 @@
         path: "/etc/systemd/system/docker.service.d/"
         state: directory
 
-    - name: set docker servic override file in place
+    - name: set docker service override file in place
       template:
         src: "docker_service_override.conf.j2"
         dest: "/etc/systemd/system/docker.service.d/override.conf"
