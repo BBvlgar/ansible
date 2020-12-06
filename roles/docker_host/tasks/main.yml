@@ -41,7 +41,7 @@
         name: docker
         state: stopped
 
-    - name: ensure directory exists
+    - name: ensure, the needed directory exists
       file:
         path: "/etc/systemd/system/docker.service.d/"
         state: directory
