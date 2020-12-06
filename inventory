@@ -52,16 +52,15 @@ bamboo-server               ansible_port=60022           ansible_host=bamboo.it-
 bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de
 # training                   ansible_port=60022            ansible_host=
 bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
-dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022
+#dockerhost-abn		    ansible_host=168.119.117.31	ansible_port=60022
 
 ###
 ## AWS Servers (intern)
 ###
 bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de	     	    ansible_user=ubuntu
-dockerhost                  ansible_port=22              ansible_host=ip-10-0-1-58.eu-central-1.compute.internal    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
-website                     ansible_port=22              ansible_host=website.aws.it-economics.de                   ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
-freepbx                     ansible_port=22           	 ansible_host=pbx.it-economics.de 		            ansible_user=ubuntu							ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022'
-monitoring                  ansible_port=22              ansible_host=nagios.aws.it-economics.de                    ansible_user=ubuntu							ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+website                     ansible_port=60022           ansible_host=ip-10-0-1-69.eu-central-1.compute.internal    									ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+freepbx                     ansible_port=60022        	 ansible_host=pbx.it-economics.de 		            									ansible_ssh_common_args='-A -J hq1-muc.it-economics.de:60022'
+monitoring                  ansible_port=60022           ansible_host=ip-10-0-1-25.eu-central-1.compute.internal    									ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 newdockerhost               ansible_port=60022           ansible_host=newDockerhost                                                                                                     ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 
 ###
@@ -92,7 +91,7 @@ bamboo-builder
 s3
 bastion
 jumphost
-dockerhost
+newdockerhost
 freepbx
 website
 # atlassian-pi.muc
@@ -105,7 +104,6 @@ website
 # teamviewer-pi.karlsruhe
 # teamviewer-pi.bonn
 # teamviewer-pi.sofia
-s3-restore-2020-10-14
 
 
 [production:children]
