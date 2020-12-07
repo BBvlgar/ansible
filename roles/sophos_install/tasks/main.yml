@@ -1,5 +1,44 @@
 ---
 
+- name: Update repositories cache and install "gcc" package
+  apt:
+    name: gcc
+    update_cache: yes
+  when:
+    - sophos_av_url is defined
+    - sophos_av_url | length > 0
+
+- name: Update repositories cache and install "linux-source" package
+  apt:
+    name: linux-source
+    update_cache: yes
+  when:
+    - sophos_av_url is defined
+    - sophos_av_url | length > 0
+
+- name: Update repositories cache and install "linux-headers-generic" package
+  apt:
+    name: linux-headers-generic
+    update_cache: yes
+  when:
+    - sophos_av_url is defined
+    - sophos_av_url | length > 0
+
+- name: Update repositories cache and install " build-essential" package
+  apt:
+    name:  build-essential
+    update_cache: yes
+  when:
+    - sophos_av_url is defined
+    - sophos_av_url | length > 0
+
+- name: Install linux headers
+  package:
+    name: "linux-headers-{{ ansible_kernel }}"
+  when:
+    - sophos_av_url is defined
+    - sophos_av_url | length > 0
+
 - name: Download Sophos Installers
   get_url: url={{ item }} dest=/var/tmp
   with_items:
