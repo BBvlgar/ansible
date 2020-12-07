@@ -1,73 +1,60 @@
 ---
 
-- name: Update repositories cache and install "gcc" package
-  apt:
-    name: gcc
-    update_cache: yes
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+- name: Install annd configure Sophos AV
+  block:
+    - name: Update repositories cache and install "gcc" package
+      apt:
+        name: gcc
+        update_cache: yes
 
-- name: Update repositories cache and install "linux-source" package
-  apt:
-    name: linux-source
-    update_cache: yes
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Update repositories cache and install "linux-source" package
+      apt:
+        name: linux-source
+        update_cache: yes
 
-- name: Update repositories cache and install "linux-headers-generic" package
-  apt:
-    name: linux-headers-generic
-    update_cache: yes
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Update repositories cache and install "linux-headers-generic" package
+      apt:
+        name: linux-headers-generic
+        update_cache: yes
 
-- name: Update repositories cache and install " build-essential" package
-  apt:
-    name:  build-essential
-    update_cache: yes
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Update repositories cache and install " build-essential" package
+      apt:
+        name:  build-essential
+        update_cache: yes
 
-- name: Install linux headers
-  package:
-    name: "linux-headers-{{ ansible_kernel }}"
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Install linux headers
+      package:
+        name: "linux-headers-{{ ansible_kernel }}"
 
-- name: Download Sophos Installers
-  get_url: url={{ item }} dest=/var/tmp
-  with_items:
-    - "{{ sophos_av_url }}"
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Download Sophos Installers
+      get_url: url={{ item }} dest=/var/tmp
+      with_items:
+        - "{{ sophos_av_url }}"
 
+    - name: Changing perm of install fieles, adding "a+x"
+      file: dest=/var/tmp/{{ item }} mode=a+x
+      with_items:
+        - "SophosInstall.sh"
 
-- name: Changing perm of install fieles, adding "a+x"
-  file: dest=/var/tmp/{{ item }} mode=a+x
-  with_items:
-    - "SophosInstall.sh"
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Install Sophos AV
+      shell: bash /var/tmp/SophosInstall.sh
 
+    - name: Set used threads for Sophos AV
+      command: /opt/sophos-av/bin/savconfig set {{ item }} {{ ansible_processor_cores }}
+      with_items:
+        - "ThreadsPerProcess"
+        - "MaximumThreads"
 
-- name: Install Sophos AV
-  shell: bash /var/tmp/SophosInstall.sh
-  when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - name: Restart Sophos
+      service:
+        name: sav-protect
+        state: restarted
 
+    - name: Cleanup
+      file: path=/var/tmp/{{ item }} state=absent
+      with_items:
+        - "SophosInstall.sh"
 
-- name: Cleanup
-  file: path=/var/tmp/{{ item }} state=absent
-  with_items:
-    - "SophosInstall.sh"
   when:
     - sophos_av_url is defined
     - sophos_av_url | length > 0
