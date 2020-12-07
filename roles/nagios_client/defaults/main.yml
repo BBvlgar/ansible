@@ -17,6 +17,7 @@ nagios:
     - "3.125.97.169"
     - "192.168.7.1"
     - "192.168.7.2"
+    - "10.0.1.25"
 
 nagios_install_tools:
   - name: nagios-nrpe-server
