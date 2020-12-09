@@ -12,6 +12,12 @@
     - pause: prompt="Create user __ {{ hostvars['localhost']['user']['registration']['user']['username'] }} __ in environment __ {{ env }} __ and system __ {{ hostvars.get('localhost').get('ldap_url') }} __, press ENTER to continue (abort with ctrl+c)."
       when: env == 'production'
 
+- name: Create ldap account
+  include: ldap.yml
+
+- name: Create achievo account
+  import_playbook: achievo.yml
+
 - name: Generate SSL certificate
   import_playbook: ssl.yml
 
