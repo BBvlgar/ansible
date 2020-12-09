@@ -1,0 +1,11 @@
+---
+
+- hosts: updatableServers
+
+  tasks:
+
+    - name: 'admin_user'
+      include_role:
+        name: admin_user
+
+...
