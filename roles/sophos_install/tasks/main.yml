@@ -29,7 +29,7 @@
     - name: Download Sophos Installers
       get_url: url={{ item }} dest=/var/tmp
       with_items:
-        - "{{ sophos_av_url }}"
+        - "{{ sophos_av.url }}"
 
     - name: Changing perm of install fieles, adding "a+x"
       file: dest=/var/tmp/{{ item }} mode=a+x
@@ -40,10 +40,16 @@
       shell: bash /var/tmp/SophosInstall.sh
 
     - name: Set used threads for Sophos AV
-      command: /opt/sophos-av/bin/savconfig set {{ item }} {{ ansible_processor_cores }}
-      with_items:
-        - "ThreadsPerProcess"
-        - "MaximumThreads"
+      command: /opt/sophos-av/bin/savconfig set ThreadsPerProcess {{ sophos_av.threadsPerProcess | default(ansible_processor_cores) }}
+
+    - name: Set used threads for Sophos AV
+      command: /opt/sophos-av/bin/savconfig set MaximumThreads {{ sophos_av.maximumThreads | default(ansible_processor_cores) }}
+
+    - name: Disable MaliciousTrafficDetection in Sophos AV
+      command: /opt/sophos-av/bin/savconfig set EnableMaliciousTrafficDetection false
+      when:
+        - sophos_av.disableMTD is definded
+        - sophos_av.disableMTD|bool == true
 
     - name: Restart Sophos
       service:
@@ -56,6 +62,6 @@
         - "SophosInstall.sh"
 
   when:
-    - sophos_av_url is defined
-    - sophos_av_url | length > 0
+    - sophos_av.url is defined
+    - sophos_av.url | length > 0
   become: yes
