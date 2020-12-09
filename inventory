@@ -90,7 +90,7 @@ bamboo-builder
 s3
 bastion
 jumphost
-newdockerhost
+dockerhost
 freepbx
 website
 # atlassian-pi.muc
