@@ -40,10 +40,15 @@
       shell: bash /var/tmp/SophosInstall.sh
 
     - name: Set used threads for Sophos AV
-      command: /opt/sophos-av/bin/savconfig set {{ item }} {{ ansible_processor_cores }}
-      with_items:
-        - "ThreadsPerProcess"
-        - "MaximumThreads"
+      command: /opt/sophos-av/bin/savconfig set ThreadsPerProcess {{ sophos_av_threadsPerProcess | default(ansible_processor_cores) }}
+
+    - name: Set used threads for Sophos AV
+      command: /opt/sophos-av/bin/savconfig set MaximumThreads {{ sophos_av_maximumThreads | default(ansible_processor_cores) }}
+
+    - name: Disable MaliciousTrafficDetection in Sophos AV
+      command: /opt/sophos-av/bin/savconfig set EnableMaliciousTrafficDetection false
+      when:
+        - sophos_av_disableMTD|default(false)|bool == true
 
     - name: Restart Sophos
       service:
