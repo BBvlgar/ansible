@@ -1,2 +1,1 @@
-sophos_av:
-  disableMTD: true
+sophos_av_disableMTD: true
