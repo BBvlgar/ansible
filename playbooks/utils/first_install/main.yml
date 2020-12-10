@@ -62,8 +62,8 @@
       include_role:
         name: sophos_install
       when:
-        - sophos_av.url is defined
-        - sophos_av.url | length > 0
+        - sophos_av_url is defined
+        - sophos_av_url | length > 0
 
     - name: 'install basic toolset and configuration'
       include_role:
