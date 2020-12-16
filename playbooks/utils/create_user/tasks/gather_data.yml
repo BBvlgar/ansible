@@ -88,7 +88,7 @@
       with_items:
         - "{{ user.registration.user.username }}"
         - "{{ user.registration.user.mail }}"
-      when: "{{ item|trim =='' }}"
+      when: item|trim =='' or item|trim =='null' or item|trim =='none'
 
     - name: Test if contract is valid
       fail: "msg='Please correct the contract type which is set to >{{ data.meta.fields.customfield_12107.value }}< with and end date of >{{ user.registration.contract.enddate }}< in the ticket {{ ticket_number }}'"
