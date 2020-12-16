@@ -18,7 +18,10 @@
       register: user_exists
       no_log: "{{ no_log|default('true') }}"
 
+    - name: Fail when user exist
+      fail: msg="User exist already"
+      when: "'numEntries: 1' in user_exists.stdout"
+
     - include: ldap_user.yml
-      when: "'numEntries: 1' not in user_exists.stdout"
 
     - include: ldap_groups.yml
