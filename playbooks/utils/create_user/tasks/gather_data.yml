@@ -57,6 +57,7 @@
               mobilephone:  "{{ data.meta.fields.customfield_10201 }}"
               telephone:    "{{ data.meta.fields.customfield_10201 }}"
               password:     "{{ password.stdout }}"
+              gender:       "{{ data.meta.fields.customfield_15200.value }}"
             contract:
               days:         "{{ data.meta.fields.customfield_10137 }}"
               startdate:    "{{ data.meta.fields.customfield_10133 }}"
