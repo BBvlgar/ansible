@@ -92,4 +92,4 @@ jpegPhoto:: iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAMAAAD8CC+4AAAB3VBMVEUAAAC0w8u1w8
  UQ0hCTLWZo0qIFkAxXahPAaAzSmfnSDOb8zV1Mvptnvo1B5wksZ+E8cC8VnkdO11F/qTFYsRKXH9H
  0X355+gBSczBIVpngAgAAAABJRU5ErkJggg==
 {% if user.registration.user.mobilephone %}mobile: {{user.registration.user.mobilephone}}{%else%}{%endif%}
-employeeType:: {{ gender }}
+employeeType: {{ user.registration.user.gender }}
