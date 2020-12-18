@@ -35,5 +35,16 @@
         docker_container:
           name: selenium_tmmittelstand
           state: absent
+
+      - name: Copy mail to server
+        template: src=../templates/hornetsecurity_mail.j2 dest=/tmp/hornetsecurity_mail
+
+      - name: Send mail to tm mittelstand
+        shell: cat /tmp/hornetsecurity_mail | mail -s "Bitte User in Hornetsecurity hinzufügen" -c admins@it-economics.de kundencenter@tm-mittelstand.de
+
+      - name: Make sure welcome mail is deleted
+        file: path=/tmp/hornetsecurity_mail state=absent
+
       when: user.registration.contract.employerId not in noMailAccount
       ignore_errors: yes
+
