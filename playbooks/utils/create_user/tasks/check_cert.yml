@@ -14,7 +14,6 @@
     - debug: msg="Creating user certificate {{ user.registration.user.username }} with employer {{ user.registration.contract.employer }} id {{ user.registration.contract.employerId }}"
       when: user.registration.contract.employerId not in noSSL
 
-
     - block:
       - set_fact:
           status: "{% if user.registration.user.lvl == 'Freelancer'%}external{% else %}internal{% endif %}"
@@ -24,22 +23,8 @@
         stat: path=/home/sysadmin/Private/it-economics_CA/{{ status }}/{{ user.registration.user.mail }}
         register: keydir
 
-      - block:
-        - name: Copy generation script
-          copy: src=../files/generate dest=/tmp/generate mode=755
+      - name: Fail when user cert exist
+        fail: msg="User Cert exist already"
+        when: keydir.stat.exists
 
-        - name: Generate SSL certificate
-          shell: /tmp/generate {{ status }} {{ user.registration.user.mail }}  "{{ user.registration.user.firstname }} {{ user.registration.user.name }}" {{ ca_password }} {{ p12_password }}
-
-        - name: Delete generation script
-          file: path=/tmp/generate state=absent
-        when: not keydir.stat.exists
-
-      - name: Fetch files from pki
-        fetch: src=/home/sysadmin/Private/it-economics_CA/{{ status }}/{{ user.registration.user.mail }}/it-economics_{{ user.registration.user.mail }}.{{ item }} dest=/tmp/it-economics_{{ user.registration.user.mail }}.{{ item }} flat=yes
-        with_items:
-          - p12
-          - cer
-          - crt
       when: user.registration.contract.employerId not in noSSL
-
