@@ -1,0 +1,39 @@
+---
+
+# data for plain installing Hetzner root server
+hetzner_install:
+  hostname: hs1
+  image: "{{ install_base }}/../images/Ubuntu-2004-focal-64-minimal.tar.gz"
+  drives:
+    # SDA has not to be included to SWRAID
+    # - /dev/sda
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+  partitions:
+    - destination: /boot
+      filesystem:  ext3
+      size:        4G
+    - destination: lvm
+      filesystem:  vg0
+      size:        all
+  additionals: |
+    LV vg0   swap   swap     swap         40G
+    LV vg0   tmp    /tmp     reiserfs     20G
+    LV vg0   home   /home    ext4         40G
+    LV vg0   root   /        ext4         all
+
+    SWRAID 1
+    SWRAIDLEVEL 5
+
+# we want to install this server as Docker server
+docker_host: true
+
+# it's only a backup volume, so we do not want to permanently mount it
+# # additional mountpoints have to be created
+# mountpoints:
+#   - fstype: ext4
+#     path:   /mnt/backup
+#     src:    /dev/sda
+
+...
