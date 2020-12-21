@@ -1,0 +1,4 @@
+# ignore all environments
+# (the ones added as Git subtree are NOT ignored!)
+environments/*
+!environments/README.md
