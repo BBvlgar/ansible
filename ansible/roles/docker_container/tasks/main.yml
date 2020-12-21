@@ -84,19 +84,20 @@
 - name: reduce first volume helper
   set_fact:
     volumes1: "{{ volume_helper1.results | map(attribute='ansible_facts.volvar') | list }}"
-  ignore_errors: true
+  ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # again the same thing for files:
 - name: reduce second volume helper
   set_fact:
     volumes2: "{{ volume_helper2.results | map(attribute='ansible_facts.volvar') | list }}"
-  ignore_errors: true
+  ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # now that we prepared all bind commands for our folders that should be bound,
 # we have to ensure that the folders on the host system do exist.
 - name: Create needed dirs – if they do not already exist
+  become: yes
   file:
     path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ dir.0 }}"
     state: directory
@@ -168,7 +169,7 @@
 
 # pull the currently newest image for the container rollout
 - name: Pull updated images for the container rollout
-  command: "{{ repository_url }}"
+  command: "docker pull {{ repository_url }}"
   when: ((container.pull is defined and container.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
         ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
 
@@ -199,29 +200,30 @@
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
 - name: Control Container
   docker_container:
-    image: "{{ repository_url }}"
-    name: "{{ container.name }}"
-    stop_timeout: "{{ container.stop_timeout | default(10) }}"
-    hostname: "{{ container.hostname | default(container.name) }}"
-    capabilities: "{{ container.capabilities | default([]) }}"
-    state: "{{ container.state | default( cnt_state ) }}"
-    env: "{{ container.env | default({}) }}"
-    recreate: "{{ container.recreate | default( cnt_recreate ) }}"
-    exposed: "{{ container.expose_ports | default([]) }}"
-    memory: "{{ container.memory_limit | default('0')}}"
-    log_driver: "{{ container.log_driver | default('json-file') }}"
-    log_options: "{{ container.log_options | default({}) }}"
-    networks: "{{ container.networks | default([]) }}"
-    published_ports: "{{ container.aux_ports | default([]) }}"
-    volumes: "{{  volumes1 | default([]) + volumes2 | default([]) + container.volumes | default([]) }}"
-    volumes_from: "{{ container.volumes_from | default([]) }}"
-    restart_policy: "{{ container.restart_policy | default(docker_restart_policy) }}"
-    labels: "{{ container.labels | default({}) }}"
-    user: "{{ container.user | default('') }}"
-    privileged: "{{ container.privileged | default('no') }}"
-    working_dir: "{{ container.working_dir | default('') }}"
-    command: "{{ container.command | default('') }}"
-    init: "{{ container.init | default('no') }}"
+    image:           "{{ repository_url }}"
+    name:            "{{ container.name }}"
+    capabilities:    "{{ container.capabilities   | default( [] ) }}"
+    command:         "{{ container.command        | default( '' ) }}"
+    env:             "{{ container.env            | default( {} ) }}"
+    exposed:         "{{ container.expose_ports   | default( [] ) }}"
+    healthcheck:     "{{ container.healthcheck    | default( {} ) }}"
+    hostname:        "{{ container.hostname       | default( container.name ) }}"
+    init:            "{{ container.init           | default( 'no' ) }}"
+    labels:          "{{ container.labels         | default( {} ) }}"
+    log_driver:      "{{ container.log_driver     | default( 'json-file' ) }}"
+    log_options:     "{{ container.log_options    | default( {} ) }}"
+    memory:          "{{ container.memory_limit   | default( '0' )}}"
+    networks:        "{{ container.networks       | default( [] ) }}"
+    privileged:      "{{ container.privileged     | default( 'no' ) }}"
+    published_ports: "{{ container.aux_ports      | default( [] ) }}"
+    recreate:        "{{ container.recreate       | default( cnt_recreate ) }}"
+    restart_policy:  "{{ container.restart_policy | default( docker_restart_policy ) }}"
+    state:           "{{ container.state          | default( cnt_state ) }}"
+    stop_timeout:    "{{ container.stop_timeout   | default( 10 ) }}"
+    user:            "{{ container.user           | default( '' ) }}"
+    volumes_from:    "{{ container.volumes_from   | default( [] ) }}"
+    volumes:         "{{ volumes1                 | default( [] )   +   volumes2 | default( [] )   +   container.volumes | default( [] ) }}"
+    working_dir:     "{{ container.working_dir    | default( '' ) }}"
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # previous tasks / roles could prepare some (templated) files that have to be

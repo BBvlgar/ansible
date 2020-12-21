@@ -1,0 +1,50 @@
+---
+
+log:
+  level: "{{ loglevel }}"
+  filePath: '/var/log/traefik/traefik.log'
+
+accessLog:
+  filePath: '/var/log/traefik/access.log'
+
+entryPoints:
+  web:
+    address: ':80'
+{% if insecureOnly is not defined or not insecureOnly %}
+  websecure:
+    address: ':443'
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      ### adjust your mail address!
+      email: '{{ acme_mail }}'
+      storage: '/acme/acme.json'
+      {% if tlsChallenge is defined and tlsChallenge %}tlsChallenge: {}
+      {% else %}dnsChallenge:
+        ### configure along documentation https://docs.traefik.io/https/acme/#dnschallenge
+        ### https://go-acme.github.io/lego/dns/
+        provider: {{ dns_provider }}
+        delayBeforeCheck: 0
+      {% endif %}
+{% endif %}
+
+api: {}
+
+providers:
+  docker:
+    network: "{{ traefik_network }}"
+    watch: true
+    exposedByDefault: false
+    {# defaultRule: middlewares? #}
+
+  file:
+    watch: false
+    filename: '/etc/traefik/provider.yaml'
+{% if pilot_token is defined %}
+
+pilot:
+    token: "{{ pilot_token }}"
+{% endif %}
+
+...
