@@ -1,16 +1,7 @@
 ###
-## only sync specific environments
+## ignore testing
 ###
-environments/*
-# productive env
-!environments/production/
-!environments/production/*
-# hosting env
-!environments/hosting/
-!environments/hosting/*
-# testing env
-!environments/testing/
-!environments/testing/*
+testing
 
 ###
 ## globally ignore
