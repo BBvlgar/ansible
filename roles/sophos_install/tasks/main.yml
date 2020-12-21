@@ -64,3 +64,5 @@
     - sophos_av_url is defined
     - sophos_av_url | length > 0
   become: yes
+
+...
