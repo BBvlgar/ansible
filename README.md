@@ -4,22 +4,17 @@ Infrastructure as Code repository – a basic repository to build custom environ
 
 ## Thoughts
 
-The base structure of this repository consists out of 17 (nested) directories,
-that allow us to structure our infrastructure as code.
+This Ansible repository holds everything to run – but no sensitive data. This
+core repository is meant to be imported into a combination / working repository,
+e.g. as Git subtree (see below).
+
+The base structure of this repository consists out of nested directories and some
+symlinks, that allow us to structure our infrastructure as code.
 
 ```
 .
-├── certs
-├── environments
-│   ├── hosting
-│   │   ├── group_vars
-│   │   └── host_vars
-│   ├── production
-│   │   ├── group_vars
-│   │   └── host_vars
-│   └── testing
-│       ├── group_vars
-│       └── host_vars
+├── certs          # symlink to ../certs – to be provisioned within embedding repo
+├── environments   # symlink to ../environments – to be provisioned within embedding repo
 ├── playbooks
 │   ├── apps
 │   ├── server
@@ -27,7 +22,6 @@ that allow us to structure our infrastructure as code.
 ├── roles
 └── templates
 
-17 directories
 ```
 
 Where `certs` as storage for server certificates and `templates` as storage for
@@ -56,7 +50,19 @@ playbooks and roles since there is a policy of overriding (autoloaded) defaults:
 
 See also [the ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 
-### The `inventory.yml` file
+### The subtree construct
+
+For the ability to devide Ansible code from sensitive data like environments, we
+decided to use Git subtree. Therefor, we have multiple repositories:
+
+* This `ansible` repo for the Ansible files
+* `env_x` repositories for each environment
+* A `combined` repo, that combines all these repos into one
+
+The `combined` repo also holds the `certs` folder mentioned before.
+
+
+### The `inventory.yml` file (or simply `inventory`)
 
 Since there are situations, where we do not define DNS entries of hosts, we
 define an aditional variable within our inventory file, the `alias_fqdn` on
