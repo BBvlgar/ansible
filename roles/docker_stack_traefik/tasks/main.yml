@@ -1,0 +1,71 @@
+---
+
+# Tell user, which stack will be worked on
+- debug:
+    msg: "Now container stack *{{ stack.name | mandatory }}* will be worked on:"
+
+- name: "prepare configuration paths"
+  set_fact:
+    traefik_templates:
+      - "traefik.yaml"
+      - "provider.yaml"
+    cnt_cnf_tpl_path: "{{ docker_home }}/{{ stack.name }}/"
+
+- name:   "prepare Træfik config"
+  become: yes
+  block:
+
+    - name:   "Create needed dirs – if they do not already exist"
+      file:
+        path: "{{ cnt_cnf_tpl_path }}config/"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure Træfik configs are placed well"
+      template:
+        src: "{{ item }}.j2"
+        dest: "{{ cnt_cnf_tpl_path }}config/{{ item|basename }}"
+      with_items: "{{ traefik_templates }}"
+
+- name:   "prepare ACME"
+  become: yes
+  block:
+
+    - name:
+      set_fact:
+        acme_path: "{{ cnt_cnf_tpl_path }}acme/"
+        acme_file: "acme.json"
+
+    - name:   "Create needed dirs – if they do not already exist"
+      file:
+        path: "{{ acme_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: check if ACME file exists
+      stat:
+        path: "{{ acme_path }}{{ acme_file }}"
+      register: acme_file_stat
+
+    - name:   "Create needed dirs – if they do not already exist"
+      file:
+        path: "{{ acme_path }}{{ acme_file }}"
+        state: file
+        mode: "0600"
+      when: acme_file_stat.stat.exists == true
+
+    - name: "Ensure Træfik configs are placed well"
+      command: "echo \"{}\" > {{ acme_path }}{{ acme_file }}"
+      when: acme_file_stat.stat.exists == true
+
+  when: ( insecureOnly is not defined or not insecureOnly )
+
+- name: "run Træfik container"
+  import_role:
+    name: docker_stack
+  vars:
+    stack: stack
+    check_traefik: no
+    debug: yes
+
+...
