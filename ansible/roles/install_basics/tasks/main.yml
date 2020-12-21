@@ -15,6 +15,7 @@
 
 - name: ensure usage of Python3 on host
   become: yes
+  ignore_errors: yes
   block:
 
     - name: check default version of Python
