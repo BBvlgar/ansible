@@ -1,0 +1,30 @@
+---
+#
+# MAIN FILE to create a new USER ACCOUNT in ITE systems
+#
+
+- name: Debug - User we are working on
+  debug:
+    msg: "{{ user }}"
+
+# TODO How do you mount ecryptfs via ssh?
+- name: Install, configure, and start Apache
+  block:
+  - name: Generate SSL certificate
+    include: ssl.yml
+    delegate_to: pki.muc
+    become: true
+
+  - name: Upload certificate to LDAP
+    include: ssl_ldap.yml
+
+  - name: Upload SSL certificate
+    include: ssl_upload.yml
+    delegate_to: dockerhost
+    become: true
+
+  - name: Cleanup temp files
+    include: cleanup.yml
+  ignore_errors: yes
+
+

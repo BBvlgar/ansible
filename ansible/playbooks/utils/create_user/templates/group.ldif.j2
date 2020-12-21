@@ -1,0 +1,5 @@
+
+dn: cn={{ item.key }},ou=groups,dc=it-economics,dc=de
+changetype: modify
+add: member
+member: uid={{ user.registration.user.username }},ou=people,dc=it-economics,dc=de

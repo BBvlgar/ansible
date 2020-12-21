@@ -1,0 +1,48 @@
+    # Import Groups
+
+    - name: Create temporary folder
+      command: mktemp -d
+      register: tempDir
+
+    - name: Create temporary file
+      command: mktemp
+      register: tempFile
+
+    - set_fact:
+        tempDir: "{{ tempDir.stdout }}"
+        tempFile: "{{ tempFile.stdout }}"
+
+    - name: Create group ldif's (loop over user.registration.user.lvl array) and save them in temp folder for Level
+      template: src=../templates/group.ldif.j2 dest="{{ tempDir }}/{{ item.key }}.ldif"
+      with_dict: "{{ vars[user.registration.user.lvl|lower|regex_replace(' ','_')] }}"
+
+    # We skip adding Freelancers to the location group since only internal employees should be in this group
+    - name: Create ldif for location and save them in temp folder
+      template: src=../templates/group.ldif.j2 dest="{{ tempDir }}/{{ item.key }}.ldif"
+      with_dict: "{{ vars[user.registration.user.location|lower|regex_replace(' ','')] }}"
+      when: user.registration.user.lvl != 'Extern - Freelancer'  and user.registration.user.lvl != 'Extern - Subcontractor'
+
+    - name: Assemble ldifs
+      assemble: src={{ tempDir }} dest="{{ tempFile }}.ldif"
+
+    # Updating works with "-c" = skip errors
+    - name: Import ldif file
+      command: >
+        ldapadd -c -x
+        -D "uid={{ admin_user }},ou=people,dc=it-economics,dc=de"
+        -w {{ admin_password }}
+        -H {{ ldap_url }}
+        -f {{ tempFile }}.ldif
+      ignore_errors: true
+      register: group_import
+      no_log: "{{ no_log|default('true') }}"
+
+    - name: Ensure ldif file is removed
+      file: path={{ tempFile }}.ldif state=absent
+
+    - name: Ensure group fragments are removed
+      file: path={{ tempDir }} state=absent
+
+    - name: Fail when group_import exit code is NOT 20 (already exists) and NOT 0
+      fail: msg="Group import exited with status = "
+      when: ( group_import.rc != 20 ) and ( group_import.rc != 0 )

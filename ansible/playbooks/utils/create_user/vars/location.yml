@@ -1,0 +1,20 @@
+---
+# Must be a dictionary since the same logic is used for e_level
+muenchen:
+  ? loc_muenchen
+sofia:
+  ? loc_sofia
+frankfurt:
+  ? loc_frankfurt
+duesseldorf:
+  ? loc_duesseldorf
+karlsruhe:
+  ? loc_karlsruhe
+muenster:
+  ? loc_muenster
+hamburg:
+  ? loc_hamburg
+bonn:
+  ? loc_bonn
+noida:
+  ? loc_noida

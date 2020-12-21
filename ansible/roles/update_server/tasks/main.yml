@@ -1,0 +1,52 @@
+---
+
+- name: perform updates
+  block:
+
+    - name: Apt Update
+      apt:
+        update-cache: yes
+
+    - name: Aptitude must be present
+      apt:
+        name: aptitude
+
+    - name: Check for upgradeable
+      apt:
+        upgrade: 'yes'
+      check_mode: yes
+      register: upgradeable
+
+    - name: Show me
+      debug:
+        msg: "{{ upgradeable.stdout_lines }}"
+
+    - name: Waiting for continue
+      pause:
+        prompt: "Should we continue? (yes/no - default: yes)"
+      register: continue_upgrade
+      when: not override_user | bool
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: 'yes'
+        state: latest
+      when: override_user | bool or
+            continue_upgrade.user_input is defined and (
+              continue_upgrade.user_input == '' or
+              continue_upgrade.user_input | bool
+            )
+
+  become: yes
+
+# # command to install updates and clean up kernel images, etc.
+#
+# sudo apt update && \
+# sudo apt upgrade -y && \
+# sudo apt autoremove -y && \
+# sudo apt-get purge $(dpkg -l linux-{image,headers}-"[0-9]*" | \
+#   awk '/ii/{print $2}' | \
+#   grep -ve "$(uname -r | \
+#   sed -r 's/-[a-z]+//')")
+
+...

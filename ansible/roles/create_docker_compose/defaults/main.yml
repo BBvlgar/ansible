@@ -1,0 +1,10 @@
+---
+
+composerFilePath: "/Users/cwalonka/devops/docker-compose"
+remote: false
+debug: false
+DOCKER_PROXYNET: proxy
+DOCKER_DBNET: database
+DOCKER_WORLDNET: publicwww
+traefik_network: proxy
+...

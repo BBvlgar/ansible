@@ -1,0 +1,50 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+  become: true
+  vars:
+    env: testing
+    noMailAccount:
+      - "12700"
+      - "11403"
+      - "11402"
+
+  tasks:
+    - block:
+      - name: Start selenium container
+        docker_container:
+          name: selenium_tmmittelstand
+          image: selenium/standalone-firefox:83.0
+          volumes:
+            - "/dev/shm:/dev/shm"
+          ports:
+            - "4445:4444"
+            - "5901:5900"
+
+      - name: Take a short break
+        pause:
+          seconds: 30
+
+      - name: Copy generation script
+        copy: src=../files/tm-mittelstand_create-user.py dest=/tmp/tm-mittelstand_create-user.py mode=755
+
+      - name: Create User via tm-mittelstand
+        shell: /tmp/tm-mittelstand_create-user.py {{ user.registration.user.name }} {{ user.registration.user.firstname }} {{ user.registration.user.mail }} {{ user.registration.user.password }} {{ admin_user }} {{ tmmittelstand_password }}
+
+      - name: Remove selenium container
+        docker_container:
+          name: selenium_tmmittelstand
+          state: absent
+
+      - name: Copy mail to server
+        template: src=../templates/hornetsecurity_mail.j2 dest=/tmp/hornetsecurity_mail
+
+      - name: Send mail to tm mittelstand
+        shell: cat /tmp/hornetsecurity_mail | mail -s "Bitte User in Hornetsecurity hinzufügen" -c admins@it-economics.de kundencenter@tm-mittelstand.de
+
+      - name: Make sure welcome mail is deleted
+        file: path=/tmp/hornetsecurity_mail state=absent
+
+      when: user.registration.contract.employerId not in noMailAccount
+      ignore_errors: yes
+

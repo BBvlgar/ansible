@@ -1,0 +1,5 @@
+- name: Install nagios_client
+  hosts: server_definitions
+  become: true
+  roles:
+    - nagios_client

@@ -1,0 +1,76 @@
+#!/bin/bash
+# Return codes
+OK=0
+WARN=1
+CRIT=2
+UNK=3
+
+WARN_THRES=50
+CRIT_THRES=75
+
+WEAR_WARN_THRES=1000
+WEAR_CRIT_THRES=1500
+
+OUTPUT=""
+
+smart="sudo /usr/sbin/smartctl -a"
+
+main() {
+	ct=0
+	# for every device in /dev/sd
+	for i in /dev/sd? ; do
+		wear[ct]=$($smart $i | grep Wear_Leveling_Count | awk '{print $NF}')
+		usedBlocks[ct]=$($smart $i | grep Used_Rsvd_Blk_Cnt_Tot | awk '{print $NF}')
+		unusedBlocks[ct]=$($smart $i | grep Unused_Rsvd_Blk_Cnt_Tot | awk '{print $NF}')
+		# Calculate used / unused blocks percentage
+		if [ ${usedBlocks[ct]} -gt 0 ] ; then
+			blocksRatio[ct]=$(echo "scale=10 ; ${usedBlocks[ct]} / ${unusedBlocks[ct]} * 100" | bc)
+		else
+			blocksRatio[ct]=0
+		fi
+		OUTPUT+="$i wear: ${wear[ct]} usedblocks: ${blocksRatio[ct]}% ;;"
+
+		# If used blocks percentage is smaller than 50 & wear < 1000
+	        if [[ ${wear[ct]} -lt $WEAR_WARN_THRES ]] && [[ ${blocksRatio[ct]} -lt $WARN_THRES ]] ; then
+	                status[ct]=$OK
+	        fi
+
+	        # If used blocks percentage is between 50 & 75 & 1000 < wear < 1500
+	        if [[ ${wear[ct]} -ge $WEAR_WARN_THRES && ${wear[ct]} -lt $WEAR_CRIT_THRES ]] || [[ ${blocksRatio[ct]} -ge $WARN_THRES && ${blocksRatio[ct]} -lt $CRIT_THRES ]] ; then
+	                status[ct]=$WARN
+	        fi
+
+	        # If wear or used blocks percentage is bigger than 75
+	        if [[ ${wear[ct]} -ge $WEAR_CRIT_THRES ]] || [[ ${blocksRatio[ct]} -ge $CRIT_THRES ]] ; then
+	                status[ct]=$CRIT
+	        fi
+
+		# increment counter
+		ct+=1
+	done
+
+	# Debug output
+	if [[ -z $1 ]] && [[ $1 = "debug" ]] ; then
+		echo Wear Levels: ${wear[@]}
+		echo Used Blocks: ${usedBlocks[@]}
+		echo Unused Blocks: ${unusedBlocks[@]}
+		echo Blocks Ratio: ${blocksRatio[@]}
+	fi
+
+	return $(echo ${status[@]} | tr ' ' '\n' |sort -nr | head -n 1)
+}
+
+case $1 in 
+	"debug")
+		main "debug"
+		status=$?
+		echo $OUTPUT
+		exit $status
+	;;
+	*)
+		main
+		status=$?
+		echo $OUTPUT
+		exit $status
+	;;
+esac

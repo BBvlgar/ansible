@@ -1,0 +1,58 @@
+###### Delete group entries
+  - name: Create temporary folder
+    command: mktemp -d
+    register: tempDir
+
+  - name: Create temporary file
+    command: mktemp
+    register: tempFile
+
+  - set_fact:
+      tempDir: "{{ tempDir.stdout }}"
+      tempFile: "{{ tempFile.stdout }}"
+
+  - name: Get groups of current user
+    shell: >
+      ldapsearch -x 
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
+      -w "{{ hostvars.get('localhost').get('admin_password') }}" 
+      -H "{{ hostvars.get('localhost').get('ldap_url') }}" 
+      -b "ou=groups,dc=it-economics,dc=de" 
+      member="uid={{ hostvars.get('localhost').get('username') }},ou=people,dc=it-economics,dc=de" 
+      | grep "dn: " | awk '{print $2}' 
+      | sed '/^\s*$/d'
+      | tr '\n' ';'
+      | sed 's/\;$//'
+      | grep "cn="
+      # the last grep makes sure the group array is NOT empty! 
+    register: ldap_groups
+    ignore_errors: true
+    no_log: "{{ no_log|default('true') }}"
+
+  - name: Create group ldif's and save them in temp folder for Level
+    template: src=../templates/group.ldif.j2 dest="{{ tempDir }}/{{ item }}.ldif"
+    with_items: "{{ ldap_groups.stdout.split(';') }}"
+    when: not ldap_groups is failed
+
+  - name: Assemble ldifs
+    assemble: src={{ tempDir }} dest="{{ tempFile }}.ldif"
+    when: not ldap_groups is failed
+
+  # Updating works with "-c" = skip errors
+  - name: Import ldif file
+    command: >
+      ldapmodify -c -x 
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
+      -w {{ hostvars.get('localhost').get('admin_password') }} 
+      -H {{ hostvars.get('localhost').get('ldap_url') }} 
+      -f {{ tempFile }}.ldif
+    ignore_errors: true
+    register: group_import
+    no_log: "{{ no_log|default('true') }}"
+    when: not ldap_groups is failed
+
+  - name: Ensure ldif file is removed
+    file: path={{ tempFile }}.ldif state=absent
+
+  - name: Ensure group fragments are removed
+    file: path={{ tempDir }} state=absent

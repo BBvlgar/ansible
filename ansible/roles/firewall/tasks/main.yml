@@ -1,0 +1,44 @@
+---
+
+- name: merge global_ufw_rules and host_ufw_rules into ufw_rules
+  set_fact:
+    ufw_rules: "{{ global_ufw_rules | default([]) }} + {{ host_ufw_rules | default([]) }}"
+
+- name: root block
+  block:
+
+    - name: Install ufw as firewall
+      package:
+        name: "{{ item.name }}"
+        state: "{{ item.state | default( package_state ) }}"
+      with_items: "{{ install_packages }}"
+      when: only_install_ufw is not defined or only_install_ufw | bool
+
+    - name: Configure ufw defaults
+      ufw:
+        direction: "{{ item.direction }}"
+        policy:    "{{ item.policy }}"
+      with_items: "{{ ufw_defaults }}"
+      when: only_install_ufw is not defined or only_install_ufw | bool
+
+    - name: Configure ufw rules
+      ufw:
+        rule:  "{{ item.rule }}"
+        port:  "{{ item.port }}"
+        proto: "{{ item.proto | default('tcp') }}"
+      with_items: "{{ ufw_rules }}"
+      when: only_install_ufw is not defined or only_install_ufw | bool
+
+    - name: restart ufw
+      service:
+        name:  ufw
+        state: restarted
+      when: ( only_install_ufw is defined and ( restart_ufw is not defined or restart_ufw | bool ) ) or only_install_ufw is not defined and restart_ufw is not defined
+
+    - name: enable ufw
+      command: ufw --force enable
+      when: ( only_install_ufw is defined and ( enable_ufw is not defined or enable_ufw | bool ) ) or only_install_ufw is not defined and enable_ufw is not defined
+
+  become: true
+
+...

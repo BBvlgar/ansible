@@ -1,0 +1,32 @@
+---
+#
+#
+# MAIN FILE to delete a USER ACCOUNT from ITE systems
+#
+
+# Ensure dependencies are installed on controll node
+#- import_playbook: dependencies.yml
+
+# Fetch data from ticket system
+- import_playbook: gather_data.yml
+
+- name: Confirmation
+  hosts: localhost
+  tasks:
+    - debug: msg="Please use the following password for the email account {{hostvars.get('localhost').get('email') }} {{ hostvars.get('localhost').get('email_password') }}"
+    - pause: prompt="Deleting user __ {{hostvars.get('localhost').get('username') }} __ from system __ {{ hostvars.get('localhost').get('ldap_url') }} __, do you want to continue?"
+
+- name: Disable 2fa and set Office password
+  import_playbook: remove_2fa_and_set_password.yml
+
+- name: disable achievo account
+  import_playbook: achievo.yml
+
+# Delete ldap account
+- import_playbook: ldap.yml
+
+# Revoke SSL certificate
+- import_playbook: ssl.yml
+
+# Backup emails
+- import_playbook: email.yml

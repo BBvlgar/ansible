@@ -1,0 +1,28 @@
+###
+## only sync specific environments
+###
+environments/*
+# productive env
+!environments/production/
+!environments/production/*
+# hosting env
+!environments/hosting/
+!environments/hosting/*
+# testing env
+!environments/testing/
+!environments/testing/*
+
+###
+## globally ignore
+###
+*.retry
+.logintask
+.directory
+.save
+.vagrant
+.DS_Store
+__pycache__
+screenshot_login.png
+screenshot_usercreate.png
+screenshot_usercreated.png
+docker-compose/*

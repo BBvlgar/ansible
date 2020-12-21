@@ -1,0 +1,12 @@
+docker_tag: master
+docker_home: /srv
+docker_restart_policy: always
+
+database_network: database
+traefik_network: proxy
+
+pull: missing # "always" would pull newest image
+cnt_state: started
+cnt_recreate: no
+
+# docker_root: /var/lib/docker

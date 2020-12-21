@@ -1,0 +1,21 @@
+---
+
+- name: Copy generation script
+  copy: src=../files/generate dest=/tmp/generate mode=755
+
+- name: Generate SSL certificate
+  shell: /tmp/generate "internal" {{ user.mail }}  "{{ user.cn }}" {{ ca_password }} {{ p12_password }} renew
+
+- name: Delete generation script
+  file: path=/tmp/generate state=absent
+
+- name: Fetch files from pki
+  fetch: src=/home/sysadmin/Private/it-economics_CA/internal/{{ user.mail }}/it-economics_{{ user.mail }}.{{ ending }} dest=/tmp/it-economics_{{ user.mail }}.{{ ending }} flat=yes
+  with_items:
+    - p12
+    - cer
+    - crt
+  loop_control:
+    loop_var: ending
+
+...

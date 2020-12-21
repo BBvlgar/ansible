@@ -1,0 +1,11 @@
+---
+
+- hosts: updatableServers
+
+  tasks:
+
+    - name: 'update Server'
+      include_role:
+        name: update_server
+
+...

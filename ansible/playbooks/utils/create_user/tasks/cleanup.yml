@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Cleanup files from localhost
+      file: path=/tmp/it-economics_{{ hostvars.get('localhost').get('user').registration.user.mail }}.{{ item }} state=absent
+      with_items:
+        - p12
+        - cer
