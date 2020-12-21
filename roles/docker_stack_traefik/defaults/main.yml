@@ -1,0 +1,37 @@
+---
+
+loglevel:     "ERROR"
+insecureOnly: no
+
+tlsChallenge: no
+### configure along documentation https://docs.traefik.io/https/acme/#dnschallenge
+### https://go-acme.github.io/lego/dns/
+###
+### e.g.:
+# dns_provider: "cloudflare"
+
+docker_home: "/data/docker"
+
+traefik_network:  "{{ '{{' }} traefik_network {{ '}}' }}"
+
+traefik_users:
+  admin: "$2y$05$DG5qSRWLCZfYX6BdHJ7rR.1kUCDA.Gc6tIyRiZ.HNuBnE8aIyKA3q"
+
+stack:
+  name: "Træfik"
+  containers:
+    - name: traefik
+      traefik: yes
+      image: traefik
+      env: "{{ traefik_env | default( {} ) }}"
+      mountfiles_no_backup:
+        - [[ "config/traefik.yaml", "/etc/traefik/traefik.yaml" ]]
+        - [[ "config/provider.yaml", "/etc/traefik/provider.yaml" ]]
+      directories:
+        - [[ "acme", "/acme" ]]
+      directories_no_backup:
+        - [[ "logs", "/var/log/traefik" ]]
+      fqdn:
+        - "{{ traefik_fqdn | default( 'traefik' + inventory_hostname ) }}"
+
+...

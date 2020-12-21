@@ -1,7 +1,11 @@
-[mysqld]
-{% if mysqld is not none %}
-{% for key, value in mysqld.items() %}
+{% if cnf is not none %}
+{% for confkey, confval in cnf.items() %}
+[{{ confkey }}]
+{% if confval is not none %}
+{% for key, value in confval.items() %}
 {{ key }}{% if value is not none %}={{ value }}{% endif %}
 
+{% endfor %}
+{% endif %}
 {% endfor %}
 {% endif %}

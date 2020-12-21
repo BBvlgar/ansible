@@ -17,8 +17,8 @@ DNS settings are controlled by the separate `dns` role.
 1. The main application isn't meant to be reachable directly from the public
 WorldWideWeb, it is meant to speak to the public through a reverse proxy. We
 chose [Træfik](https://traefik.io/) for this purpose.  
-Træfik is managed through the separate `docker_traefik` role since this role
-has to rely on it.
+Træfik is managed through the separate `docker_stack_traefik` role since this
+role has to rely on it.
 2. There is always one container hosting the main application. This could be
 a `Jira`, `Confluence` or even an `Apache` hosting webapps like `LimeSurvey`.
 3. For allowing *easy* backups without going through *every single* Docker
@@ -29,12 +29,17 @@ dictionary structure provided to this role.
 There are two additionals that are predefined with this role:
     * a `mysql` container, that is based on the official `mysql:5.6` image and
     configured like we need it in regular setups.  
-    It can be toggled by setting `stack.mysql` to `true`.
+    It can be toggled by setting `stack.mysql` to `true`.
     * a `postgres` container, that is based on the official `postgres:9.6`
     image and is configured along our regular needs.  
-    It can be toggled by setting `stack.postgres` to `true`.
+    It can be toggled by setting `stack.postgres` to `true`.
 
 ## Variables used in this role
+
+### Binds and Mounts
+
+* `directories`, `mountfiles` and `volumes` exist for each container.
+* if the item should not be prepared for Backup within the data container, the keys should be appended with `_no_backup`, so `directories` become `directories_no_backup`.
 
 ### globally defined variables
 
@@ -67,12 +72,17 @@ belonging to the stack it'll be the same schema.
 `false` (default: `false`)  
 * `stack.postgres` toggles the creation of a `Postgres` container via values
 `true` or `false` (default: `false`)
-* `stack.mysql_database` defines the MySQL database one wants to work with.
-* `stack.mysql_user` defines the MySQL user to work with.
-* `stack.mysql_pw` defines the MySQL password for the dedicated user above.
-* `stack.mysql_root_pw` defines the password for MySQL root user.
+* `stack.db_name` defines the MySQL / PostgreSQL database one wants to work with.
+* `stack.db_user` defines the MySQL / PostgreSQL user to work with.
+* `stack.db_pw` defines the MySQL / PostgreSQL password for the dedicated user above.
+* `stack.db_root_pw` defines the password for MySQL root user (unused with PostgreSQL).
+
+If you want to two or all three of MySQL, MariaDB or PostgreSQL with different settings, you can replace `db_` within the variables above by `mysql_`, `mdb_` or `pg_` – so i.e. `stack.db_name` gets `stack.pg_name` with PostgreSQL.
 
 ## Dependencies
+
+* `docker_container` role since it is used to deploy each single container
+* `docker_stack_traefik` role since that deploys the Træfik container
 
 ## Example Playbook
 
