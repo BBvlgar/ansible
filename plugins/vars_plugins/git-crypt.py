@@ -1,5 +1,6 @@
 import base64
 import os, glob, subprocess
+import tempfile
 from subprocess import PIPE, DEVNULL
 
 from ansible.plugins.vars import BaseVarsPlugin
@@ -49,6 +50,8 @@ def checkGitCrypt():
             unlockGitCrypt()
 
     os.chdir( cwd )
+    if keyFileObj is not None:
+        keyFileObj.close()
 
 ###
 ## function to check if the current repo is unlocked (return True) or not (return False)
@@ -78,7 +81,7 @@ def unlockGitCrypt():
         print( 'GPG Key not available – trying to use symmetric key' )
         try:
             _base64_decode_symmetric_key()
-            subprocess.run( [ gcp, 'unlock', '$GITCRYPT_KEY_PATH' ], check=True, text=True, stdout=PIPE )
+            subprocess.run( [ gcp, 'unlock', gitcryptKeyPath ], check=True, text=True, stdout=PIPE )
             print( 'Unlocking with symmetric key successfull' )
             success = True
         except subprocess.CalledProcessError as e:
@@ -111,12 +114,19 @@ def whichGitCrypt():
 ###
 ## function that retrieves the symmetric key for git-crypt
 ###
+gitcryptKeyPath = ''
+keyFileObj = None
 def _base64_decode_symmetric_key():
-    with open(os.environ['GITCRYPT_KEY_PATH'], "rb+") as file:
-        byte_key = base64.b64decode(file.read())
-        file.seek(0)
-        file.write(byte_key)
-        file.truncate()
+    global gitcryptKeyPath
+    global keyFileObj
+    if gitcryptKeyPath == '':
+        keyFileObj = tempfile.NamedTemporaryFile()
+        gitcryptKeyPath = keyFileObj.name
+        with open(os.environ['GITCRYPT_KEY_PATH'], "r") as b64:
+            byte_key = base64.b64decode(b64.read())
+            keyFileObj.seek(0)
+            keyFileObj.write(byte_key)
+            keyFileObj.truncate()
 
 ###
 ## necessary for being a var plugin
