@@ -45,3 +45,7 @@ docker_stacks:
 
 ...
 ```
+
+For only let run specific stacks, provide the variable `stacks` as comma separated list of stack names – no usage of whitespaces! So `-e stacks="lorem,ipsum"` is the correct way, but `-e stacks="lorem, ipsum"` would be wrong / would fail.
+
+For running all stacks except a few, provide the variable `except_stacks` defined the equivalent way like `stacks` above.
