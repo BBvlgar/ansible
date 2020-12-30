@@ -25,3 +25,9 @@ screenshot_login.png
 screenshot_usercreate.png
 screenshot_usercreated.png
 docker-compose/*
+
+###
+## this repo should not contain secret data
+## so we'll ignore .git-crypt
+###
+.git-crypt
