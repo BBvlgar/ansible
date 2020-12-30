@@ -23,3 +23,9 @@ playbooks/*
 __pycache__
 docker-compose/*
 !docker-compose/.gitkeep
+
+###
+## this repo should not contain secret data
+## so we'll ignore .git-crypt
+###
+.git-crypt
