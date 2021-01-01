@@ -1,8 +1,11 @@
 ---
 
 # Tell user, which stack will be worked on
+- set_fact:
+    stack: "{{ traefik_stack | preparestack }}"
+
 - debug:
-    msg: "Now container stack *{{ stack.name | mandatory }}* will be worked on:"
+    msg: "Now container stack *{{ stack.name | mandatory }}* will be prepared:"
 
 - name: "prepare configuration paths"
   set_fact:

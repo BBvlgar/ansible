@@ -17,7 +17,7 @@ traefik_network:  "{{ '{{' }} traefik_network {{ '}}' }}"
 traefik_users:
   admin: "$2y$05$DG5qSRWLCZfYX6BdHJ7rR.1kUCDA.Gc6tIyRiZ.HNuBnE8aIyKA3q"
 
-stack:
+traefik_stack:
   name: "Træfik"
   containers:
     - name: traefik
