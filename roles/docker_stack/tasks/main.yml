@@ -80,6 +80,8 @@
   register: continue_cnt
   when: ( debug is defined and debug )
 
+# NETWORKING has to be defined ...
+
 # finally call docker_container role for every container that has to be controlled
 - name: 'Create and manage containers for the Docker stack.'
   include_role:

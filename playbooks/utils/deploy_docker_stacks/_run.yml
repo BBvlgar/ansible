@@ -1,0 +1,20 @@
+---
+
+- set_fact:
+    containers: "{{ [] }}"
+
+- set_fact:
+    containers: "{{ containers | default( [] ) + [ cnt.value ] }}"
+  with_dict: "{{ cur_stack.value }}"
+  loop_control:
+    loop_var: cnt
+
+# build the stack dictionary
+- set_fact:
+    stack: "{{ { \"name\" : cur_stack.key, \"containers\" : containers } }}"
+
+# Now run the stack
+- debug:
+    var: stack
+
+...
