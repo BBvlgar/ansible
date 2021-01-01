@@ -5,118 +5,17 @@
 
   tasks:
 
-    # First of all, let's gather all information about the stacks to be run
+    # include_* is processed in place, import_* would be pre-processed, so it should not be used here.
+    - include_tasks: "_prepare.yml"
 
-    - name: prepare text variables
-      set_fact:
-        # these variables are used as error messages and colloration of them below
-        error_prompt:   "Should we continue anyway? (yes/no - default: yes)"
-        error_c_main:   "\n\u001b[0;1;37;41m"
-        error_c_info:   "\u001b[0;34m\n\n"
-        error_c_prompt: "\n\n\u001b[1;32m"
-        error_c_reset:  "\u001b[0m"
-        error1_main:    "The following stacks you want{% if except_stacks is defined %} {% if stacks is defined %}(not){% else %}not{% endif %}{% endif %} to run are not defined:"
-        error2_main:    "Your selection resulted in an empty set of Stacks."
-        error2_info:    "We'll use all defined stacks if you continue."
+    # Træfik check now has to take place
 
-    - name: check if only few stacks should be run
-      block:
-
-        - set_fact:
-            stack_helper:   "{{ stacks.split(',') }}"
-
-        - set_fact:
-            # When item is not an empty string and it exists as key in docker_apps, add the corresponding string to docker_stacks variable
-            # else if item is not an empty string add the nonexistent key to the list not_found for further debug.
-            # If the second case eventuates, we need to return the already defined docker_stacks variable (or an empty dictionary) or the
-            # variable will be deleted / empty ...
-            # If the first case eventuates, the same has to be done for the not_found list.
-            docker_stacks: "{% if item and docker_apps[ item ] is defined %}{{ docker_stacks | default( {} ) | combine( { item : docker_apps[ item ] } ) }}{% else %}{{ docker_stacks | default( {} ) }}{% endif %}"
-            not_found: "{% if item and docker_apps[ item ] is not defined %}{{ not_found | default( [] ) + [ item ] }}{% else %}{{ not_found | default( [] ) }}{% endif %}"
-          with_items: "{{ stack_helper }}"
-          when: stack_helper is defined and stack_helper | length > 0
-
-      when: stacks is defined
-
-    - name: check if all stacks except few should be run
-      block:
-
-        - set_fact:
-            stack_helper: "{{ except_stacks.split(',') }}"
-
-        - set_fact:
-            # Same procedure like above for finding non existent stack names
-            not_found: "{% if item and docker_apps[ item ] is not defined %}{{ not_found | default( [] ) + [ item ] }}{% else %}{{ not_found | default( [] ) }}{% endif %}"
-          with_items: "{{ stack_helper }}"
-          when: stack_helper is defined and stack_helper | length > 0
-
-        - set_fact:
-            # Now, we'll only add those stacks to docker_stack the key is not within the stack_helper list.
-            # Again, the case to delete any already set info from docker_stacks should be avoided – therefor the else track is mandatory.
-            docker_stacks: "{% if stack.key not in stack_helper %}{{ docker_stacks | default( {} ) | combine( { stack.key: stack.value } ) }}{% else %}{{ docker_stacks | default( {} ) }}{% endif %}"
-          with_dict: "{{ docker_apps }}"
-          loop_control:
-            loop_var: stack
-
-      when: except_stacks is defined
-
-    - name: Error catching if something went wrong with the user entries
-      block:
-
-        - name: Unknown stack identifiers – wait for continue
-          pause:
-            # \u001b[XXXm changes the coloring – see ANSI colors. That's used for presenting informative, userfriendly messages with our prompts
-            # The texts are defined by the variables above – so here we only concatenate them to the prompt.
-            prompt: "{{ error_c_main }}{% for n in range( ( error1_main | length ) + 2 ) %} {% endfor %}{{ error_c_reset + error_c_main + ' ' + error1_main + ' ' + error_c_reset + error_c_main }}{% for n in range( ( error1_main | length ) + 2 ) %} {% endfor %}{{ error_c_info }}{{ not_found }}{{ error_c_prompt + error_prompt + error_c_reset }}"
-          register: continue_playbook
-          when: override_user is not defined or not override_user | bool
-
-        - name: fail if user selects to abort
-          fail:
-            msg: "Okay, we'll abort the playbook."
-          when: continue_playbook.user_input is defined and (
-                  continue_playbook.user_input != '' and
-                  not continue_playbook.user_input | bool
-                )
-
-      when: not_found is defined and
-            not_found | length > 0 and
-            (
-              override_user is not defined or
-              not override_user | bool
-            )
-
-    - name: Error catching if something went wrong with the user entries
-      block:
-
-        - name: Empty stack selection – wait for continue
-          pause:
-            prompt: "{{ error_c_main }}{% for n in range( ( error2_main | length ) + 2 ) %} {% endfor %}{{ error_c_reset + error_c_main + ' ' + error2_main + ' ' + error_c_reset + error_c_main }}{% for n in range( ( error2_main | length ) + 2 ) %} {% endfor %}{{ error_c_info + error2_info + error_c_prompt + error_prompt + error_c_reset }}"
-          register: continue_playbook
-          when: override_user is not defined or not override_user | bool
-
-        - name: fail if user selects to abort
-          fail:
-            msg: "Okay, we'll abort the playbook."
-          when: continue_playbook.user_input is defined and (
-                  continue_playbook.user_input != '' and
-                  not continue_playbook.user_input | bool
-                )
-
-      when: docker_stacks is defined and
-            docker_stacks | length == 0 and
-            (
-              override_user is not defined or
-              not override_user | bool
-            )
-
-    - name: check if all stacks should be run
-      set_fact:
-        docker_stacks: "{{ docker_apps }}"
-      when: docker_stacks is not defined or
-            docker_stacks | length == 0
-
-    - debug:
-        var: docker_stacks
+    # Afer that, run all Docker Stacks
+    - name: Run Docker stacks
+      include_tasks: "_run.yml"
+      with_dict: "{{ docker_stacks }}"
+      loop_control:
+        loop_var: cur_stack
+      when: docker_stacks | length != 0
 
 ...
