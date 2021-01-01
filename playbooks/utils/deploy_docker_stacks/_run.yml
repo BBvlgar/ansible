@@ -1,17 +1,13 @@
 ---
 
-- set_fact:
-    containers: "{{ [] }}"
-
-- set_fact:
-    containers: "{{ containers | default( [] ) + [ cnt.value ] }}"
-  with_dict: "{{ cur_stack.value }}"
-  loop_control:
-    loop_var: cnt
-
 # build the stack dictionary
 - set_fact:
-    stack: "{{ { \"name\" : cur_stack.key, \"containers\" : containers } }}"
+    stack: "{{ { \"name\" : cur_stack.key } | combine( cur_stack.value ) }}"
+  when: "'name' not in cur_stack.value"
+
+- set_fact:
+    stack: "{{ cur_stack.value }}"
+  when: "'name' in cur_stack.value"
 
 # Now run the stack
 - debug:
