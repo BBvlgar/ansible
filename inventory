@@ -52,6 +52,10 @@ bamboo-server               ansible_port=60022           ansible_host=bamboo.it-
 bamboo-builder              ansible_port=60022           ansible_host=bamboo-builder.it-economics.de
 # training                   ansible_port=60022            ansible_host=
 bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
+meet.it-economics.de        ansible_port=60022           ansible_host=meet.it-economics.de
+office.it-economics.de      ansible_port=60022           ansible_host=office.it-economics.de
+
+
 
 ###
 ## AWS Servers (intern)
