@@ -23,17 +23,11 @@
   include_tasks: add_postgres.yml
   when: ( workstack.postgres is defined and workstack.postgres )
 
-- debug:
-    var: workstack.containers
-
 - name: 'combine all containers and the mainapplication'
   set_fact:
     ## ToDo – Main Application and real additional containers
     # stackitems: "{{ containers + [ mainapplication ] }}"
     stackitems: "{{ containers + stack.containers }}"
-
-- debug:
-    var: stackitems
 
 # the data container collects all mounted data (bind mounts and volumes)
 # and therefor eases up the backup process
@@ -51,24 +45,6 @@
     stackitems: "{{ ( stackitems + [ datacontainer ] ) | unifyVolumes | ensurePullRun | prepareContainerNames ( stack ) | prepareSharedHome ( workstack.name ) }}"
     traefik_state: "{{ stackitems | traefikState }}"
 
-- name: Do Træfik things
-  block:
-
-    - name: 'ensure Træfik running on host'
-      import_role:
-        name: docker_stack_traefik
-      when: ( check_traefik is not defined or check_traefik )
-
-    - name: do not run Træfik within upcomming steps
-      set_fact:
-        check_traefik: no
-
-    - name: 'prepare Træfik labels for stack containers'
-      set_fact:
-        stackitems: "{{ stackitems | prepareTraefik }}"
-
-  when: traefik_state
-
 - name: 'DEBUG: Print all stack items to be run'
   debug:
     msg: '{{ stackitems }}'
@@ -79,6 +55,14 @@
     prompt: "Should we continue? (yes/no - default: yes)"
   register: continue_cnt
   when: ( debug is defined and debug )
+
+- name: 'Fail if user skipps'
+  fail:
+    msg: 'User aborted the run'
+  when: debug is defined and
+        debug and
+        continue_cnt.user_input is defined and
+        not ( continue_cnt.user_input | bool )
 
 # NETWORKING has to be defined ...
 
