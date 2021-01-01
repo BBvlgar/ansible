@@ -30,9 +30,9 @@ If the central repositories changed – for example by third-party contribution 
 
 ```sh
 git fetch --all
-git subtree pull --prefix ansible ansible master --squash
-git subtree pull --prefix environments/production env_production --squash
-git subtree pull --prefix environments/hosting env_hosting master --squash
+git subtree pull --prefix ansible ansible master
+git subtree pull --prefix environments/production env_production master
+git subtree pull --prefix environments/hosting env_hosting master
 ```
 
 ### merge back into dedicated repositories
@@ -40,7 +40,7 @@ git subtree pull --prefix environments/hosting env_hosting master --squash
 When changes are finalized within the working repository, they should also be regularly merged back into the dedicated repositories. That can be done by these comments:
 
 ```sh
-git subtree push --prefix=environments/hosting env_hosting master
-git subtree push --prefix=environments/production env_production master
-git subtree push --prefix=ansible ansible master
+git subtree push --prefix=environments/hosting env_hosting master --squash
+git subtree push --prefix=environments/production env_production master --squash
+git subtree push --prefix=ansible ansible master --squash
 ```
