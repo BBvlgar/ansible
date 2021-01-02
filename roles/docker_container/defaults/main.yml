@@ -1,16 +1,44 @@
 ---
 
-docker_tag: master
-docker_home: /srv
-docker_restart_policy: always
+docker_tag:            master
+docker_home:           "/data/docker"
+docker_restart_policy: unless-stopped
 
 database_network: database
-traefik_network: proxy
+traefik_network:  proxy
 
-pull: missing # "always" would pull newest image
-cnt_state: started
+cnt_pull:     missing # "always" would pull newest image
+cnt_state:    started
 cnt_recreate: no
 
-# docker_root: /var/lib/docker
+# Label-definition for containers using Træfik
+traefik_rule: "Host(`{{ item | default ( container.fqdn  | default ('')) }}`)"
+
+traefik_auth:
+  key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.middlewares"
+  value: "auth@file"
+
+traefik_labels:
+  default:
+    - key:   "traefik.enable"
+      value: "true"
+    - key:   "traefik.http.services.{{ container.name | replace('.', '_') }}.loadbalancer.server.port"
+      value: "{{ container.traefik_port | default( '80' ) }}"
+  web:
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.rule"
+      value: "{{ container.traefik_rule | default ( local_traefik_rule ) }}"
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.entrypoints"
+      value: "web"
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.middlewares"
+      value: "forcehttps@file"
+  websecure:
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.rule"
+      value: "{{ container.traefik_rule | default ( local_traefik_rule ) }}"
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.entrypoints"
+      value: "websecure"
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.tls"
+      value: "true"
+    - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.tls.certresolver"
+      value: "letsencrypt"
 
 ...
