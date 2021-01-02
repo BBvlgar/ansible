@@ -1,0 +1,13 @@
+---
+
+- name: check if Træfik has to run
+  block:
+
+    - name: Check if Træfik is necessary
+      set_fact:
+        run_traefik: "{{ ( run_traefik | default(False) | bool ) or ( 'traefik' in cnt and ( cnt['traefik'] | bool )) }}"
+      with_items: "{{ cur_stack.value.containers }}"
+      loop_control:
+        loop_var: cnt
+
+...
