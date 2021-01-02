@@ -32,6 +32,8 @@ traefik_stack:
       directories_no_backup:
         - [[ "logs", "/var/log/traefik" ]]
       fqdn:
-        - "{{ traefik_fqdn | default( 'traefik' + inventory_hostname ) }}"
+        - "{{ traefik_fqdn | default( 'traefik.' + alias_fqdn | default( ansible_host ) | lower ) }}"
+      networks:
+        - "{{ traefik_network }}"
 
 ...

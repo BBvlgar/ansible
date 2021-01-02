@@ -10,7 +10,10 @@
   when: "'name' in cur_stack.value"
 
 # Now run the stack
-- debug:
-    var: stack
+- name: "run stack \"{{ cur_stack.key }}\""
+  import_role:
+    name: docker_stack
+  vars:
+    stack: stack
 
 ...
