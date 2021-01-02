@@ -42,8 +42,7 @@
 # bring everything together within the stackitems variable
 - name: 'Combine all container information to let them run'
   set_fact:
-    stackitems: "{{ ( stackitems + [ datacontainer ] ) | unifyVolumes | ensurePullRun | prepareContainerNames ( stack ) | prepareSharedHome ( workstack.name ) }}"
-    traefik_state: "{{ stackitems | traefikState }}"
+    stackitems: "{{ ( stackitems + [ datacontainer ] ) | unifyVolumes | ensurePullRun | adjustNetworks | prepareContainerNames ( stack ) | prepareSharedHome ( workstack.name ) }}"
 
 - name: 'DEBUG: Print all stack items to be run'
   debug:
@@ -62,9 +61,8 @@
   when: debug is defined and
         debug and
         continue_cnt.user_input is defined and
+        not ( continue_cnt.user_input == '' ) and
         not ( continue_cnt.user_input | bool )
-
-# NETWORKING has to be defined ...
 
 # finally call docker_container role for every container that has to be controlled
 - name: 'Create and manage containers for the Docker stack.'

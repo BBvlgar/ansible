@@ -50,16 +50,15 @@
         path: "{{ acme_path }}{{ acme_file }}"
       register: acme_file_stat
 
-    - name:   "Create needed dirs – if they do not already exist"
+    - name:   "Create acme file if not already existing"
       file:
         path: "{{ acme_path }}{{ acme_file }}"
-        state: file
+        state: touch
         mode: "0600"
-      when: acme_file_stat.stat.exists == true
 
     - name: "Ensure Træfik configs are placed well"
       command: "echo \"{}\" > {{ acme_path }}{{ acme_file }}"
-      when: acme_file_stat.stat.exists == true
+      when: not acme_file_stat.stat.exists
 
   when: ( insecureOnly is not defined or not insecureOnly )
 
@@ -68,7 +67,5 @@
     name: docker_stack
   vars:
     stack: stack
-    check_traefik: no
-    debug: yes
 
 ...

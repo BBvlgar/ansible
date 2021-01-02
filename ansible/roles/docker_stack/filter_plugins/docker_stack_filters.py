@@ -10,8 +10,7 @@ class FilterModule(object):
             'prepareDataContainer': self.prepareDataContainer,
             'unifyVolumes': self.unifyVolumes,
             'ensurePullRun': self.ensurePullRun,
-            'traefikState': self.traefikState,
-            'prepareTraefik': self.prepareTraefik,
+            'adjustNetworks': self.adjustNetworks,
         }
 
     def prepareString(self, line):
@@ -107,18 +106,12 @@ class FilterModule(object):
                 stack_items[i]['pull'] = True
         return stack_items
 
-    def traefikState(self, stack_items):
-        traefik = False
+    def adjustNetworks(self, stack_items):
         for i, cnt in enumerate(stack_items):
-            if "traefik" in cnt:
-                traefik = ( stack_items[i]['traefik'] or traefik )
-        return traefik
-
-
-    def prepareTraefik(self, stack_items):
-        for i, cnt in enumerate(stack_items):
-            if ( "traefik" in cnt and stack_items[i]['traefik']):
-                if "labels" not in cnt:
-                    cnt['labels'] = []
-                stack_items[i]['labels'] = stack_items[i]['labels'] + [ 'LoremIpsumDolor!' ]
+            if "networks" in cnt:
+                networks = stack_items[i]['networks']
+                stack_items[i]['networks'] = []
+                for network in networks:
+                    if isinstance(network, str) :
+                        stack_items[i]['networks'].append( { 'name': network } )
         return stack_items
