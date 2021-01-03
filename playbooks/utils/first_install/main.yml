@@ -103,6 +103,20 @@
         enable_ufw: "yes"
         restart_ufw: "yes"
 
+    - name: 'DEBUG: Wait for user to continue'
+      pause:
+        prompt: "Should we continue with the reboot? (yes/no - default: yes)"
+      register: continue_reboot
+      when: ( debug is defined and debug )
+
+    - name: 'Fail if user skipps'
+      fail:
+        msg: 'User aborted the run'
+      when: debug is defined and
+            debug and
+            continue_reboot.user_input is defined and
+            not ( continue_reboot.user_input | bool )
+
     - name: reboot
       reboot:
         reboot_timeout: 300
