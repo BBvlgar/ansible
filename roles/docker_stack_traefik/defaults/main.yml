@@ -24,16 +24,25 @@ traefik_stack:
       traefik: yes
       image: traefik
       env: "{{ traefik_env | default( {} ) }}"
+      traefik_websecure_middlewares:
+        - "traefikauth@file"
+      volumes_no_backup:
+        - "/var/run/docker.sock:/var/run/docker.sock"
       mountfiles_no_backup:
         - [[ "config/traefik.yaml", "/etc/traefik/traefik.yaml" ]]
         - [[ "config/provider.yaml", "/etc/traefik/provider.yaml" ]]
+      labels:
+        traefik.http.routers.traefik_traefik_http.service: "api@internal"
+        traefik.http.routers.traefik_traefik.service: "api@internal"
+      traefik_port: "8080"
       directories:
         - [[ "acme", "/acme" ]]
       directories_no_backup:
         - [[ "logs", "/var/log/traefik" ]]
       fqdn:
         - "{{ traefik_fqdn | default( 'traefik.' + alias_fqdn | default( ansible_host ) | lower ) }}"
-      networks:
-        - "{{ traefik_network }}"
+      # networks:
+      #   - "{{ traefik_network }}"
+      network_mode: "host"
 
 ...

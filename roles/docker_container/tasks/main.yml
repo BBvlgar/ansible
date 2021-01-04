@@ -254,6 +254,20 @@
     ( not ( container.traefik_insecure_only | default ( traefik_insecure_only  | default ( false ) ) ) )
   with_items: "{{ traefik_labels.websecure }}"
 
+- name: 'extract networks'
+  set_fact:
+    container_networks: "{{ container.networks | default ( [] ) }}"
+
+- name: 'ensure traefik network is defined'
+  set_fact:
+    container_networks: "{{ container_networks + [ { 'name': traefik_network } ] }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    (
+      container.network_mode is not defined
+      or not container.network_mode == 'host'
+    )
+
 # Now the final app container will be started with all defined variables
 # For more information on this task:
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
@@ -272,7 +286,7 @@
     log_driver:      "{{ container.log_driver     | default( 'json-file' ) }}"
     log_options:     "{{ container.log_options    | default( {} ) }}"
     memory:          "{{ container.memory_limit   | default( '0' )}}"
-    networks:        "{{ container.networks       | default( [] ) }}"
+    networks:        "{{ container_networks }}"
     network_mode:    "{{ container.network_mode   | default ('bridge') }}"
     privileged:      "{{ container.privileged     | default( 'no' ) }}"
     purge_networks:  "{{ container.purge_networks | default( true ) }}"
