@@ -112,6 +112,8 @@
   become: yes
   command: rm /etc/rc{1..3}.d/*docker
   # may throw an exception if the runlevel files do not exist ...
+  args:
+    warn: false
   ignore_errors: yes
 
 - name: Retrieve latest docker-compose information

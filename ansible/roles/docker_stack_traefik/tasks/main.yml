@@ -12,7 +12,7 @@
     traefik_templates:
       - "traefik.yaml"
       - "provider.yaml"
-    cnt_cnf_tpl_path: "{{ docker_home }}/{{ stack.name }}/"
+    cnt_cnf_tpl_path: "{{ docker_home }}/{{ stack.name }}/traefik/"
 
 - name:   "prepare Træfik config"
   become: yes

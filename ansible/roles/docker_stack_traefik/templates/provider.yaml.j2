@@ -13,8 +13,8 @@ http:
       basicAuth:
         users:
           {#
-           # adjust at least your password – for example by this docker command:
-           # $$$   docker run -it --rm ubuntu bash -c "apt-get update > /dev/null; apt-get install -y apache2-utils > /dev/null; echo; htpasswd -nbB 'admin' 'Def12345'"
+           # adjust at least your password – for example by this docker command ('\'' needed for single quote escape ...):
+           # $$$   docker run -it --rm ubuntu bash -c 'apt-get update > /dev/null; apt-get install -y apache2-utils > /dev/null; echo; htpasswd -nbB '\''admin'\'' '\''Def12345'\'''
            #
            #}{% for user, passhash in traefik_users.items() %}- '{{ user }}:{{ passhash }}'
           {% endfor %}

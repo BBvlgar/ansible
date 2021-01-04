@@ -25,12 +25,15 @@
 
     - name: Grant admin & sudo to admins
       user:
-        name:   "{{ item.name }}"
-        shell:  "/bin/bash"
-        groups: "{{ fullgroups[ item.name ] }}"
-        append: "yes"
-        state:  "present"
-        password: "{{ item.password|default() }}"
+        name:             "{{ item.name }}"
+        shell:            "/bin/bash"
+        groups:           "{{ fullgroups[ item.name ] }}"
+        append:           yes
+        state:            "{% if item.remove | default( 'no' | bool ) %}absent{% else %}present{% endif %}"
+        password:         "{{ item.password | default() }}"
+        remove:           "{{ item.remove | default( 'no' | bool ) }}"
+        comment:          "{{ item.comment | default('') }}"
+        generate_ssh_key: yes # does not overwrite SSH key
       with_items: "{{ admins }}"
       # the `when` below limits the execution to two conditions that are combined by
       # a logical `AND`:
