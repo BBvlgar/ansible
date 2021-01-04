@@ -53,7 +53,7 @@ mysql_cnt:
   volumes:
     - "{{ workstack.name }}_mysql_data:/var/lib/mysql"
   networks:
-    - name: "{{ database_network }}"
+    - "{{ database_network }}"
   env:
     MYSQL_ROOT_PASSWORD:  "{{ stack.mysql_root_pw | default ( stack.db_root_pw | default ( stack.db_pw | default ( default_db_root_pw ) ) ) }}"
     MYSQL_DATABASE:       "{{ stack.mysql_name | default ( stack.db_name | default ( stack.db_user | default ( default_db_name ) ) ) }}"
@@ -89,7 +89,7 @@ mdb_cnt:
   volumes:
     - "{{ workstack.name }}_mariadb_data:/var/lib/mysql"
   networks:
-    - name: "{{ database_network }}"
+    - "{{ database_network }}"
   env:
     MYSQL_ROOT_PASSWORD:  "{{ stack.mdb_root_pw | default ( stack.db_root_pw | default ( stack.db_pw | default ( default_db_root_pw ) ) ) }}"
     MYSQL_DATABASE:       "{{ stack.mdb_name | default ( stack.db_name | default ( stack.db_user | default ( default_db_name ) ) ) }}"
@@ -122,7 +122,7 @@ postgres_cnt:
   name:     "postgres"
   version:  "{{ postgres_version }}"
   networks:
-    - name: "{{ database_network }}"
+    - "{{ database_network }}"
   volumes:
     - "{{ workstack.name }}_postgres_data:/var/lib/postgresql/data"
   labels:
@@ -138,11 +138,14 @@ postgres_cnt:
 ## for the datacontainer
 ###
 
+datacontainer_image:   "busybox"
+datacontainer_volumes: []
+
 datacontainer:
   restart_policy: no
   recreate:       no
-  run:            no
-  image:          "busybox"
+  run:            yes
+  image:          "{{ datacontainer_image }}"
   state:          "present"
   name:           "data"
 

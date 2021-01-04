@@ -14,9 +14,11 @@ cnt_recreate: no
 # Label-definition for containers using Træfik
 traefik_rule: "Host(`{{ item | default ( container.fqdn  | default ('')) }}`)"
 
-traefik_auth:
-  key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.middlewares"
-  value: "auth@file"
+traefik_web_middlewares:
+  - "forcehttps@file"
+
+traefik_websecure_middlewares:
+  - "security@file"
 
 traefik_labels:
   default:
@@ -30,7 +32,7 @@ traefik_labels:
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.entrypoints"
       value: "web"
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.middlewares"
-      value: "forcehttps@file"
+      value: "{{ ( traefik_web_middlewares | default( [] ) + container.traefik_web_middlewares | default( [] ) + container.traefik_middlewares | default( [] ) ) | join( ', ' ) }}"
   websecure:
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.rule"
       value: "{{ container.traefik_rule | default ( local_traefik_rule ) }}"
@@ -40,5 +42,7 @@ traefik_labels:
       value: "true"
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.tls.certresolver"
       value: "letsencrypt"
+    - key: "traefik.http.routers.{{ container.name | replace('.', '_') }}.middlewares"
+      value: "{{ ( traefik_websecure_middlewares | default( [] ) + container.traefik_websecure_middlewares | default( [] ) + container.traefik_middlewares | default( [] ) ) | join( ', ' ) }}"
 
 ...

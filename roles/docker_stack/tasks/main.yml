@@ -29,20 +29,25 @@
     # stackitems: "{{ containers + [ mainapplication ] }}"
     stackitems: "{{ containers + stack.containers }}"
 
+# bring everything together within the stackitems variable
+- name: 'Combine all container information to let them run'
+  set_fact:
+    stackitems: "{{ stackitems | adjustNetworks | prepareSharedHome ( workstack.name ) | prepareContainerNames ( stack ) }}"
+
 # the data container collects all mounted data (bind mounts and volumes)
 # and therefor eases up the backup process
 - name: 'prepare data for data container'
   set_fact:
-    stack_data: "{{ stackitems | prepareDataContainer }}"
+    stack_data: "{{ stackitems | prepareDataContainer ( workstack.name, { 'volumes': datacontainer_volumes | default( [] ) } )}}"
 
 - name: 'prepare datacontainer for easing up backups'
   set_fact:
-    datacontainer: "{{ datacontainer | combine ( stack_data ) }}"
+    localdatacontainer: "{{ datacontainer | combine ( stack_data | combine ( { 'name': workstack.name + '_' + datacontainer.name, 'shared_home_app': workstack.name } ) ) }}"
 
-# bring everything together within the stackitems variable
+# combine stackitems and datacontainer
 - name: 'Combine all container information to let them run'
   set_fact:
-    stackitems: "{{ ( stackitems + [ datacontainer ] ) | unifyVolumes | ensurePullRun | adjustNetworks | prepareContainerNames ( stack ) | prepareSharedHome ( workstack.name ) }}"
+    stackitems: "{{ ( stackitems + [ localdatacontainer ] ) | unifyVolumes | ensurePullRun }}"
 
 - name: 'DEBUG: Print all stack items to be run'
   debug:
