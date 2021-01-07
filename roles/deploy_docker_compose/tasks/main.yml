@@ -16,6 +16,12 @@
     state: present
   when: internal_network is defined and remote == true
 
+- name: remote -Create database network
+  docker_network:
+    name: "{{ database_network }}"
+    state: present
+  when: database_network is defined and remote == true
+
 - name: localhost - Create traefik network
   docker_network:
     name: "{{ traefik_network }}"
@@ -30,6 +36,12 @@
     state: present
   delegate_to: localhost
   when: remote != true and internal_network is defined
+
+- name: remote -Create database network
+  docker_network:
+    name: "{{ database_network }}"
+    state: present
+  when: database_network is defined and remote != true
 
 - name: recreate or rollout services
   docker_compose:

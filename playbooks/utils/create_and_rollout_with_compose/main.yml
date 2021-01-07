@@ -4,13 +4,12 @@
 - name: Create Composefiles for Hosts
   hosts: docker_hosts
   become: true
-  
+
   tasks:
-    #- debug:
-    #    msg: "{{ app }}"
-    #  with_dict: "{{ applications }}"
-    #  loop_control:
-    #    loop_var: app
+    - name: "Deploy Traefik"
+      include_role:
+        name: docker_stack_traefik
+      when: traefik_enabled is defined and traefik_enabled
 
     - name: "Create Docker-Compose-Files"
       include_role:
@@ -18,8 +17,6 @@
       with_dict: "{{ applications }}"
       loop_control:
         loop_var: app
-
-
 
     - name: "Deploy  Docker-Compose-Files"
       include_role:
