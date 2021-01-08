@@ -4,20 +4,20 @@
     msg: "{{ app }}"
   when: debug == true
 
-- name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists"
+- name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists on remote host"
   file: 
     path: "{{ composerFilePath }}/{{ app.key }}"
     state: directory
     recurse: yes
   when: remote == true 
 
-- name: Provision docker-compose
+- name: Provision docker-compose on remote host
   template:
     src: "docker-compose.yml.j2"
     dest: "{{ composerFilePath }}/{{ app.key }}/docker-compose.yml"
   when: remote == true  
 
-- name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists"
+- name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists on localhost"
   file:
     path: "{{ composerFilePath }}/{{ app.key }}"
     state: directory
@@ -25,7 +25,7 @@
   delegate_to: localhost
   when: remote != true
 
-- name: Provision docker-compose
+- name: Provision docker-compose on localhost
   template:
     src: "docker-compose.yml.j2"
     dest: "{{ composerFilePath }}/{{ app.key }}/docker-compose.yml"
