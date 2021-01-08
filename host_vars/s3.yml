@@ -1,0 +1,8 @@
+---
+docker_host: true
+traefik_enabled: true
+disallowed_users:
+  - mthanner
+
+
+...
