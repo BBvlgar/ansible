@@ -1,1 +1,76 @@
+---
+docker_host: true
+traefik_enabled: true
+disallowed_users: 
+  - mthanner
+  - tfischer
+  - mmenzel
 sophos_av_disableMTD: true
+remote: true
+debug: true
+
+applications:
+  wireguard-stack:
+    wireguard:
+      name: wireguard
+      image: linuxserver/wireguard
+      restartPolicy: always
+      cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+      environment:
+        PUID: "1000"
+        PGID: "1000"
+        TZ: "Europe/London"
+        SERVERURL: "hq1-muc.it-economics.de" #optional
+        SERVERPORT: "51820" #optional
+        PEERS: "5" #optional
+        PEERDNS: "auto" #optional
+        INTERNAL_SUBNET: "10.13.13.0" #optional
+        ALLOWEDIPS: "0.0.0.0/0" #optional        
+      volumes:
+        - "/mnt/shared/applications/wireguard/config:/config"
+        - "/lib/modules:/lib/modules"
+      sysctls:
+        - net.ipv4.conf.all.src_valid_mark=1        
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 51820:51820/udp
+
+  openvpn-stack:
+    openvpn:
+      name: openvpn
+      image: iteconomics/openvpn:latest
+      restartPolicy: always     
+      volumes:
+        - '/srv/openvpn/config/ite.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'     
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 443:443
+
+  devopenvpn-stack:
+    devopenvpn:
+      name: devopenvpn
+      image: iteconomics/openvpn:latest
+      restartPolicy: always     
+      volumes:
+        - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'     
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 443:443
+
+
+...

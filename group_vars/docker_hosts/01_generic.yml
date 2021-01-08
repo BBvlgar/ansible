@@ -1,5 +1,6 @@
 ---
 
 docker_home: '/mnt/data'
+composerFilePath: "/mnt/shared/compose"
 
 ...
