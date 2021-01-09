@@ -1,7 +1,7 @@
 ---
 
 galaxy_info:
-  author: macwinnie
+  author: macwinnie, Felix Kazuya
   description: Update role for servers
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -19,5 +19,7 @@ galaxy_info:
 
   galaxy_tags:
     - update
+
+dependencies: []
 
 ...

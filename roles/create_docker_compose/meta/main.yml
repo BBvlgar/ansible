@@ -2,7 +2,7 @@
 
 galaxy_info:
   author: Felix Kazuya, macwinnie
-  description: Configure administrative users
+  description: Configure Docker Compose Files
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
