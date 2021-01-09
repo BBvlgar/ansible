@@ -1,6 +1,14 @@
-# Ansible
+# License
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-it-economics Infrastructure as Code repository
+# Authors
+- Martin Winter <devopsansible@winter-martin.de>
+- Christian Walonka <devopsansible@walonka.de>
+- Felix Kazuya <devopsansible@felixkazuya.de>
+
+
+# Ansible
+DevOps Infrastructure as Code repository
 
 ## Thoughts
 
