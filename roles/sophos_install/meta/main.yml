@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Christian Walonka, Alexander Barth, Felix Kazuya
+  description: Install licenced SophosAV
+  company: it-economics GmbH, Independent
+  issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
+
+  license: CC-BY
+
+  min_ansible_version: 2.0
+
+  platforms:
+   - name: Ubuntu
+     versions:
+      - all
+
+  galaxy_tags: []
+
+dependencies: []
