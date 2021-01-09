@@ -3,6 +3,185 @@ docker_host: true
 traefik_enabled: true
 disallowed_users:
   - mthanner
+remote: true
+debug: true
 
+applications:
+  portainer_stack:
+    portainer:
+      name: portainer
+      image: portainer/portainer-ce
+      restartPolicy: always
+      volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        - "{{ docker_home }}/portainer/data:/data"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"
+        - "traefik.http.routers.portainer_http.rule: 'Host(`portainer.muc.it-economics.de`)'"
+        - "traefik.http.routers.portainer_http.entrypoints: 'web'"
+        - "traefik.http.routers.portainer.rule: 'Host(`portainer.muc.it-economics.de`)'"
+        - "traefik.http.routers.portainer.entrypoints: 'websecure'"
+        - "traefik.http.routers.portainer.tls: 'true'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"     
+        - "traefik.http.routers.portainer.tls.domains[0].main: 'portainer.muc.it-economics.de'"
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.muc.it-economics.de'" 
+      networks:
+        - "backbone"
 
+  alfresco-stack:
+    alfresco-prd:
+      name: alfresco-prd
+      image: iteconomics/wireguard
+      container_name: alfresco-prd
+      restartPolicy: always
+      volumes:
+        - "/srv/alfresco-prd/config:/srv/project/config"
+        - "/srv/alfresco-prd/config/custom-log4j.properties:/opt/alfresco/tomcat/shared/classes/alfresco/extension/custom-log4j.properties"
+    alfresco-prd_web:
+      name: alfresco_web
+      image: iteconomics/apache
+      container_name: alfresco-prd_web
+      restartPolicy: always
+      environment:
+        MODS: "proxy proxy_ajp ssl headers"
+    alfresco-prd_db:
+      name: alfresco-prd_db
+      image: mysql:5.6
+      container_name: alfresco-prd_db
+      restartPolicy: always
+      environment:
+        MYSQL_ROOT_PASSWORD: "tqi2KSxY3MXcuIqUGiOM"
+        MYSQL_DATABASE: "alfresco"
+        MYSQL_USER: "alfresco"
+        MYSQL_PASSWORD: "AvQib3Rpyx65rl636Qsn"
+      volumes:
+        - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
+        - "/srv/alfresco-prd/db/backup:/mnt/backup/db"
+        - "/srv/alfresco-prd/db/data:/var/lib/mysql"
+      networks:
+        - "database"
+      labels:
+        - "traefik.enable: 'false'"
+
+  social-partner-stack:
+    social-partner:
+      name: confluence-ite
+      image: iteconomics/confluence-ite:latest
+      container_name: confluence-ite
+      restartPolicy: always
+      environment:
+        CATALINA_OPTS: "-Xms2048m -Xmx8192m -Djdk.tls.trustNameService=true -Duser.timezone=Europe/Berlin"
+        PROXY: "social-partner.muc.it-economics.de"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.share.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.share_http.rule: 'Host(`social-partner.muc.it-economics.de`)'"
+        - "traefik.http.routers.share_http.entrypoints: 'web'"
+        - "traefik.http.routers.share_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.share.rule: 'Host(`social-partner.muc.it-economics.de`)'"
+        - "traefik.http.routers.share.entrypoints: 'websecure'"
+        - "traefik.http.routers.share.tls: 'true'"
+        - "traefik.http.routers.share.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.share.tls.domains[0].main: 'social-partner.muc.it-economics.de'"
+      volumes:
+        - "/srv/social-partner/confluence/data:/var/atlassian/application-data/confluence"
+    social-partner_db:
+      name: confluence_db
+      image: mysql:5.6
+      container_name: confluence_db
+      restartPolicy: always
+      environment:
+        MYSQL_ROOT_PASSWORD: "h7i8buZaZw4b9AoS77q1"
+        MYSQL_DATABASE: "confluence"
+        MYSQL_USER: "confluence"
+        MYSQL_PASSWORD: "h7i8buZaZw4b9AoS77q1"
+      volumes:
+        - "/srv/social-partner/mysql/config:/etc/mysql/conf.d"
+        - "/srv/social-partner/mysql/data:/var/lib/mysql"
+      networks:
+        - "database"
+      labels:
+        - "traefik.enable: 'false'"
+
+  personio_backup-stack:
+    personio_backup:
+      name: alfresco
+      image: iteconomics/wireguard
+  network-stack:
+    ldap03:
+      name: ldap03
+      image: iteconomics/openldap:latest
+      restartPolicy: always
+      volumes:
+        - "/srv/ldap03/certs:/certs"
+        - "/srv/ldap03/import:/import"
+      labels:
+        - "traefik.enable: false"
+      ports:
+        - "636:636"
+      networks:
+        - "database"
+    kdc:
+      name: kdc03
+      image: iteconomics/kdc:latest
+      container_name: kdc03
+      restartPolicy: always
+      ports:
+      - "88:88"
+      - "464:464"
+      - "749:749"
+      - "88:88/udp"
+      - "464:464/udp"
+      - "749:749/udp"
+      volumes:
+        - "/dev/random:/dev/urandom"
+        - "/kdc:/srv/kdc03/config"
+    pihole:
+      name: pihole
+      image: pihole/pihole:latest
+      container_name: pihole
+      restartPolicy: always
+      ports:
+      - "53:53/udp"
+      - "53:53/udp"
+      - "67:67/udp"
+      volumes:
+        - "/srv/pihole/pihole:/etc/pihole"
+        - "/srv/pihole/dnsmasq.d:/etc/dnsmasq.d"
+      networks:
+        - "backbone"
+    freeradius:
+      name: freeradius
+      image: iteconomics/freeradius:latest
+      container_name: freeradius
+      restartPolicy: always
+      ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+      volumes:
+        - "/srv/freeradius/config/ldap:/etc/freeradius/mods-available/ldap"
+        - "/srv/freeradius/config/radiusd.conf:/etc/freeradius/radiusd.conf"
+        - "/srv/freeradius/certs:/certs"
+        - "/srv/freeradius/config/clients.conf:/etc/freeradius/clients.conf"
+      networks:
+        - "backbone"
+    ntp:
+      name: ntp
+      image: cturra/ntp:latest
+      container_name: ntp
+      restartPolicy: always
+      cap_add:
+        - SYS_TIME
+      ports:
+      - "123:123/udp"
+      environment:
+        NTP_SERVERS: "time.cloudflare.com"
+      networks:
+        - "backbone"
+      #read_only: true
+      #tmpfs:
+      #  - /etc/chrony:rw,mode=1750
+      #  - /run/chrony:rw,mode=1750
+      #  - /var/lib/chrony:rw,mode=1750
 ...

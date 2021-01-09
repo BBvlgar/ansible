@@ -24,7 +24,7 @@ applications:
         TZ: "Europe/London"
         SERVERURL: "hq1-muc.it-economics.de" #optional
         SERVERPORT: "51820" #optional
-        PEERS: "5" #optional
+        PEERS: "10" #optional
         PEERDNS: "auto" #optional
         INTERNAL_SUBNET: "10.13.13.0" #optional
         ALLOWEDIPS: "0.0.0.0/0" #optional        
