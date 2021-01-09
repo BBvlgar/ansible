@@ -1,15 +1,10 @@
----
-
 galaxy_info:
-  author: Martin Winter
-  description: Update role for servers
-  company: it-economics GmbH
+  author: Christian Walonka, Felix Kazuya
+  description: Install all updates
+  company: it-economics GmbH, Independent
+  issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
-  # If the issue tracker for your role is not on github, uncomment the
-  # next line and provide a value
-  # issue_tracker_url: http://example.com/issue/tracker
-
-  license: license (GPLv2, CC-BY, etc)
+  license: CC-BY
 
   min_ansible_version: 2.0
 
@@ -18,7 +13,6 @@ galaxy_info:
      versions:
       - all
 
-  galaxy_tags:
-    - update
+  galaxy_tags: []
 
-...
+dependencies: []
