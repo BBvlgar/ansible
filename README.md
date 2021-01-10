@@ -19,9 +19,10 @@ ATTENTION: only to be performed, if you know what you are doing ;)
 For the repository to be fully functional and able to communicate with its subtree repositories, one should add these additional remotes:
 
 ```sh
-git remote add -f ansible ssh://git@git.it-economics.de:7999/in/ansible.git
-git remote add -f env_hosting ssh://git@git.it-economics.de:7999/in/env_hosting.git
-git remote add -f env_production ssh://git@git.it-economics.de:7999/in/env_production.git
+git remote add -f ansible          ssh://git@git.it-economics.de:7999/in/ansible.git
+git remote add -f env_hosting      ssh://git@git.it-economics.de:7999/in/env_hosting.git
+git remote add -f env_production   ssh://git@git.it-economics.de:7999/in/env_production.git
+git remote add -f custom_playbooks ssh://git@git.it-economics.de:7999/in/custom-playbooks.git
 ```
 
 ### fetching changes from the remotes into working repo
@@ -30,9 +31,10 @@ If the central repositories changed – for example by third-party contribution 
 
 ```sh
 git fetch --all
-git subtree pull --prefix ansible ansible master
-git subtree pull --prefix environments/production env_production master
-git subtree pull --prefix environments/hosting env_hosting master
+git subtree pull --prefix ansible                 ansible          master
+git subtree pull --prefix environments/production env_production   master
+git subtree pull --prefix environments/hosting    env_hosting      master
+git subtree pull --prefix custom/playbooks        custom_playbooks master
 ```
 
 ### merge back into dedicated repositories
@@ -40,7 +42,8 @@ git subtree pull --prefix environments/hosting env_hosting master
 When changes are finalized within the working repository, they should also be regularly merged back into the dedicated repositories. That can be done by these comments:
 
 ```sh
-git subtree push --prefix=environments/hosting env_hosting master --squash
-git subtree push --prefix=environments/production env_production master --squash
-git subtree push --prefix=ansible ansible master --squash
+git subtree push --prefix=custom/playbooks        custom_playbooks master
+git subtree push --prefix=environments/hosting    env_hosting      master
+git subtree push --prefix=environments/production env_production   master
+git subtree push --prefix=ansible                 ansible          master
 ```
