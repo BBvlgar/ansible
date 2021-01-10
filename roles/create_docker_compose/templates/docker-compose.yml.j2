@@ -10,7 +10,11 @@ services:
     {% for volume in container.volumes %}  - {{ volume }}
     {% endfor %}{% endif %}{% if (container.cap_add is defined) and (container.cap_add | length() > 0) %}cap_add:
     {% for value in container.cap_add %}  - {{ value }}
+<<<<<<< HEAD
     {% endfor %}{% endif %}{% if (container.sysctls is defined) and (container.sysctls | length() > 0) %}sysctls:
+=======
+    {% endfor %}{% if (container.sysctls is defined) and (container.sysctls | length() > 0) %}sysctls:
+>>>>>>> 3383e309255d04afcc9f790e584a23a105590290
     {% for value in container.sysctls %}  - {{ value }}
     {% endfor %}{% endif %}labels:
     {% if (container.labels is defined) and (container.labels | length() > 0) %}{% for label in container.labels %}  {{ label }}
