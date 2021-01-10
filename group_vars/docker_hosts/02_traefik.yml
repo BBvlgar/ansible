@@ -13,6 +13,8 @@ traefik_port: "8080"
 traefik_restart_policy: always
 traefik_acme_mail: 'sysadmin@it-economics.de'
 traefik_debug: false
+dns_provider: 'cloudflare'
+
 
 # Default bind to first IP address of host
 traefik_ip: "0.0.0.0" #"{% if ansible_eth0 is defined %}{{ansible_eth0.ipv4.address}}{% else %}{{ansible_em1.ipv4.address}}{% endif %}"
