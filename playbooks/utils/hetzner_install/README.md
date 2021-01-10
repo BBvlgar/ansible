@@ -179,7 +179,7 @@ Since the server is in rescue mode, the playbook ignores host key checks, etc.
 Now, we want to run the task. From your Ansible root directory, please run some command like this:
 
 ```sh
-ansible-playbook -i environments/production playbooks/utils/testing.yml --limit "server_alias" --user root --ask-pass
+ansible-playbook -i environments/production playbooks/utils/hetzner_install/main.yml --limit "server_alias" --user root --ask-pass
 ```
 
 You'll have to define some things:
