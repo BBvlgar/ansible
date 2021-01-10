@@ -1,6 +1,9 @@
+#!/usr/bin/env ansible-playbook
 ---
 
 ###
+## Licenced unter CC-BY
+##
 ## for this role to be run for the first time on a new pi use this command:
 ##
 ## ansible-playbook -e 'ansible_port=22 ansible_user=pi ansible_ssh_pass=raspberry ansible_sudo_pass=raspberry' -i environments/production playbooks/server/raspy.yml

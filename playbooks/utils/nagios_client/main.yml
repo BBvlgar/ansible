@@ -1,4 +1,10 @@
+#!/usr/bin/env ansible-playbook
 ---
+
+###
+## Licenced unter CC-BY
+##
+###
 
 - name: Install nagios_client
   hosts: server_definitions

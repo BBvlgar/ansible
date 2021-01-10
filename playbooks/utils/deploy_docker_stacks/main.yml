@@ -1,4 +1,10 @@
+#!/usr/bin/env ansible-playbook
 ---
+
+###
+## Licenced unter CC-BY
+##
+###
 
 - hosts: 'docker:!localhost'
   become: yes

@@ -1,11 +1,11 @@
+#!/usr/bin/env ansible-playbook
 ---
-#
-#
-# MAIN FILE to delete a USER ACCOUNT from ITE systems
-#
 
-# Ensure dependencies are installed on controll node
-#- import_playbook: dependencies.yml
+###
+## Licenced unter CC-BY
+##
+## MAIN FILE to delete a USER ACCOUNT from ITE systems
+###
 
 # Fetch data from ticket system
 - import_playbook: gather_data.yml

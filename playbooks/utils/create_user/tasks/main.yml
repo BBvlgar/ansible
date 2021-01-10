@@ -1,7 +1,11 @@
+#!/usr/bin/env ansible-playbook
 ---
-#
-# MAIN FILE to create a new USER ACCOUNT in ITE systems
-#
+
+###
+## Licenced unter CC-BY
+##
+## MAIN FILE to create a new USER ACCOUNT in ITE systems
+###
 
 - name: Fetch data from ticket system
   import_playbook: gather_data.yml

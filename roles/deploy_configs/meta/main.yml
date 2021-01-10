@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Martin Winter, Christian Walonka, Felix Kazuya
+  description: Deployment for config files
+  company: it-economics GmbH, Independent 
+  issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
+
+  license: CC-BY
+
+  min_ansible_version: 2.0
+
+  platforms:
+   - name: Ubuntu
+     versions:
+      - all
+
+  galaxy_tags:
+    - dns
+    - deployment
