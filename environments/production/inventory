@@ -28,8 +28,9 @@
 ## Munich Servers
 ###
 s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de
+dockerhost.muc                         ansible_port=60022            ansible_host=dockerhost.muc.it-economics.de
 bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
-jumphost                   ansible_port=60022            ansible_host=jumphost.muc.it-economics.de
+jumphost                   ansible_port=60022            ansible_host=hq1-muc.it-economics.de
 pki.muc                    ansible_port=22               ansible_host=pki.muc.it-economics.de
 ## Do not Touch Systems Muc
 # nas4
@@ -92,6 +93,7 @@ jumphost
 bamboo-server
 bamboo-builder
 s3
+dockerhost.muc
 bastion
 jumphost
 dockerhost
@@ -123,6 +125,8 @@ pis
 dockerhost
 dockerhost-abn
 dockerhost
+jumphost
+dockerhost.muc
 
 [personio_backup]
 
