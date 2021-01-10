@@ -1,0 +1,64 @@
+    # Import User
+    - name: Create temporary file
+      command: mktemp
+      register: tempFile
+
+    - set_fact:
+        tempFile: "{{ tempFile.stdout }}"
+
+    - name: Get highest uid
+      shell: >
+        ldapsearch -x
+        -D "uid={{ admin_user }},ou=people,dc=it-economics,dc=de"
+        -w "{{ admin_password }}"
+        -H "{{ ldap_url }}"
+        -b dc=it-economics,dc=de "(objectClass=posixAccount)"
+        | grep uidNumber
+        | awk '{print $NF}'
+        | sort -n -r
+        | uniq
+        | head -n 1
+      register: uid_raw
+      no_log: "{{ no_log|default('true') }}"
+
+    - name: Get highest gid # from posixAccounts and not posixGroups, since accounts start at 10000 and groups at 50000 - so there should be no collision
+      shell: >
+        ldapsearch -x
+        -D "uid={{ admin_user }},ou=people,dc=it-economics,dc=de"
+        -w {{ admin_password }}
+        -H {{ ldap_url }}
+        -b dc=it-economics,dc=de "(objectClass=posixAccount)"
+        | grep gidNumber
+        | awk '{print $NF}' | sort -n -r | uniq | head -n 1
+      register: gid_raw
+      no_log: "{{ no_log|default('true') }}"
+
+    - set_fact:
+        e_uid: "{{ uid_raw.stdout | int + 1 }}"
+        e_gid: "{{ gid_raw.stdout | int + 1 }}"
+
+    - set_fact:
+        ldif_template: "user.ldif.j2"
+
+    - set_fact:
+        ldif_template: "user-sopra.ldif.j2"
+      when: "{{ user.registration.contract.employerId }} == 12700"
+
+    - debug:
+        msg: "Using ldap user template: {{ ldif_template }} "
+
+    - name: Copy template to tmp location
+      template: src="../templates/{{ ldif_template }}" dest="{{ tempFile }}.ldif"
+
+    # TODO Should updates be made?
+    - name: Import ldif file
+      command: >
+        ldapadd -x
+        -D "uid={{ admin_user }},ou=people,dc=it-economics,dc=de"
+        -w "{{ admin_password }}"
+        -H "{{ ldap_url }}"
+        -f "{{ tempFile }}.ldif"
+      no_log: "{{ no_log|default('true') }}"
+
+    - name: Ensure ldif file is removed
+      file: path={{ tempFile }}.ldif state=absent

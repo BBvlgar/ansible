@@ -1,0 +1,30 @@
+---
+- hosts: pki.muc
+  become: true
+  vars:
+    noSSL:
+      - "12700"
+      - "11403"
+      - "11402"
+
+  tasks:
+    - set_fact:
+        user: "{{ hostvars.get('localhost').get('user') }}"
+
+    - debug: msg="Creating user certificate {{ user.registration.user.username }} with employer {{ user.registration.contract.employer }} id {{ user.registration.contract.employerId }}"
+      when: user.registration.contract.employerId not in noSSL
+
+    - block:
+      - set_fact:
+          status: "{% if user.registration.user.lvl == 'Freelancer'%}external{% else %}internal{% endif %}"
+
+      # TODO check in index.txt instead?
+      - name: Check if already created
+        stat: path=/home/sysadmin/Private/it-economics_CA/{{ status }}/{{ user.registration.user.mail }}
+        register: keydir
+
+      - name: Fail when user cert exist
+        fail: msg="User Cert exist already"
+        when: keydir.stat.exists
+
+      when: user.registration.contract.employerId not in noSSL

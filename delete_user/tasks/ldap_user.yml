@@ -1,0 +1,25 @@
+###### Delete user
+  - name: Create temporary file
+    command: mktemp
+    register: tempFile
+
+  - set_fact:
+      tempFile: "{{ tempFile.stdout }}"
+
+  - name: Copy template to tmp location
+    template: src=../templates/user.ldif.j2 dest="{{ tempFile }}.ldif"
+    when: user_exists
+
+  - name: Import ldif file
+    command: > 
+      ldapmodify -x 
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
+      -w {{ hostvars.get('localhost').get('admin_password') }} 
+      -H {{ hostvars.get('localhost').get('ldap_url') }} 
+      -f {{ tempFile }}.ldif
+    when: user_exists
+    no_log: "{{ no_log|default('true') }}"
+
+  - name: Ensure ldif file is removed
+    file: path={{ tempFile }}.ldif state=absent
+
