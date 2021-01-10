@@ -1,10 +1,7 @@
----
-
 galaxy_info:
-
-  author: Martin Winter
-  description: install basic tools and configuration
-  company: it-economics GmbH
+  author: Christian Walonka, Alexander Barth, Felix Kazuya
+  description: Install licenced SophosAV
+  company: it-economics GmbH, Independent
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
   license: CC-BY
@@ -19,5 +16,3 @@ galaxy_info:
   galaxy_tags: []
 
 dependencies: []
-
-...

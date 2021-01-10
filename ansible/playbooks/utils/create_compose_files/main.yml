@@ -1,6 +1,11 @@
 #!/usr/bin/env ansible-playbook
 ---
 
+###
+## Licenced under CC-BY
+##
+###
+
 - name: Create Composefiles for Hosts
   hosts: docker_hosts
   become: true

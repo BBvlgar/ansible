@@ -1,15 +1,11 @@
 ---
 
 galaxy_info:
-  author: Martin Winter
+  author: Martin Winter, Christian Walonka, Felix Kazuya
   description: Deployment role for latest Træfik container
   company: it-economics GmbH
-
-  # If the issue tracker for your role is not on github, uncomment the
-  # next line and provide a value
-  # issue_tracker_url: http://example.com/issue/tracker
-
-  license: license (GPLv2, CC-BY, etc)
+  license: CC-BY
+  issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
   min_ansible_version: 2.0
 

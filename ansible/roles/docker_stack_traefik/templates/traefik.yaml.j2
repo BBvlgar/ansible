@@ -18,7 +18,7 @@ certificatesResolvers:
   letsencrypt:
     acme:
       ### adjust your mail address!
-      email: '{{ acme_mail }}'
+      email: '{{ acme_mail | default(traefik_acme_mail) }}'
       storage: '/acme/acme.json'
       {% if tlsChallenge is defined and tlsChallenge %}tlsChallenge: {}
       {% else %}dnsChallenge:

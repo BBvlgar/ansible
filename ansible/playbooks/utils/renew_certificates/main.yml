@@ -1,5 +1,10 @@
 #!/usr/bin/env ansible-playbook
 ---
+
+###
+## Licenced unter CC-BY
+##
+###
 - name: renew certificates
   hosts: localhost
 

@@ -1,5 +1,10 @@
+#!/usr/bin/env ansible-playbook
 ---
 
+###
+## Licenced under CC-BY
+##
+###
 - hosts: 'all:!localhost'
   become: yes
 

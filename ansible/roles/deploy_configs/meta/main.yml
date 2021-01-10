@@ -1,10 +1,7 @@
----
-
 galaxy_info:
-
-  author: Martin Winter
-  description: install basic tools and configuration
-  company: it-economics GmbH
+  author: Martin Winter, Christian Walonka, Felix Kazuya
+  description: Deployment for config files
+  company: it-economics GmbH, Independent 
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
   license: CC-BY
@@ -16,8 +13,6 @@ galaxy_info:
      versions:
       - all
 
-  galaxy_tags: []
-
-dependencies: []
-
-...
+  galaxy_tags:
+    - dns
+    - deployment
