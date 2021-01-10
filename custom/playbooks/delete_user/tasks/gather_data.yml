@@ -1,0 +1,97 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+  vars:
+    env: testing
+
+  vars_prompt:
+    - name: "admin_user"
+      prompt: "Please enter your username (admin_user)"
+      private: no
+      when: admin_user is not defined
+
+    - name: "admin_password"
+      prompt: "Please enter your password (admin_password)"
+      private: yes
+      when: admin_password is not defined
+
+    - name: "ticket_user"
+      prompt: "Please enter your user for the ticket system"
+      private: no
+      when: ticket_user is not defined
+
+    - name: "ticket_password"
+      prompt: "Please enter your password for the ticket system"
+      private: yes
+      when: ticket_password is not defined
+
+    - name: "ticket_number"
+      prompt: "Please enter the ticket number, e.g. AM-1 (ticket_number)"
+      private: no
+      when: ticket_number is not defined
+
+    - name: "office_user"
+      prompt: "Please enter your office mail"
+      private: no
+      when: office_user is not defined
+
+    - name: "office_password"
+      prompt: "Please enter your password for office"
+      private: yes
+      when: office_password is not defined
+
+    - name: "office_2fa_method"
+      prompt: "Please enter your 2fa method (Code or PopUp) for office"
+      private: no
+      when: office_2fa_method is not defined
+
+    - name: "office_2fa_code"
+      prompt: "Please enter your 2fa code for office"
+      private: yes
+      when:  office_2fa_code is not defined
+
+  tasks:
+
+    - name: Get data fields from ticket
+      jira: username={{ ticket_user }} password={{ ticket_password }} uri={{ ticket_system }} project=AM operation=fetch issue={{ ticket_number }}
+      register: data
+      no_log: "{{ no_log|default('true') }}"
+
+
+
+    - name: Create random password for use in email account
+      shell: openssl rand -base64 8
+      register: email_password
+
+    - set_fact:
+        # Set input variables as host facts for use in other playbooks on this host
+        admin_user: "{{admin_user}}"
+        admin_password: "{{ admin_password }}"
+        office_user: "{{office_user}}"
+        office_password: "{{ office_password }}"
+        office_2fa_method: "{{ office_2fa_method }}"
+        office_2fa_code: "{% if office_2fa_method == 'Code' %} {{office_2fa_code }}{% else %} '' {% endif %}"
+        username: "{{ data.meta.fields.customfield_11601.name }}"
+        email: "{{ data.meta.fields.customfield_11601.emailAddress  }}"
+        email_password: "{{ email_password.stdout + '1' }}"
+        ldap_url: "{{ ldap_url }} "
+        encryption_password: "{{encryption_password}}"
+
+    - name: set delete data
+      set_fact:
+        user:
+          disable:
+            user:
+              username:     "{{ data.meta.fields.customfield_11601.name }}"
+              email:        "{{ data.meta.fields.customfield_11601.emailAddress  }}"
+              to:           "{{ data.meta.fields.customfield_10134 }}"
+          secret: "{{ secret }}"
+
+    - fail: msg="{{ item }} is required!"
+      with_items:
+        - "{{ admin_user }}"
+        - "{{ username }}"
+        - "{{ email }}"
+        - "{{ office_user }}"
+        - "{{ office_2fa_method }}"
+      when: "{{ item|trim =='' }}"
