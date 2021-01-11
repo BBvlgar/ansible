@@ -1,5 +1,7 @@
 ---
+
 applications:
+
   portainer_stack:
     portainer:
       name: portainer
@@ -16,9 +18,9 @@ applications:
         - "traefik.http.routers.portainer.rule: 'Host(`portainer.muc.it-economics.de`)'"
         - "traefik.http.routers.portainer.entrypoints: 'websecure'"
         - "traefik.http.routers.portainer.tls: 'true'"
-        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"     
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
         - "traefik.http.routers.portainer.tls.domains[0].main: 'portainer.muc.it-economics.de'"
-        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.muc.it-economics.de'" 
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.muc.it-economics.de'"
       networks:
         - "backbone"
 
@@ -171,5 +173,5 @@ applications:
         - "backbone"
       labels:
         - "traefik.enable: 'false'"
-        
+
 ...

@@ -1,9 +1,8 @@
 ---
-docker_host: true
-traefik_enabled: true
+
+debug:           yes
+traefik_enabled: yes
 disallowed_users:
   - mthanner
-remote: true
-debug: true
 
 ...

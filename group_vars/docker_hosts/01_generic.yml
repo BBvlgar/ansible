@@ -1,6 +1,8 @@
 ---
 
-docker_home: '/mnt/data'
-composerFilePath: "/mnt/shared/compose"
+remote:           yes
+docker_host:      yes
+docker_home:      '/mnt/data'
+composerFilePath: '/mnt/shared/compose'
 
 ...

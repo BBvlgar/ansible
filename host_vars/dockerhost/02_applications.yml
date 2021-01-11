@@ -1,5 +1,7 @@
 ---
+
 applications:
+
   events-app_stack:
     events-app-backend:
       name: events-app-backend
@@ -47,9 +49,9 @@ applications:
 
   skillmatrix_stack:
     skillmatrix-service:
-      name: skillmatrix-service            
+      name: skillmatrix-service
       image: iteconomics/mindmap-service:24
-      restartPolicy: always      
+      restartPolicy: always
       environment:
         POSTGRESQL_URL: "jdbc:postgresql://hre1vrt7i07k54.cmeuro3rr38y.eu-central-1.rds.amazonaws.com:5432/mindmapdb"
         POSTGRESQL_USER: "mindmap"
@@ -71,14 +73,14 @@ applications:
         - "traefik.http.routers.skillmatrix-service.tls.domains[0].sans: '*.it-economics.de'"
       networks:
         - "backbone"
-        - "database" 
+        - "database"
 
     skillmatrix-gui:
-      name: skillmatrix-gui                  
+      name: skillmatrix-gui
       image: iteconomics/d3-skills-mindmap:23
       volumes:
         - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
-      restartPolicy: always      
+      restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
         - "traefik.http.services.skillmatrix.loadbalancer.server.port: '8080'"
@@ -95,7 +97,7 @@ applications:
         VUE_APP_BACKEND_URL: https://skillmatrix-service.it-economics.de
       networks:
         - "backbone"
-        - "database" 
+        - "database"
 
   appstore_stack:
     appstore:
@@ -266,7 +268,7 @@ applications:
         - "traefik.http.routers.directory.rule: 'Host(`directory.it-economics.de`)'"
         - "traefik.http.routers.directory.entrypoints: 'websecure'"
         - "traefik.http.routers.directory.tls: 'true'"
-        - "traefik.http.routers.directory.tls.certresolver: 'letsencrypt'" 
+        - "traefik.http.routers.directory.tls.certresolver: 'letsencrypt'"
         - "traefik.http.routers.directory.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.directory.tls.domains[0].sans: '*.it-economics.de'"
       environment:
@@ -629,7 +631,7 @@ applications:
         - "88:88/tcp"
         - "88:88/udp"
       networks:
-        - "database"        
+        - "database"
 
   limesurvey_stack:
     limesurvey:
@@ -679,4 +681,5 @@ applications:
         DEFAULT_TEMPLATE: iteconomics
       networks:
         - "backbone"
+
 ...

@@ -1,12 +1,11 @@
 ---
-docker_host: true
+
 traefik_enabled: true
-disallowed_users: 
+disallowed_users:
   - mthanner
   - tfischer
   - mmenzel
 sophos_av_disableMTD: true
-remote: true
 debug: true
 
 host_ufw_rules:

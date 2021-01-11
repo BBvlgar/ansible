@@ -1,6 +1,5 @@
 ---
-docker_host: true
-composerFilePath: "/mnt/shared/compose/dockerhost"
-remote: true
+
+composerFilePath: '/mnt/shared/compose/dockerhost'
 
 ...

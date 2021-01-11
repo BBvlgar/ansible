@@ -1,5 +1,7 @@
 ---
+
 applications:
+
   wireguard-stack:
     wireguard:
       name: wireguard
@@ -17,12 +19,12 @@ applications:
         PEERS: "10" #optional
         PEERDNS: "auto" #optional
         INTERNAL_SUBNET: "10.13.13.0" #optional
-        ALLOWEDIPS: "0.0.0.0/0" #optional        
+        ALLOWEDIPS: "0.0.0.0/0" #optional
       volumes:
         - "/mnt/shared/applications/wireguard/config:/config"
         - "/lib/modules:/lib/modules"
       sysctls:
-        - net.ipv4.conf.all.src_valid_mark=1        
+        - net.ipv4.conf.all.src_valid_mark=1
       labels:
         - "traefik.enable: 'false'"
       networks:
@@ -34,11 +36,11 @@ applications:
     openvpn:
       name: openvpn
       image: iteconomics/openvpn:latest
-      restartPolicy: always     
+      restartPolicy: always
       volumes:
         - '/srv/openvpn/config/ite.conf:/etc/openvpn/ite.conf'
         - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
-        - '/srv/openvpn/ssl:/etc/ssl/vpn'     
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
       labels:
         - "traefik.enable: 'false'"
       networks:
@@ -50,11 +52,11 @@ applications:
     devopenvpn:
       name: devopenvpn
       image: iteconomics/openvpn:latest
-      restartPolicy: always     
+      restartPolicy: always
       volumes:
         - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
         - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
-        - '/srv/openvpn/ssl:/etc/ssl/vpn'     
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
       labels:
         - "traefik.enable: 'false'"
       networks:
