@@ -41,7 +41,7 @@ applications:
       environment:
         POSTGRES_USER: "{{ events-app-backend.DATABASE_USER }}"
         POSTGRES_PASSWORD: "{{ events-app-backend.DATABASE_PASSWORD }}"
-        POSTGRES_DB: {{ events-app-backend.DATABASE_DB }}
+        POSTGRES_DB: "{{ events-app-backend.DATABASE_DB }}"
       networks:
         - database
 
