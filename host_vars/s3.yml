@@ -6,6 +6,7 @@ disallowed_users:
 remote: true
 debug: true
 
+---
 applications:
   portainer_stack:
     portainer:
@@ -32,9 +33,11 @@ applications:
   alfresco-stack:
     alfresco-prd:
       name: alfresco-prd
-      image: iteconomics/wireguard
+      image: iteconomics/alfresco
       container_name: alfresco-prd
       restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
       volumes:
         - "/srv/alfresco-prd/config:/srv/project/config"
         - "/srv/alfresco-prd/config/custom-log4j.properties:/opt/alfresco/tomcat/shared/classes/alfresco/extension/custom-log4j.properties"
@@ -43,6 +46,8 @@ applications:
       image: iteconomics/apache
       container_name: alfresco-prd_web
       restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
       environment:
         MODS: "proxy proxy_ajp ssl headers"
     alfresco-prd_db:
@@ -50,19 +55,19 @@ applications:
       image: mysql:5.6
       container_name: alfresco-prd_db
       restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
       environment:
-        MYSQL_ROOT_PASSWORD: "tqi2KSxY3MXcuIqUGiOM"
-        MYSQL_DATABASE: "alfresco"
-        MYSQL_USER: "alfresco"
-        MYSQL_PASSWORD: "AvQib3Rpyx65rl636Qsn"
+        MYSQL_ROOT_PASSWORD: "{{ alfresco.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ alfresco.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ alfresco.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ alfresco.MYSQL_PASSWORD }}"
       volumes:
         - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
         - "/srv/alfresco-prd/db/backup:/mnt/backup/db"
         - "/srv/alfresco-prd/db/data:/var/lib/mysql"
       networks:
         - "database"
-      labels:
-        - "traefik.enable: 'false'"
 
   social-partner-stack:
     social-partner:
@@ -92,10 +97,10 @@ applications:
       container_name: confluence_db
       restartPolicy: always
       environment:
-        MYSQL_ROOT_PASSWORD: "h7i8buZaZw4b9AoS77q1"
-        MYSQL_DATABASE: "confluence"
-        MYSQL_USER: "confluence"
-        MYSQL_PASSWORD: "h7i8buZaZw4b9AoS77q1"
+        MYSQL_ROOT_PASSWORD: "{{ social-partner.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ social-partner.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ social-partner.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ social-partner.MYSQL_PASSWORD }}"
       volumes:
         - "/srv/social-partner/mysql/config:/etc/mysql/conf.d"
         - "/srv/social-partner/mysql/data:/var/lib/mysql"
@@ -104,11 +109,11 @@ applications:
       labels:
         - "traefik.enable: 'false'"
 
-  personio_backup-stack:
-    personio_backup:
-      name: alfresco
-      image: iteconomics/wireguard
-  network-stack:
+#  personio_backup-stack:
+#    personio_backup:
+#      name: alfresco
+#      image: iteconomics/wireguard
+  ldap-stack:
     ldap03:
       name: ldap03
       image: iteconomics/openldap:latest
@@ -122,11 +127,14 @@ applications:
         - "636:636"
       networks:
         - "database"
+  kdc-stack:
     kdc:
       name: kdc03
       image: iteconomics/kdc:latest
       container_name: kdc03
       restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
       ports:
       - "88:88"
       - "464:464"
@@ -137,6 +145,7 @@ applications:
       volumes:
         - "/dev/random:/dev/urandom"
         - "/kdc:/srv/kdc03/config"
+  pihole-stack:
     pihole:
       name: pihole
       image: pihole/pihole:latest
@@ -144,13 +153,15 @@ applications:
       restartPolicy: always
       ports:
       - "53:53/udp"
-      - "53:53/udp"
       - "67:67/udp"
       volumes:
         - "/srv/pihole/pihole:/etc/pihole"
         - "/srv/pihole/dnsmasq.d:/etc/dnsmasq.d"
       networks:
         - "backbone"
+      labels:
+        - "traefik.enable: 'false'"
+  freeradius-stack:
     freeradius:
       name: freeradius
       image: iteconomics/freeradius:latest
@@ -166,22 +177,7 @@ applications:
         - "/srv/freeradius/config/clients.conf:/etc/freeradius/clients.conf"
       networks:
         - "backbone"
-    ntp:
-      name: ntp
-      image: cturra/ntp:latest
-      container_name: ntp
-      restartPolicy: always
-      cap_add:
-        - SYS_TIME
-      ports:
-      - "123:123/udp"
-      environment:
-        NTP_SERVERS: "time.cloudflare.com"
-      networks:
-        - "backbone"
-      #read_only: true
-      #tmpfs:
-      #  - /etc/chrony:rw,mode=1750
-      #  - /run/chrony:rw,mode=1750
-      #  - /var/lib/chrony:rw,mode=1750
+      labels:
+        - "traefik.enable: 'false'"
+       
 ...

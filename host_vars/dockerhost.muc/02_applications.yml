@@ -50,10 +50,10 @@ applications:
       labels:
         - "traefik.enable: 'false'"
       environment:
-        MYSQL_ROOT_PASSWORD: "tqi2KSxY3MXcuIqUGiOM"
-        MYSQL_DATABASE: "alfresco"
-        MYSQL_USER: "alfresco"
-        MYSQL_PASSWORD: "AvQib3Rpyx65rl636Qsn"
+        MYSQL_ROOT_PASSWORD: "{{ alfresco.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ alfresco.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ alfresco.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ alfresco.MYSQL_PASSWORD }}"
       volumes:
         - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
         - "/srv/alfresco-prd/db/backup:/mnt/backup/db"
@@ -89,10 +89,10 @@ applications:
       container_name: confluence_db
       restartPolicy: always
       environment:
-        MYSQL_ROOT_PASSWORD: "h7i8buZaZw4b9AoS77q1"
-        MYSQL_DATABASE: "confluence"
-        MYSQL_USER: "confluence"
-        MYSQL_PASSWORD: "h7i8buZaZw4b9AoS77q1"
+        MYSQL_ROOT_PASSWORD: "{{ social-partner.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ social-partner.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ social-partner.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ social-partner.MYSQL_PASSWORD }}"
       volumes:
         - "/srv/social-partner/mysql/config:/etc/mysql/conf.d"
         - "/srv/social-partner/mysql/data:/var/lib/mysql"
