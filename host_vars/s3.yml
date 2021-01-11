@@ -6,7 +6,6 @@ disallowed_users:
 remote: true
 debug: true
 
----
 applications:
   portainer_stack:
     portainer:
