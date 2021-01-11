@@ -1,0 +1,47 @@
+---
+###
+#applications:
+#  stack:
+#    app1:          <--- here we are
+#      templates:
+#        htaccess:
+#          src: "wordpress-htaccess.j2"
+#          dest: "{{ docker_home }}/flixdafoxde/wordpress/.htaccess"
+#          owner: "777"
+#          group: "777"
+#        uploadini:
+#          src: "uploadini.j2"
+#          dest: "{{ docker_home }}/flixdafoxde/upload.ini"
+#          mode: "777"
+#          group: "777"
+#    app2:          <--- here we are
+#      templates:
+#        htaccess:
+#          src: "wordpress-htaccess.j2"
+#          dest: "{{ docker_home }}/flixdafoxde/wordpress/.htaccess"
+#          mode: "777"
+#          owner: "777"
+#          group: "777"
+#        uploadini:
+#          src: "uploadini.j2"
+#          dest: "{{ docker_home }}/flixdafoxde/upload.ini"
+#    app3:          <--- here we are
+##
+
+- debug:
+    msg: "{{ app }}"
+  when: debug is defined and debug == true
+
+- name: "Create Config-Files"
+  template:
+    src: "{{ tpl.value.src }}"
+    dest: "{{ tpl.value.dest }}"
+    mode: "{{ tpl.value.mode | default ('') }}"
+    owner: "{{ tpl.value.owner | default ('') }}"
+    group: "{{ tpl.value.group | default ('') }}"
+  with_dict: "{{ app.value.templates }}"
+  loop_control:
+    loop_var: tpl
+  when: app.value.templates is defined and app.value.templates | length != 0
+
+...
