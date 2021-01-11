@@ -23,6 +23,8 @@ git remote add -f ansible          ssh://git@git.it-economics.de:7999/in/ansible
 git remote add -f env_hosting      ssh://git@git.it-economics.de:7999/in/env_hosting.git
 git remote add -f env_production   ssh://git@git.it-economics.de:7999/in/env_production.git
 git remote add -f custom_playbooks ssh://git@git.it-economics.de:7999/in/custom-playbooks.git
+git remote add -f custom_templates ssh://git@git.it-economics.de:7999/in/custom_templates.git
+
 ```
 
 ### fetching changes from the remotes into working repo
@@ -35,6 +37,7 @@ git subtree pull --prefix ansible                 ansible          master
 git subtree pull --prefix environments/production env_production   master
 git subtree pull --prefix environments/hosting    env_hosting      master
 git subtree pull --prefix custom/playbooks        custom_playbooks master
+git subtree pull --prefix custom/templates        custom_templates master
 ```
 
 ### merge back into dedicated repositories
