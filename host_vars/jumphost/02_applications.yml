@@ -1,14 +1,4 @@
 ---
-docker_host: true
-traefik_enabled: true
-disallowed_users: 
-  - mthanner
-  - tfischer
-  - mmenzel
-sophos_av_disableMTD: true
-remote: true
-debug: true
-
 applications:
   wireguard-stack:
     wireguard:
@@ -71,6 +61,5 @@ applications:
         - "backbone"
       ports:
         - 443:443
-
 
 ...

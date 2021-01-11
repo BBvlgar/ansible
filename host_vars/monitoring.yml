@@ -8,5 +8,14 @@ disallowed_users:
 sophos_av_disableMTD: true
 remote: true
 debug: false
+host_ufw_rules:
+  # Wireguard
+  - rule: allow
+    port: "60002"
+    proto: "tcp"
+  # Wireguard
+  - rule: allow
+    port: "60002"
+    proto: "udp"
 
 ...

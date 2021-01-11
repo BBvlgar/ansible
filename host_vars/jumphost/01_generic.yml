@@ -1,0 +1,38 @@
+---
+docker_host: true
+traefik_enabled: true
+disallowed_users: 
+  - mthanner
+  - tfischer
+  - mmenzel
+sophos_av_disableMTD: true
+remote: true
+debug: true
+
+host_ufw_rules:
+  # Wireguard
+  - rule: allow
+    port: "60002"
+    proto: "tcp"
+  # Wireguard
+  - rule: allow
+    port: "60002"
+    proto: "udp"
+  # OpenVPN
+  - rule: allow
+    port: "443"
+    proto: "tcp"
+  # OpenVPN
+  - rule: allow
+    port: "443"
+    proto: "udp"
+  # OpenVPN
+  - rule: allow
+    port: "8443"
+    proto: "tcp"
+  # OpenVPN
+  - rule: allow
+    port: "8443"
+    proto: "udp"
+
+...
