@@ -47,6 +47,13 @@ applications:
         - "backbone"
       ports:
         - 443:443
+      templates:
+        vpnconf:
+          src: "custom/openvpn/ite.conf.j2"
+          dest: "/srv/openvpn/config/ite.conf"
+        htaccess:
+          src: "custom/openvpn/ldap.cfg.j2"
+          dest: "/srv/openvpn/config/ldap.cfg"
 
   devopenvpn-stack:
     devopenvpn:
@@ -63,5 +70,12 @@ applications:
         - "backbone"
       ports:
         - 443:443
+      templates:
+        vpnconf:
+          src: "custom/openvpn/ite.conf.j2"
+          dest: "/srv/openvpn/config/ite.conf"
+        htaccess:
+          src: "custom/openvpn/ldap.cfg.j2"
+          dest: "/srv/openvpn/config/ldap.cfg"
 
 ...
