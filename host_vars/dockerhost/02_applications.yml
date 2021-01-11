@@ -53,10 +53,10 @@ applications:
       image: iteconomics/mindmap-service:24
       restartPolicy: always
       environment:
-        POSTGRESQL_URL: {{ skillmatrix-service.POSTGRESQL_URL }}
-        POSTGRESQL_USER: {{ skillmatrix-service.POSTGRESQL_USER }}
-        POSTGRESQL_PASSWORD: {{ skillmatrix-service.POSTGRESQL_PASSWORD }}
-        STATIC_CONTENT_PATH: /usr/share/nginx/html
+        POSTGRESQL_URL: "{{ skillmatrix-service.POSTGRESQL_URL }}"
+        POSTGRESQL_USER: "{{ skillmatrix-service.POSTGRESQL_USER }}"
+        POSTGRESQL_PASSWORD: "{{ skillmatrix-service.POSTGRESQL_PASSWORD }}"
+        STATIC_CONTENT_PATH: "/usr/share/nginx/html"
       volumes:
         - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
       labels:
