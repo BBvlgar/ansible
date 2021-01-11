@@ -83,7 +83,6 @@ applications:
       image: felixkazuyade/worksuite:latest
       container_name: worksuite
       restartPolicy: always
-      labels:
       ports:
         - "222:22"
       environment:
