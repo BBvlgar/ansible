@@ -1,0 +1,26 @@
+---
+applications:
+  portainer_stack:
+    portainer:
+      name: portainer
+      image: portainer/portainer-ce
+      restartPolicy: always
+      volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+            - '/mnt/shared/applications/portainer/data:/data'
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"
+        - "traefik.http.routers.portainer_http.rule: 'Host(`portainer.it-economics-testing.de`)'"
+        - "traefik.http.routers.portainer_http.entrypoints: 'web'"
+        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.portainer.rule: 'Host(`portainer.it-economics-testing.de`)'"
+        - "traefik.http.routers.portainer.entrypoints: 'websecure'"
+        - "traefik.http.routers.portainer.tls: 'true'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.portainer.tls.domains[0].main: 'it-economics-testing.de'"
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.it-economics-testing.de'"
+      networks:
+        - "backbone"
+
+...

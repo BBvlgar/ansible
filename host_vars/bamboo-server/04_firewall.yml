@@ -1,0 +1,20 @@
+---
+host_ufw_rules:
+  # bamboo
+  - rule: allow
+    port: "8085"
+    proto: "tcp"
+  # bamboo
+  - rule: allow
+    port: "8085"
+    proto: "udp"
+  # bamboo broker
+  - rule: allow
+    port: "54663"
+    proto: "tcp"
+  # bamboo broker
+  - rule: allow
+    port: "54663"
+    proto: "udp"
+
+...
