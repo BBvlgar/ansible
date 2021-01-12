@@ -158,6 +158,15 @@
 # If we would not do this, Docker would assume the bind paths to be directories
 # and create folders, what could destroy the container when it requires a file
 # on the destination.
+- name: Create parent directories for files – if they do not already exist
+  file:
+    path: "{{ ( docker_home + '/' + ( container.shared_home_app | default( container.name ) ) + '/' + file.0 ) | dirname }}"
+    state: directory
+  with_items: "{{ container.mountfiles | default([]) }}"
+  loop_control:
+    loop_var: file
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
 - name: Create needed files – if they do not already exist
   file:
     path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ file.0 }}"
