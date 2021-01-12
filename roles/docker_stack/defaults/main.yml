@@ -141,7 +141,7 @@ postgres_cnt:
 datacontainer_image:   "busybox"
 datacontainer_volumes: []
 
-datacontainer:
+default_datacontainer:
   restart_policy: no
   recreate:       no
   run:            yes

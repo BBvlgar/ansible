@@ -174,15 +174,6 @@
   when: ((container.pull is defined and container.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
         ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
 
-# create Docker networks if they are defined and needed
-- name: Make sure docker networks exists
-  docker_network: "{{ network | combine( { 'appends': 'true' | bool } ) }}"
-  with_items: "{{ container.networks | default({}) }}"
-  loop_control:
-    loop_var: network
-  ignore_errors: yes
-  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
-
 # If one or more directories of the container should be mounted from a data
 # volume, at this moment that single one or the other ones will be created
 - name: Create Docker volumes
@@ -267,6 +258,15 @@
       container.network_mode is not defined
       or not container.network_mode == 'host'
     )
+
+# create Docker networks if they are defined and needed
+- name: Make sure docker networks exists
+  docker_network: "{{ network | combine( { 'appends': 'true' | bool } ) }}"
+  with_items: "{{ container_networks }}"
+  loop_control:
+    loop_var: network
+  ignore_errors: yes
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # Now the final app container will be started with all defined variables
 # For more information on this task:
