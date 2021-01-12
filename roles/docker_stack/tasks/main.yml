@@ -6,7 +6,8 @@
 
 - name: "prepare container name"
   set_fact:
-    workstack: "{{ stack | preparestack }}"
+    workstack:  "{{ stack | preparestack }}"
+    containers: []
 
 # `include_*` is executed in sequence, `import_*` would be executed before
 # starting all tasks. So we shuold use `include_*`.
@@ -33,6 +34,7 @@
 - name: 'Combine all container information to let them run'
   set_fact:
     stackitems: "{{ stackitems | adjustNetworks | prepareSharedHome ( workstack.name ) | prepareContainerNames ( stack ) }}"
+    datacontainer: "{{ default_datacontainer }}"
 
 # the data container collects all mounted data (bind mounts and volumes)
 # and therefor eases up the backup process
