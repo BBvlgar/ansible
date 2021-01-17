@@ -5,7 +5,7 @@
 ## general definitions
 ###
 
-postgres_version:     "{{ stack.postgres_version | default ('11.4') }}"
+postgres_version:     "{{ stack.postgres_version | default ('10') }}"
 mysql_version:        "{{ stack.mysql_version    | default ('5.7') }}"
 mdb_version:          "{{ stack.mdb_version      | default ('latest') }}"
 
@@ -131,6 +131,7 @@ postgres_cnt:
     POSTGRES_DB:        "{{ stack.pg_name | default ( stack.db_name | default ( stack.db_user | default ( default_db_name ) ) ) }}"
     POSTGRES_USER:      "{{ stack.pg_user | default ( stack.db_user | default ( default_db_user ) ) }}"
     POSTGRES_PASSWORD:  "{{ stack.pg_pw | default ( stack.db_pw | default ( default_db_pw ) ) }}"
+    LANG:               "{{ stack_pg_lang | default( 'en_US.UTF-8' ) }}"
 
 
 ###
