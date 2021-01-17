@@ -24,7 +24,7 @@
     - name: Run Træfik
       include_role:
         name: docker_stack_traefik
-      when: run_traefik
+      when: run_traefik | default(False) | bool
 
     # Afer that, run all Docker Stacks
     - name: Run Docker stacks
