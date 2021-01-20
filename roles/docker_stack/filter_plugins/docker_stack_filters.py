@@ -66,7 +66,7 @@ class FilterModule(object):
                 stack_data[k] = []
 
         for cnt in stack_items:
-            backup_prefix = '/backup/' + self.prepareString( cnt['name'] ) + '/'
+            backup_prefix = '/backup/' + stackname + '/' + self.prepareString( cnt['name'] ) + '/'
             print(cnt)
             print()
             if "directories" in cnt:
