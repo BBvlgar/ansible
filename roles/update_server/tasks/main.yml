@@ -49,10 +49,10 @@
         reboot_timeout: 300
       ignore_errors: yes  
       when: override_user | bool or
-      continue_upgrade_restart.user_input is defined and (
-        continue_upgrade.user_input == '' or
-        continue_upgrade.user_input | bool
-      )
+            continue_upgrade_restart.user_input is defined and (
+              continue_upgrade.user_input == '' or
+              continue_upgrade.user_input | bool
+            )
 
   become: yes
 
