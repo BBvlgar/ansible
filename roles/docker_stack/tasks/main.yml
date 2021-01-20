@@ -28,7 +28,7 @@
   set_fact:
     ## ToDo – Main Application and real additional containers
     # stackitems: "{{ containers + [ mainapplication ] }}"
-    stackitems: "{{ containers + stack.containers }}"
+    stackitems: "{{ containers + stack.containers | default([]) }}"
 
 # bring everything together within the stackitems variable
 - name: 'Combine all container information to let them run'
