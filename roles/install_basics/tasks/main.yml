@@ -5,6 +5,10 @@
 - name: 'merge tools to be installed'
   set_fact:
     install_tools: "{{ basic_toolset + additional_basic_tools | default([]) }}"
+    
+- name: 'merge pip tools to be installed'
+  set_fact:
+    install_pip_tools: "{{ basic_pip_toolset + additional_basic_pip_tools | default([]) }}"
 
 - name: install the latest version of basic toolset
   package:
@@ -45,6 +49,14 @@
       - pip
       # - python3-keyczar
       # - ansible
+      
+- name: install pip packages, force upgrade
+  pip:
+    name: "{{ item.name }}"
+    executable: pip3
+    state: latest      
+  with_items: "{{ install_pip_tools }}"
+  become: yes
 
 - name: download files, e.g. CA certificates
   get_url:

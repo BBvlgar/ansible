@@ -49,4 +49,7 @@ basic_toolset:
   - name: mailutils
   - name: strace
 
+basic_pip_toolset:
+  - name: pip
+
 ...
