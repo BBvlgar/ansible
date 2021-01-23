@@ -266,7 +266,8 @@
     (
       container.network_mode is not defined
       or not container.network_mode == 'host'
-    )
+    ) and
+    {'name': 'host'} not in container_networks
 
 # create Docker networks if they are defined and needed
 - name: Make sure docker networks exists
@@ -280,34 +281,60 @@
 # Now the final app container will be started with all defined variables
 # For more information on this task:
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
+- name: build docker run dictionary
+  set_fact:
+    docker_container:
+      image:           "{{ docker_image_url }}"
+      name:            "{{ container.name }}"
+      capabilities:    "{{ container.capabilities   | default( [] ) }}"
+      command:         "{{ container.command        | default( '' ) }}"
+      domainname:      "{{ container.domainname     | default( '' ) }}"
+      env:             "{{ container.env            | default( {} ) }}"
+      exposed:         "{{ container.expose_ports   | default( [] ) }}"
+      healthcheck:     "{{ container.healthcheck    | default( {} ) }}"
+      hostname:        "{{ container.hostname       | default( container.name ) }}"
+      init:            "{{ container.init           | default( 'no' ) }}"
+      labels:          "{{ containerlabels }}"
+      log_driver:      "{{ container.log_driver     | default( 'json-file' ) }}"
+      log_options:     "{{ container.log_options    | default( {} ) }}"
+      memory:          "{{ container.memory_limit   | default( '0' )}}"
+      networks:        "{{ container_networks }}"
+      network_mode:    "{{ container.network_mode   | default ('bridge') }}"
+      privileged:      "{{ container.privileged     | default( 'no' ) }}"
+      purge_networks:  "{{ container.purge_networks | default( true | bool ) }}"
+      published_ports: "{{ container.aux_ports      | default( [] ) }}"
+      recreate:        "{{ container.recreate       | default( cnt_recreate ) }}"
+      restart_policy:  "{{ container.restart_policy | default( docker_restart_policy ) }}"
+      state:           "{{ container.state          | default( cnt_state ) }}"
+      stop_timeout:    "{{ container.stop_timeout   | default( 10 ) }}"
+      user:            "{{ container.user           | default( '' ) }}"
+      volumes_from:    "{{ container.volumes_from   | default( [] ) }}"
+      volumes:         "{{ volumes1                 | default( [] )   +   volumes2 | default( [] )   +   container.volumes | default( [] ) }}"
+      working_dir:     "{{ container.working_dir    | default( '' ) }}"
+      networks_cli_compatible: "yes"
+
+- name: 'DEBUG: Print docker container info to be run'
+  debug:
+    msg: '{{ docker_container }}'
+  when: ( debug is defined and debug )
+
+- name: 'DEBUG: Wait for user to continue'
+  pause:
+    prompt: "Should we continue? (yes/no - default: yes)"
+  register: continue_cnt
+  when: ( debug is defined and debug )
+
+- name: 'Fail if user skipps'
+  fail:
+    msg: 'User aborted the run'
+  when: debug is defined and
+        debug and
+        continue_cnt.user_input is defined and
+        not ( continue_cnt.user_input == '' ) and
+        not ( continue_cnt.user_input | bool )
+
 - name: Control Container
-  docker_container:
-    image:           "{{ docker_image_url }}"
-    name:            "{{ container.name }}"
-    capabilities:    "{{ container.capabilities   | default( [] ) }}"
-    command:         "{{ container.command        | default( '' ) }}"
-    env:             "{{ container.env            | default( {} ) }}"
-    exposed:         "{{ container.expose_ports   | default( [] ) }}"
-    healthcheck:     "{{ container.healthcheck    | default( {} ) }}"
-    hostname:        "{{ container.hostname       | default( container.name ) }}"
-    init:            "{{ container.init           | default( 'no' ) }}"
-    labels:          "{{ containerlabels }}"
-    log_driver:      "{{ container.log_driver     | default( 'json-file' ) }}"
-    log_options:     "{{ container.log_options    | default( {} ) }}"
-    memory:          "{{ container.memory_limit   | default( '0' )}}"
-    networks:        "{{ container_networks }}"
-    network_mode:    "{{ container.network_mode   | default ('bridge') }}"
-    privileged:      "{{ container.privileged     | default( 'no' ) }}"
-    purge_networks:  "{{ container.purge_networks | default( true ) }}"
-    published_ports: "{{ container.aux_ports      | default( [] ) }}"
-    recreate:        "{{ container.recreate       | default( cnt_recreate ) }}"
-    restart_policy:  "{{ container.restart_policy | default( docker_restart_policy ) }}"
-    state:           "{{ container.state          | default( cnt_state ) }}"
-    stop_timeout:    "{{ container.stop_timeout   | default( 10 ) }}"
-    user:            "{{ container.user           | default( '' ) }}"
-    volumes_from:    "{{ container.volumes_from   | default( [] ) }}"
-    volumes:         "{{ volumes1                 | default( [] )   +   volumes2 | default( [] )   +   container.volumes | default( [] ) }}"
-    working_dir:     "{{ container.working_dir    | default( '' ) }}"
+  docker_container: "{{ docker_container }}"
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # previous tasks / roles could prepare some (templated) files that have to be
