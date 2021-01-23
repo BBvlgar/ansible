@@ -47,9 +47,16 @@
     localdatacontainer: "{{ datacontainer | combine ( stack_data | combine ( { 'name': workstack.name + '_' + datacontainer.name, 'shared_home_app': workstack.name } ) ) }}"
 
 # combine stackitems and datacontainer
-- name: 'Combine all container information to let them run'
+- name: 'Combine all containers with the data container'
   set_fact:
-    stackitems: "{{ ( stackitems + [ localdatacontainer ] ) | unifyVolumes | ensurePullRun }}"
+    stackitems: "{{ stackitems + [ localdatacontainer ] }}"
+  when: localdatacontainer.volumes is defined and localdatacontainer.volumes | length > datacontainer_volumes | length or
+        localdatacontainer.directories is defined and localdatacontainer.directories | length >= 1 or
+        localdatacontainer.mountfiles is defined and localdatacontainer.mountfiles | length >= 1
+
+- name: 'Finalize all container information to let them run'
+  set_fact:
+    stackitems: "{{ stackitems | unifyVolumes | ensurePullRun }}"
 
 - name: 'DEBUG: Print all stack items to be run'
   debug:
