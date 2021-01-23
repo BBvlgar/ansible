@@ -47,5 +47,8 @@ basic_toolset:
   - name: rsync
   - name: python-setuptools
   - name: mailutils
+  
+basic_pip_toolset:
+  - name: pip
 
 ...
