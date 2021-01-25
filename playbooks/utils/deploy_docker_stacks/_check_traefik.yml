@@ -9,5 +9,6 @@
       with_items: "{{ cur_stack.value.containers | default( [] ) }}"
       loop_control:
         loop_var: cnt
+      when: notraefik is not defined or not notraefik | bool
 
 ...

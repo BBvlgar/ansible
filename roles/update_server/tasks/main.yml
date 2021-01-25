@@ -36,6 +36,23 @@
               continue_upgrade.user_input == '' or
               continue_upgrade.user_input | bool
             )
+            
+
+    - name: Waiting for continue
+      pause:
+        prompt: "Should we restrart all servers? (yes/no - default: yes)"
+      register: continue_upgrade_restart
+      when: not override_user | bool
+      
+    - name: reboot
+      reboot:
+        reboot_timeout: 300
+      ignore_errors: yes  
+      when: override_user | bool or
+            continue_upgrade_restart.user_input is defined and (
+              continue_upgrade.user_input == '' or
+              continue_upgrade.user_input | bool
+            )
 
   become: yes
 
