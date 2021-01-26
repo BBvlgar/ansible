@@ -78,32 +78,39 @@ def changePassword():
     browser.find_element_by_id('ResetUserPasswordSubmit').click()
 
 
-browser.get("https://office.de")
-browser.find_element_by_xpath("//input[@name='loginfmt']").clearAndType(args.au)
-browser.find_element_by_xpath("//input[@id='idSIButton9']").click()
+try:
+    browser.get("https://office.de")
+    browser.find_element_by_xpath("//input[@name='loginfmt']").clearAndType(args.au)
+    browser.find_element_by_xpath("//input[@id='idSIButton9']").click()
 
-time.sleep(2)
-browser.find_element_by_xpath("//input[@name='passwd']").clearAndType(args.ap)
-browser.find_element_by_xpath("//input[@id='idSIButton9']").click()
+    time.sleep(2)
+    browser.find_element_by_xpath("//input[@name='passwd']").clearAndType(args.ap)
+    browser.find_element_by_xpath("//input[@id='idSIButton9']").click()
 
-print("Wait for 2FA")
-time.sleep(2)
+    print("Wait for 2FA")
+    time.sleep(2)
 
-if ("Enter code" in browser.page_source) and args.m == "Code":
-    browser.find_element_by_xpath("//*[@id='idTxtBx_SAOTCC_OTC']").clearAndType(args.c)
-    browser.find_element_by_xpath("//*[@id='idSubmit_SAOTCC_Continue']").click()
-else:
-    print('no code')
+    if ("Enter code" in browser.page_source) and args.m == "Code":
+        browser.find_element_by_xpath("//*[@id='idTxtBx_SAOTCC_OTC']").clearAndType(args.c)
+        browser.find_element_by_xpath("//*[@id='idSubmit_SAOTCC_Continue']").click()
+    else:
+        print('no code')
 
-time.sleep(20)
-element = WebDriverWait(browser, 60).until(
-        EC.presence_of_element_located((By.XPATH, "//*[text()='Stay signed in?']"))
-    )
+    time.sleep(20)
+    element = WebDriverWait(browser, 60).until(
+    	EC.presence_of_element_located((By.XPATH, "//*[text()='Stay signed in?']"))
+      )
 
-browser.find_element_by_xpath("//input[@id='idBtn_Back']").click()
+    browser.find_element_by_xpath("//input[@id='idBtn_Back']").click()
+
+except Exception as e:
+    raise Exception("Could not login to Office, please check your saved credentials.")
 
 # Disable 2FA of user
-disable2FA()
+try:
+    disable2FA()
+except Exception as e:
+    pass
 time.sleep(20)
 
 # change password of user
