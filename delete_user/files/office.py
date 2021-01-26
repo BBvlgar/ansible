@@ -96,12 +96,12 @@ try:
     else:
         print('no code')
 
-        time.sleep(20)
-        element = WebDriverWait(browser, 60).until(
-            EC.presence_of_element_located((By.XPATH, "//*[text()='Stay signed in?']"))
-            )
+    time.sleep(20)
+    element = WebDriverWait(browser, 60).until(
+    	EC.presence_of_element_located((By.XPATH, "//*[text()='Stay signed in?']"))
+      )
 
-        browser.find_element_by_xpath("//input[@id='idBtn_Back']").click()
+    browser.find_element_by_xpath("//input[@id='idBtn_Back']").click()
 
 except Exception as e:
     raise Exception("Could not login to Office, please check your saved credentials.")
