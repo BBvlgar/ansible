@@ -9,24 +9,46 @@
 
 # Fetch data from ticket system
 - import_playbook: gather_data.yml
+  tags:
+    - 2fa
+    - achievo
+    - ldap
+    - ssl
+    - mail
 
 - name: Confirmation
   hosts: localhost
   tasks:
     - debug: msg="Please use the following password for the email account {{hostvars.get('localhost').get('email') }} {{ hostvars.get('localhost').get('email_password') }}"
     - pause: prompt="Deleting user __ {{hostvars.get('localhost').get('username') }} __ from system __ {{ hostvars.get('localhost').get('ldap_url') }} __, do you want to continue?"
+  tags:
+    - 2fa
+    - achievo
+    - ldap
+    - ssl
+    - mail
 
 - name: Disable 2fa and set Office password
   import_playbook: remove_2fa_and_set_password.yml
+  tags:
+    - 2fa
 
 - name: disable achievo account
   import_playbook: achievo.yml
+  tags:
+    - achievo
 
 # Delete ldap account
 - import_playbook: ldap.yml
+  tags:
+    - ldap
 
 # Revoke SSL certificate
 - import_playbook: ssl.yml
+  tags: 
+    - ssl
 
 # Backup emails
 - import_playbook: email.yml
+  tags:
+    - mail

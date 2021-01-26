@@ -18,12 +18,12 @@
     when: '"it-economics" in mail'    
 
   # TODO RUN ASYNC and wait for finish
-  - name: Run offlineimap for given user
-    command: offlineimap -c /tmp/offlineimap_{{ hostvars.get('localhost').get('username') }}
-    async: 18000
-    poll: 120
-    ignore_errors: yes
-    when: '"it-economics" in mail'
+#  - name: Run offlineimap for given user
+#    command: offlineimap -c /tmp/offlineimap_{{ hostvars.get('localhost').get('username') }}
+#    async: 18000
+#    poll: 120
+#    ignore_errors: yes
+#    when: '"it-economics" in mail'
 
   - name: Create tar file and move it to /tmp/{{ hostvars.get('localhost').get('email') }}.tar.gz
     command: tar cfz /{{ maildir }}/{{ mail_uniq }} /tmp/{{ hostvars.get('localhost').get('username') }}_mail
@@ -40,11 +40,11 @@
     when: '"it-economics" in mail'
 
   - name: Test encryption key
-    shell: echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg -d --passphrase-fd 0 {{ maildir }}/DONOTDELETE.gpg | grep test
+    shell: "echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg --no-tty -d --passphrase-fd 0 {{ maildir }}/DONOTDELETE.gpg | grep test"
     register: encryption
 
   - name: Encrypt tar.gz
-    shell: echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg -c --passphrase-fd 0 {{ maildir }}/{{ mail_uniq }}
+    shell: echo {{ hostvars.get('localhost').get('encryption_password') }} | gpg --no-tty -c --passphrase-fd 0 {{ maildir }}/{{ mail_uniq }}
     when: '"it-economics" in mail and encryption is success'
 #    no_log: yes
 
