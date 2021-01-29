@@ -1,27 +1,6 @@
 ---
 downloads: ~/.ansible-downloads/
 
-#configure_dotfiles: true
-#configure_terminal: true
-configure_osx: true
-
-#configure_sudoers: false
-sudoers_custom_config: ''
-# Example:
-# sudoers_custom_config: |
-#   # Allow users in admin group to use sudo with no password.
-#   %admin ALL=(ALL) NOPASSWD: ALL
-
-#dotfiles_repo: https://github.com/geerlingguy/dotfiles.git
-#dotfiles_repo_accept_hostkey: true
-#dotfiles_repo_local_destination: ~/Development/GitHub/dotfiles
-#dotfiles_files:
-#  - .zshrc
-#  - .gitignore
-#  - .inputrc
-#  - .osx
-#  - .vimrc
-
 homebrew_installed_packages:
   - ansible
   - wget
@@ -123,25 +102,9 @@ appstore_app_ids:
   - { id: 497799835, name: "Xcode" }
 
 appstore_upgrade_all_apps: yes
-mas_signin_dialog: false
+mas_signin_dialog: true
 
-osx_script: "./setupmac.sh --no-restart"
 
-# Install packages from other package managers.
-# Note: You are responsible for making sure the required package managers are
-# installed, eg. through homebrew.
-#composer_packages: []
-# - name: drush
-#   state: present # present/absent, default: present
-#   version: "^8.1" # default: N/A
-#gem_packages: []
-# - name: bundler
-#   state: present # present/absent/latest, default: present
-#   version: "~> 1.15.1" # default: N/A
-#npm_packages: []
-# - name: webpack
-#   state: present # present/absent/latest, default: present
-#   version: "^2.6" # default: N/A
 
 pip_packages:
   - name: jinja2
@@ -154,6 +117,3 @@ pip_packages:
     state: latest
   - name: ansible-lint
     state: latest
-
-# Glob pattern to ansible task files to run after all other tasks are finished.
-#post_provision_tasks: []
