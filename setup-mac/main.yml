@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - defaults.yml
+
+  vars_prompt:
+    - name: homebrew_user
+      prompt: What is the UserID of the new User?
+      private: no
+      default: "{{ lookup('env', 'USER') }}"
+
+    - name: newUserPass
+      prompt: What is the new Users Password password?    
+
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob:
+        - "{{ playbook_dir }}/config.yml"
+      tags: ['always']
+
+  roles:
+    - role: homebrew
+      tags: ['homebrew']
+    - role: brew_mas
+      when: mas_installed_apps
+      tags: ['mas']
+    - role: mac_setup
+      tags: ['mac_setup']
+    - role: pip_packages
+      tags: ['pip_packages']
+
+...
