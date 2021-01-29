@@ -18,12 +18,12 @@
     when: '"it-economics" in mail'    
 
   # TODO RUN ASYNC and wait for finish
-#  - name: Run offlineimap for given user
-#    command: offlineimap -c /tmp/offlineimap_{{ hostvars.get('localhost').get('username') }}
-#    async: 18000
-#    poll: 120
-#    ignore_errors: yes
-#    when: '"it-economics" in mail'
+  - name: Run offlineimap for given user
+    command: offlineimap -c /tmp/offlineimap_{{ hostvars.get('localhost').get('username') }}
+    async: 18000
+    poll: 120
+    ignore_errors: yes
+    when: '"it-economics" in mail'
 
   - name: Create tar file and move it to /tmp/{{ hostvars.get('localhost').get('email') }}.tar.gz
     command: tar cfz /{{ maildir }}/{{ mail_uniq }} /tmp/{{ hostvars.get('localhost').get('username') }}_mail
