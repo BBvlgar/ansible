@@ -1,0 +1,15 @@
+---
+disable_notofication_center: false
+disable_screenshot_shadow: false
+show_hidden_files_in_finder: false
+show_hidden_file_extensions_in_finder: false
+show_finder_status_bar: true
+ShowRemovableMediaOnDesktop: true
+ShowMountedServersOnDesktop: true
+ShowHardDrivesOnDesktop: true
+ShowExternalHardDrivesOnDesktop: true
+ShowPathbar: false
+FXShowPosixPathInTitle: false
+show_library_folder: false
+safari_homepage: "about:blank"
+...
