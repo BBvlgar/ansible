@@ -1,0 +1,23 @@
+---
+# Homebrew setup prerequisites.
+- name: Ensure Homebrew parent directory has correct permissions (OSX >= 10.13).
+  file:
+    path: "{{ homebrew_prefix }}"
+    owner: root
+    state: directory
+    mode: 0775
+  become: true
+  when: "ansible_distribution_version is version('10.13', '>=')"
+  ignore_errors: true
+
+# - name: Ensure Homebrew parent directory has correct permissions (OSX < 10.13)
+#   file:
+#     path: "{{ homebrew_prefix }}"
+#     owner: root
+#     group: admin
+#     state: directory
+#     mode: 0775
+#   become: yes
+#   when: "ansible_distribution_version is version('10.13', '<')"
+
+...
