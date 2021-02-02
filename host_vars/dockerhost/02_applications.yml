@@ -300,6 +300,28 @@ applications:
       networks:
         - "backbone"
 
+  teamsurvey-dashboard-testing_stack:
+    teamsurvey-dashboard-testing:
+      name: teamsurvey-dashboard-testing
+      image: iteconomics/teamsurvey-dashboard:testing
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurvey-dashboard-testing.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing_http.rule: 'Host(`teamsurvey-test.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.rule: 'Host(`teamsurvey-test.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.tls: 'true'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.domains[0].sans: '*.it-economics.de'"
+      environment:
+        GRAPHQL_ENDPOINT: "https://teamsurvey-api-testing.it-economics.de/graphql"
+      networks:
+        - "backbone"
+
   vcard_stack:
     vcard:
       name: vcard
