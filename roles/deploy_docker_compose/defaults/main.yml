@@ -3,5 +3,8 @@
 composerFilePath: "docker-compose"
 remote: false
 debug: false
-
+BASEFQDN: "localhost"
+DOCKER_PROXYNET: "proxy"
+DOCKER_DBNET: "database"
+DOCKER_WORLDNET: "publicwww"
 ...
