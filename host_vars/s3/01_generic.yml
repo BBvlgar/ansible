@@ -1,0 +1,12 @@
+---
+
+docker_host: true
+traefik_enabled: true
+disallowed_users:
+  - mthanner
+remote: true
+debug: true
+composerFilePath: "/srv/compose/"
+
+
+...
