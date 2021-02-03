@@ -522,6 +522,32 @@ applications:
       networks:
         - "backbone"
 
+  memorysourceexport-testing_stack:
+    memorysourceexport-testing:
+      name: memorysourceexport-testing
+      image: iteconomics/memorysourceexport:testing
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.memory.loadbalancer-test.server.port: '80'"
+        - "traefik.http.routers.memory_http-test.rule: 'Host(`memory-testing.it-economics.de`)'"
+        - "traefik.http.routers.memory_http-test.entrypoints: 'web'"
+        - "traefik.http.routers.memory_http-test.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.memory-test.rule: 'Host(`memory-testing.it-economics.de`)'"
+        - "traefik.http.routers.memory-test.entrypoints: 'websecure'"
+        - "traefik.http.routers.memory-test.tls: 'true'"
+        - "traefik.http.routers.memory-test.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.memory-test.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.memory-test.tls.domains[0].sans: '*.it-economics.de'"
+      environment:
+        LDAP_BindDN: "{{ ldap_directory_user }}"
+        AUTH_USERS_JSON: "{{ memorysourceexport.AUTH_USERS_JSON }}"
+        LDAP_Host: "{{ ldap_url }}"
+        LDAP_BASE_DN: "{{ ldap_base_dn }}"
+        LDAP_BindPassword: "{{ ldap_directory_pass }}"
+      networks:
+        - "backbone"
+
   ldap01_stack:
     ldap01:
       name: ldap01
