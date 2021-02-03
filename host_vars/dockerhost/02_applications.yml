@@ -559,7 +559,7 @@ applications:
   ldap-test_stack:
     ldap-test:
       name: ldap-test
-      image: iteconomics/openldap:latest
+      image: iteconomics/openldap:testing
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/ldap-test/data/certs:/certs"
