@@ -2,51 +2,6 @@
 
 applications:
 
-  events-app_stack:
-    events-app-backend:
-      name: events-app-backend
-      image: iteconomics/events-backend:latest
-      restartPolicy: always
-      volumes:
-        - "/mnt/shared/applications/appstore/web/certs:/certs"
-        - "/mnt/shared/applications/appstore/web/config:/etc/apache2/sites-enabled"
-        - "/mnt/shared/applications/appstore/data:/var/www/html"
-      labels:
-        - "traefik.enable: 'true'"
-        - "traefik.http.services.events-app-backend.loadbalancer.server.port: '8080'"
-        - "traefik.http.routers.events-app-backend_http.rule: 'Host(`events-app-backend.it-economics.de`)'"
-        - "traefik.http.routers.events-app-backend_http.entrypoints: 'web'"
-        - "traefik.http.routers.events-app-backend_http.middlewares: 'forcehttps@file'"
-        - "traefik.http.routers.events-app-backend.rule: 'Host(`events-app-backend.it-economics.de`)'"
-        - "traefik.http.routers.events-app-backend.entrypoints: 'websecure'"
-        - "traefik.http.routers.events-app-backend.tls: 'true'"
-        - "traefik.http.routers.events-app-backend.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.events-app-backend.tls.domains[0].main: 'it-economics.de'"
-        - "traefik.http.routers.events-app-backend.tls.domains[0].sans: '*.it-economics.de'"
-      environment:
-        DATABASE_HOSTNAME: "{{ events-app-backend.DATABASE_HOSTNAME }}"
-        DATABASE_PASSWORD: "{{ events-app-backend.DATABASE_PASSWORD }}"
-        DATABASE_USER: "{{ events-app-backend.DATABASE_USER }}"
-        DATABASE_DB: "{{ events-app-backend.DATABASE_DB }}"
-      networks:
-        - "database"
-        - "backbone"
-
-    events-app-backend_db:
-      name: events-app-backend_db
-      image: postgres:11.1
-      restartPolicy: always
-      volumes:
-        - "/mnt/shared/applications/events/database/:/var/lib/postgresql/data"
-      labels:
-        - "traefik.enable: 'false'"
-      environment:
-        POSTGRES_USER: "{{ events-app-backend.DATABASE_USER }}"
-        POSTGRES_PASSWORD: "{{ events-app-backend.DATABASE_PASSWORD }}"
-        POSTGRES_DB: "{{ events-app-backend.DATABASE_DB }}"
-      networks:
-        - database
-
   skillmatrix_stack:
     skillmatrix-service:
       name: skillmatrix-service
