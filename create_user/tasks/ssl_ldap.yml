@@ -16,7 +16,8 @@
         shell: awk '/-----BEGIN CERTIFICATE-----/{flag=1;next}/-----END CERTIFICATE-----/{flag=0}flag' /tmp/it-economics_{{ user.registration.user.mail }}.crt | sed -e 's/^/ /'
         register: certificate
 
-      - set_fact:
+      - name: Setting Facts for Cert
+        set_fact:
           tempFile: "{{ tempFile.stdout }}"
           certificate: "{{ certificate.stdout }}"
 
