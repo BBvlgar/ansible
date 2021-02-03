@@ -223,7 +223,7 @@ applications:
   directory-test_stack:
     directory-test:
       name: directory-test
-      image: iteconomics/directory:latest
+      image: iteconomics/directory:testing
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
