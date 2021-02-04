@@ -1,5 +1,5 @@
 ---
-
+remote: true
 composerFilePath: '/mnt/shared/compose/dockerhost-testing'
 disallowed_users:
   - mthanner

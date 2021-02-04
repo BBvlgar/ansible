@@ -8,9 +8,9 @@ applications:
       image: iteconomics/mindmap-service:24
       restartPolicy: always
       environment:
-        POSTGRESQL_URL: "{{ skillmatrix-service.POSTGRESQL_URL }}"
-        POSTGRESQL_USER: "{{ skillmatrix-service.POSTGRESQL_USER }}"
-        POSTGRESQL_PASSWORD: "{{ skillmatrix-service.POSTGRESQL_PASSWORD }}"
+        POSTGRESQL_URL: "{{ skillmatrixservice.POSTGRESQL_URL }}"
+        POSTGRESQL_USER: "{{ skillmatrixservice.POSTGRESQL_USER }}"
+        POSTGRESQL_PASSWORD: "{{ skillmatrixservice.POSTGRESQL_PASSWORD }}"
         STATIC_CONTENT_PATH: "/usr/share/nginx/html"
       volumes:
         - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
@@ -49,7 +49,7 @@ applications:
         - "traefik.http.routers.skillmatrix.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.skillmatrix.tls.domains[0].sans: '*.it-economics.de'"
       environment:
-        VUE_APP_BACKEND_URL: https://skillmatrix-service.it-economics.de
+        VUE_APP_BACKEND_URL: "https://skillmatrix-service.it-economics.de"
       networks:
         - "backbone"
         - "database"
@@ -112,13 +112,13 @@ applications:
         - "traefik.http.routers.atlassian-quote.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.atlassian-quote.tls.domains[0].sans: '*.it-economics.de'"
       environment:
-        OpenID_ClientSecret: "{{ atlassian-quote.OpenID_ClientSecret }}"
-        OpenID_ClientID: "{{ atlassian-quote.OpenID_ClientID }}"
-        OpenID_MetaDataURL: "{{ atlassian-quote.OpenID_MetaDataURL }}"
-        OpenID_RedirectURL: "{{ atlassian-quote.OpenID_RedirectURL }}"
-        OpenID_Mailpost: "{{ atlassian-quote.OpenID_Mailpost }}"
-        LDAP_Host: "{{ atlassian-quote.LDAP_Host }}"
-        LDAP_Group: "{{ atlassian-quote.LDAP_Group }}"
+        OpenID_ClientSecret: "{{ atlassianquote.OpenID_ClientSecret }}"
+        OpenID_ClientID: "{{ atlassianquote.OpenID_ClientID }}"
+        OpenID_MetaDataURL: "{{ atlassianquote.OpenID_MetaDataURL }}"
+        OpenID_RedirectURL: "{{ atlassianquote.OpenID_RedirectURL }}"
+        OpenID_Mailpost: "{{ atlassianquote.OpenID_Mailpost }}"
+        LDAP_Host: "{{ atlassianquote.LDAP_Host }}"
+        LDAP_Group: "{{ atlassianquote.LDAP_Group }}"
         LDAP_BindDN: "{{ ldap_directory_user }}"
         LDAP_BindPassword: "{{ ldap_directory_pass }}"
       networks:
