@@ -82,7 +82,7 @@ applications:
 
     appstore_ssh:
       name: appstore_ssh
-      image: devopsansiblede/worksuite:latest
+      image: felixkazuyade/worksuite:latest
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/appstore/ssh/authorized_keys:/root/.ssh/authorized_keys"
