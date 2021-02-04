@@ -55,13 +55,13 @@ sshd:
   version_addendum:                  'none'
 
 # dependency tools
-package_state: latest
+package_state: "latest"
 ssh_tools:
-  - name: mosh
-  - name: ufw
-  - name: lsof
-  - name: sudo
-  - name: logrotate
+  - name: "mosh"
+  - name: "ufw"
+  - name: "lsof"
+  - name: "sudo"
+  - name: "logrotate"
 
 mosh:
   install_path: '{{ mosh_install_path | default("/usr/bin") }}'

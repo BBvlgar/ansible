@@ -1,3 +1,5 @@
+---
+
 - name: Ensure fail2ban is installed
   apt: name=fail2ban state=present update_cache=yes
 
@@ -8,3 +10,5 @@
 - name: Ensure service is restarted
   service: name=fail2ban state=restarted
   when: config.changed
+
+...

@@ -7,8 +7,6 @@ on a host.
 
 ## Variables used in this role
 
-
-
 ## Dependencies
 
 * `docker_container` role since it is used to deploy each single container

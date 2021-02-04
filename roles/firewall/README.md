@@ -2,9 +2,7 @@
 
 With this role, we configure the `ufw` firewall.
 
-
 ## Requirements
-
 
 ## Role Variables
 

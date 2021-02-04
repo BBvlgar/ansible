@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 drbd() {
   local status=1
   cat /proc/drbd | grep "UpToDate/UpToDate" > /dev/null

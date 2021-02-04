@@ -1,4 +1,5 @@
 ---
+
 # Homebrew setup prerequisites.
 - name: Ensure Homebrew parent directory has correct permissions (OSX >= 10.13).
   file:

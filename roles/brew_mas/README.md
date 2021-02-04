@@ -6,23 +6,26 @@ Installs [mas](https://github.com/mas-cli/mas) via homebrew on macOS, and instal
 
 ## Requirements
 
-  - **Homebrew**: Requires `homebrew` already installed 
-  - **Mac App Store account**: Due to open issues you need to sign into Mac Appstore via Gui before or while running this role. Don't store unencrypted passwords with your playbooks!
+* **Homebrew**: Requires `homebrew` already installed 
+* **Mac App Store account**: Due to open issues you need to sign into Mac Appstore via Gui before or while running this role. Don't store unencrypted passwords with your playbooks!
 
 ## Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-    appleid: ""
-    appleid_password: ""
+```
+appleid: ""
+appleid_password: ""
+```
 
 At the moment the automatic signin does not work and therefore is disabled.
 
-
-    appstore_app_ids:
-      - { id: 1451685025, name: "WireGuard" }
-      - { id: 425424353, name: "The Unarchiver " }
-      - { id: 409183694, name: "Keynote" }
+```
+appstore_app_ids:
+  - { id: 1451685025, name: "WireGuard" }
+  - { id: 425424353, name: "The Unarchiver " }
+  - { id: 409183694, name: "Keynote" }
+```
 
 A list of apps to ensure are installed on the computer. You can get IDs for all your existing installed apps with `mas list`, and you can search for IDs with `mas search [App Name]`. The `name` attribute is not authoritative and only used to provide better information in the playbook output.
 
@@ -32,17 +35,18 @@ Whether to run `mas upgrade`, which will upgrade all installed Mac App Store app
 
 ## Dependencies
 
-  - Homebrew must be installed
+* Homebrew must be installed
 
 ## Example Playbook
 
-    - hosts: localhost
-      vars:
-        appstore_app_ids:
-          - { id: 1451685025, name: "WireGuard" }
-      roles:
-        - brew-mas
-
+```
+- hosts: localhost
+  vars:
+    appstore_app_ids:
+      - { id: 1451685025, name: "WireGuard" }
+  roles:
+    - brew-mas
+```
 
 ## License
 
@@ -51,7 +55,6 @@ CC-BY
 ## Contribution
 
 Linting with ansible-lint and yamllint is required
-
 
 ## Author Information
 

@@ -1,5 +1,6 @@
 ---
 # yamllint disable rule:line-length
+
 - name: Trackpad - map bottom right corner to right-click
   shell: "defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2"
 

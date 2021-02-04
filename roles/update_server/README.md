@@ -1,6 +1,5 @@
 # Update Server Role
 
-
 ## Annotations
 
 This role does exactly what it is called: it updates the servers.

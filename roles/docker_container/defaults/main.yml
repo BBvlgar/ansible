@@ -21,11 +21,13 @@ traefik_websecure_middlewares:
   - "security@file"
 
 traefik_labels:
+
   default:
     - key:   "traefik.enable"
       value: "true"
     - key:   "traefik.http.services.{{ container.name | replace('.', '_') }}.loadbalancer.server.port"
       value: "{{ container.traefik_port | default( '80' ) }}"
+
   web:
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.rule"
       value: "{{ container.traefik_rule | default ( local_traefik_rule ) }}"
@@ -33,6 +35,7 @@ traefik_labels:
       value: "web"
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}_http.middlewares"
       value: "{{ ( traefik_web_middlewares | default( [] ) + container.traefik_web_middlewares | default( [] ) + container.traefik_middlewares | default( [] ) ) | join( ', ' ) }}"
+
   websecure:
     - key:   "traefik.http.routers.{{ container.name | replace('.', '_') }}.rule"
       value: "{{ container.traefik_rule | default ( local_traefik_rule ) }}"

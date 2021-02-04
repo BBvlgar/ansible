@@ -22,7 +22,7 @@
   become: yes
 
 - name: Ensure folder exists
-  file: 
+  file:
     path: "{{ folder }}"
     state: directory
     owner: "{{ nagios.user }}"
@@ -43,8 +43,8 @@
     loop_var: filename
 
 - name: Ensure config is installed
-  template: 
-    src: nrpe.cfg.j2 
+  template:
+    src: nrpe.cfg.j2
     dest: /etc/nagios/nrpe.cfg
     mode: 0644
     owner: root
@@ -52,7 +52,7 @@
   notify: restart nrpe
 
 - name: Ensure nagios-nrpe-server on client is restarted
-  service: 
+  service:
     name: nagios-nrpe-server
     state: restarted
 
@@ -80,7 +80,7 @@
   become: yes
   register: ufw_status
   ignore_errors: yes
-  when: 
+  when:
     - ufw_installed is defined
     - ufw_installed.rc == 0
 
