@@ -52,7 +52,7 @@ homebrew_cask_apps:
   - dbeaver-community
   - gpg-suite
   - osxfuse
-  - vmware-fusion 
+  - vmware-fusion
   - sourcetree
   - intellij-idea
   - phpstorm
@@ -104,7 +104,7 @@ appstore_app_ids:
   - { id: 425424353, name: "The Unarchiver " }
   - { id: 409183694, name: "Keynote" }
   - { id: 1006087419, name: "SnippetsLab" }
-  - { id: 1436522307, name: "Transmit 5 " }  
+  - { id: 1436522307, name: "Transmit 5 " }
   - { id: 497799835, name: "Xcode" }
 
 appstore_upgrade_all_apps: true
