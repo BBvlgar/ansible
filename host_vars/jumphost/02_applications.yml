@@ -35,6 +35,7 @@ applications:
   openvpn-stack:
     openvpn:
       name: openvpn
+      privileged: true
       image: iteconomics/openvpn:latest
       restartPolicy: always
       volumes:
@@ -47,17 +48,11 @@ applications:
         - "backbone"
       ports:
         - 443:443
-      templates:
-        vpnconf:
-          src: "custom/openvpn/ite.conf.j2"
-          dest: "/srv/openvpn/config/ite.conf"
-        htaccess:
-          src: "custom/openvpn/ldap.cfg.j2"
-          dest: "/srv/openvpn/config/ldap.cfg"
 
   devopenvpn-stack:
     devopenvpn:
       name: devopenvpn
+      privileged: true
       image: iteconomics/openvpn:latest
       restartPolicy: always
       volumes:
@@ -70,12 +65,5 @@ applications:
         - "backbone"
       ports:
         - 443:443
-      templates:
-        vpnconf:
-          src: "custom/openvpn/ite.conf.j2"
-          dest: "/srv/openvpn/config/ite.conf"
-        htaccess:
-          src: "custom/openvpn/ldap.cfg.j2"
-          dest: "/srv/openvpn/config/ldap.cfg"
 
 ...

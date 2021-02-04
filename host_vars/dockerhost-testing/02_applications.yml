@@ -224,7 +224,7 @@ applications:
 
     vcardserver:
       name: vcardserver
-      image: tomsquest/docker-radicale:testing
+      image: tomsquest/docker-radicale:latest
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/vcard/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh"
