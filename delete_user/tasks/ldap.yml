@@ -3,11 +3,11 @@
 
   tasks:
   - name: Check if user exists
-    command: > 
-      ldapsearch -x 
-      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
-      -w {{ hostvars.get('localhost').get('admin_password') }} 
-      -H {{ hostvars.get('localhost').get('ldap_url') }} 
+    command: >
+      ldapsearch -x
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de"
+      -w {{ hostvars.get('localhost').get('admin_password') }}
+      -H {{ hostvars.get('localhost').get('ldap_url') }}
       -b uid={{ hostvars.get('localhost').get('username') }},ou=people,dc=it-economics,dc=de
     register: user_exists
     ignore_errors: true

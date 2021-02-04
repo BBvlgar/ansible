@@ -45,7 +45,7 @@
 
 # Revoke SSL certificate
 - import_playbook: ssl.yml
-  tags: 
+  tags:
     - ssl
 
 # Backup emails

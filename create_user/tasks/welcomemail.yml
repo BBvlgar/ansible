@@ -5,29 +5,29 @@
     - set_fact:
         user: "{{ hostvars.get('localhost').get('user') }}"
 
-    - set_fact: 
+    - set_fact:
         mail_template: "welcome_mail.j2"
 
     - debug:
         msg: "System {{ mail_template }} has uuid {{ mail_template }}"
 
-    - set_fact: 
+    - set_fact:
         mail_template: "welcome_mail_sopra.j2"
-      when: "{{ user.registration.contract.employerId }} == 12700"  
+      when: "{{ user.registration.contract.employerId }} == 12700"
 
     - debug:
         msg: "System {{ mail_template }} has uuid {{ mail_template }}"
 
-    - set_fact: 
+    - set_fact:
         mail_template: "welcome_mail_extern.j2"
-      when: "{{ user.registration.contract.employerId }} == 11402"  
+      when: "{{ user.registration.contract.employerId }} == 11402"
 
     - debug:
         msg: "System {{ mail_template }} has uuid {{ mail_template }}"
 
-    - set_fact: 
+    - set_fact:
         mail_template: "welcome_mail_extern.j2"
-      when: "{{ user.registration.contract.employerId }} == 11403"  
+      when: "{{ user.registration.contract.employerId }} == 11403"
 
     - debug:
         msg: "System {{ mail_template }} has uuid {{ mail_template }}"

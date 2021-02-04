@@ -13,18 +13,18 @@
 
   - name: Get groups of current user
     shell: >
-      ldapsearch -x 
-      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
-      -w "{{ hostvars.get('localhost').get('admin_password') }}" 
-      -H "{{ hostvars.get('localhost').get('ldap_url') }}" 
-      -b "ou=groups,dc=it-economics,dc=de" 
-      member="uid={{ hostvars.get('localhost').get('username') }},ou=people,dc=it-economics,dc=de" 
-      | grep "dn: " | awk '{print $2}' 
+      ldapsearch -x
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de"
+      -w "{{ hostvars.get('localhost').get('admin_password') }}"
+      -H "{{ hostvars.get('localhost').get('ldap_url') }}"
+      -b "ou=groups,dc=it-economics,dc=de"
+      member="uid={{ hostvars.get('localhost').get('username') }},ou=people,dc=it-economics,dc=de"
+      | grep "dn: " | awk '{print $2}'
       | sed '/^\s*$/d'
       | tr '\n' ';'
       | sed 's/\;$//'
       | grep "cn="
-      # the last grep makes sure the group array is NOT empty! 
+      # the last grep makes sure the group array is NOT empty!
     register: ldap_groups
     ignore_errors: true
     no_log: "{{ no_log|default('true') }}"
@@ -41,10 +41,10 @@
   # Updating works with "-c" = skip errors
   - name: Import ldif file
     command: >
-      ldapmodify -c -x 
-      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de" 
-      -w {{ hostvars.get('localhost').get('admin_password') }} 
-      -H {{ hostvars.get('localhost').get('ldap_url') }} 
+      ldapmodify -c -x
+      -D "uid={{ hostvars.get('localhost').get('admin_user') }},ou=people,dc=it-economics,dc=de"
+      -w {{ hostvars.get('localhost').get('admin_password') }}
+      -H {{ hostvars.get('localhost').get('ldap_url') }}
       -f {{ tempFile }}.ldif
     ignore_errors: true
     register: group_import

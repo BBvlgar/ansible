@@ -6,11 +6,11 @@
       - "12700"
       - "11403"
       - "11402"
- 
+
   tasks:
     - set_fact:
         user: "{{ hostvars.get('localhost').get('user') }}"
-    - block:    
+    - block:
       - block:
         # Deploy P12
         - name: Copy p12 to remote
