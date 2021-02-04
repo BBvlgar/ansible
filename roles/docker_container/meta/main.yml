@@ -1,7 +1,7 @@
 galaxy_info:
   author: Martin Winter
   description: Deployment role for generic Docker container
-  company: CC-BY
+  license: CC-BY
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
   min_ansible_version: 2.0
