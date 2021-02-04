@@ -7,7 +7,7 @@
   docker_network:
     name: "{{ traefik_network }}"
     state: present
-  when: traefik_network is defined and remote == true  
+  when: traefik_network is defined and remote == true
 
 - name: remote -Create internal network
   docker_network:

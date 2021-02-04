@@ -1,9 +1,10 @@
+---
+
 galaxy_info:
   author: Martin Winter, Christian Walonka, Felix Kazuya
   description: Deployment role for generic Docker container (for Cloudflare DNS)
-  company: it-economics GmbH, Independent 
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
-
+  company: it-economics GmbH, Independent
   license: CC-BY
 
   min_ansible_version: 2.0
