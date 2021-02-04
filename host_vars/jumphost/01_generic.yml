@@ -1,5 +1,5 @@
 ---
-
+composerFilePath: "/mnt/shared/compose"
 traefik_enabled: true
 disallowed_users:
   - mthanner
@@ -7,5 +7,6 @@ disallowed_users:
   - mmenzel
 sophos_av_disableMTD: true
 debug: true
+
 
 ...
