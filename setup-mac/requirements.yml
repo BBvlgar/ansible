@@ -11,5 +11,8 @@
 - name: brew_mas
   src: https://github.com/devops-ansible/ansible-brew-mas.git
   version: master
+- name: ansible_sublime_text3
+  src: https://github.com/devops-ansible/ansible-sublime-text3.git
+  version: master
 
 ...

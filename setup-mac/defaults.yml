@@ -1,5 +1,11 @@
 ---
+# yamllint disable rule:braces
+# yamllint disable rule:line-length
+# yamllint disable rule:trailing-spaces
+
 downloads: ~/.ansible-downloads/
+
+mas_installed_apps: []
 
 homebrew_installed_packages:
   - ansible
@@ -67,7 +73,7 @@ homebrew_cask_apps:
   - elgato-stream-deck
 
 # See `geerlingguy.mas` role documentation for usage instructions.
-#appstore_app_ids: []
+# appstore_app_ids: []
 appleid: "mail@mail.de"
 appleid_password: "DoesNotWork"
 appstore_app_ids:
@@ -101,10 +107,8 @@ appstore_app_ids:
   - { id: 1436522307, name: "Transmit 5 " }  
   - { id: 497799835, name: "Xcode" }
 
-appstore_upgrade_all_apps: yes
+appstore_upgrade_all_apps: true
 mas_signin_dialog: true
-
-
 
 pip_packages:
   - name: jinja2

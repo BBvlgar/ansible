@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:trailing-spaces
 - hosts: localhost
   connection: local
 
@@ -10,9 +11,13 @@
       prompt: What is the UserID of the new User?
       private: no
       default: "{{ lookup('env', 'USER') }}"
-
+      
     - name: newUserPass
       prompt: What is the new Users Password password?    
+
+    - name: configureSublime
+      prompt: Shall we configure sublime?
+      default: false  
 
   pre_tasks:
     - include_vars: "{{ item }}"
@@ -30,5 +35,8 @@
       tags: ['mac_setup']
     - role: pip_packages
       tags: ['pip_packages']
+    - role: ansible_sublime_text3
+      tags: ['ansible_sublime_text3']
+      when: configureSublime
 
 ...

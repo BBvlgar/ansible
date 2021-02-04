@@ -1,0 +1,10 @@
+---
+homebrew_installed_packages:
+  - autoconf
+  - bash-completion
+  - gettext
+  - wget
+
+homebrew_cask_apps:
+  - firefox
+  - licecap
