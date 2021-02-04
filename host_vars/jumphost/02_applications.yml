@@ -16,12 +16,12 @@ applications:
         TZ: "Europe/London"
         SERVERURL: "hq1-muc.it-economics.de" #optional
         SERVERPORT: "51820" #optional
-        PEERS: "10" #optional
+        PEERS: "70" #optional
         PEERDNS: "auto" #optional
         INTERNAL_SUBNET: "10.13.13.0" #optional
         ALLOWEDIPS: "0.0.0.0/0" #optional
       volumes:
-        - "/mnt/shared/applications/wireguard/config:/config"
+        - "/var/wireguard/config:/config"
         - "/lib/modules:/lib/modules"
       sysctls:
         - net.ipv4.conf.all.src_valid_mark=1
