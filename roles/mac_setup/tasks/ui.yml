@@ -26,10 +26,10 @@
 
 - name: Enable Notification Center
   shell: "launchctl load -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist && open /System/Library/CoreServices/NotificationCenter.app/"
-  when: disable_notofication_center==false
+  when: not disable_notofication_center
 
 - name: Disable Notification Center
   shell: "launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null"
-  when: disable_notofication_center==true
+  when: disable_notofication_center
 
 ...
