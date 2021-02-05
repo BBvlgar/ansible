@@ -376,4 +376,26 @@ applications:
       networks:
         - "backbone"
 
+  portainer_agent_stack:
+    portainer_agent:
+      name: portainer_edge_agent
+      image:  portainer/agent
+      restartPolicy: always
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+        - "/:/host"
+        - "portainer_agent_data:/data"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+      labels:
+        - "traefik.enable: false"
+      environment:
+        EDGE: 1
+        EDGE_ID: 8a72ab76-e33c-4329-a758-66cbc3d0c3ea
+        EDGE_KEY: aHR0cDovL2RvY2tlcmhvc3QuYXdzLml0LWVjb25vbWljcy5kZTo5MDAwfGRvY2tlcmhvc3QuYXdzLml0LWVjb25vbWljcy5kZTo4MDAwfGQ3OjAxOjI5Ojg3OjYzOjY0OjA3OmY4OmJjOjhiOmI3OmNhOjY1OjRmOmM5OjQxfDY
+        CAP_HOST_MANAGEMENT: 1
+      networks:
+        - "database"
+
+
 ...
