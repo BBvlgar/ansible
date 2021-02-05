@@ -64,6 +64,24 @@ applications:
       networks:
         - "backbone"
       ports:
-        - 443:443
+        - 8443:443
+
+
+  openvpn-testing-stack:
+    devopenvpn:
+      name: devopenvpn
+      privileged: true
+      image: iteconomics/openvpn:testing
+      restartPolicy: always
+      volumes:
+        - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 8444:443
 
 ...
