@@ -1,6 +1,6 @@
 ---
 composerFilePath: "/mnt/shared/compose"
-traefik_enabled: true
+traefik_enabled: false
 disallowed_users:
   - mthanner
   - tfischer
