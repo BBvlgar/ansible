@@ -37,12 +37,12 @@ applications:
       labels:
         - "traefik.enable: 'false'"
       environment:
-        MSQL_USER: "{{ teamsurvey-api.MYSQL_USER }}"
-        MSQL_PASS: "{{ teamsurvey-api.MYSQL_PASS }}"
-        MSQL_HOST: "{{ teamsurvey-api.MYSQL_HOST }}"
-        MONGO_INITDB_ROOT_USERNAME: "{{ teamsurvey-api.MONGO_USER }}"
-        MONGO_INITDB_ROOT_PASSWORD: "{{ teamsurvey-api.MONGO_PASS }}"
-        MONGO_INITDB_DATABASE: "{{ teamsurvey-api.DATABASE }}"
+        MSQL_USER: "{{ teamsurveyapi.MYSQL_USER }}"
+        MSQL_PASS: "{{ teamsurveyapi.MYSQL_PASS }}"
+        MSQL_HOST: "{{ teamsurveyapi.MYSQL_HOST }}"
+        MONGO_INITDB_ROOT_USERNAME: "{{ teamsurveyapi.MONGO_USER }}"
+        MONGO_INITDB_ROOT_PASSWORD: "{{ teamsurveyapi.MONGO_PASS }}"
+        MONGO_INITDB_DATABASE: "{{ teamsurveyapi.DATABASE }}"
       networks:
         - "database"
       volumes:
@@ -66,12 +66,12 @@ applications:
         - "traefik.http.routers.teamsurvey-api-testing.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.teamsurvey-api-testing.tls.domains[0].sans: '*.it-economics.de'"
       environment:
-        MSQL_USER: "{{ teamsurvey-api-testing.MYSQL_USER }}"
-        MSQL_PASS: "{{ teamsurvey-api-testing.MYSQL_PASS }}"
-        MSQL_HOST: "{{ teamsurvey-api-testing.MYSQL_HOST }}"
-        MONGO_USER: "{{ teamsurvey-api-testing.MONGO_USER }}"
-        MONGO_PASS: "{{ teamsurvey-api-testing.MONGO_PASS }}"
-        MONGO_HOST: "{{ teamsurvey-api-testing.MONGO_HOST }}"
+        MSQL_USER: "{{ teamsurveyapitesting.MYSQL_USER }}"
+        MSQL_PASS: "{{ teamsurveyapitesting.MYSQL_PASS }}"
+        MSQL_HOST: "{{ teamsurveyapitesting.MYSQL_HOST }}"
+        MONGO_USER: "{{ teamsurveyapitesting.MONGO_USER }}"
+        MONGO_PASS: "{{ teamsurveyapitesting.MONGO_PASS }}"
+        MONGO_HOST: "{{ teamsurveyapitesting.MONGO_HOST }}"
       ports:
       - "127.0.0.1:5051:5050"
       networks:
