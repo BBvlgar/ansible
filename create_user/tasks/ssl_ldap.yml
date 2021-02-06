@@ -7,7 +7,7 @@
       - "11402"
   tasks:
     # Deploy CRT to LDAP
-    - block:
+    - block:    
       - name: Create temporary file
         command: mktemp
         register: tempFile
