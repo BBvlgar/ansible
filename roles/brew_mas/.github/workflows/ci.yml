@@ -10,11 +10,7 @@ name: CI
 
 defaults:
   run:
-<<<<<<< HEAD
     working-directory: 'brew_mas'
-=======
-    working-directory: 'homebrew'
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 jobs:
 
@@ -25,11 +21,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
         with:
-<<<<<<< HEAD
           path: 'brew_mas'
-=======
-          path: 'homebrew'
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
       - name: Set up Python 3.
         uses: actions/setup-python@v2
