@@ -28,17 +28,43 @@
 #    app3:          <--- here we are
 ##
 
-- debug:
+- name: application
+  debug:
     msg: "{{ app }}"
   when: debug is defined and debug == true
+
+- name: Are Templates defined?
+  debug:
+    msg: "{{ app.value.templates is defined }}"
+  when: debug is defined and debug == true
+
+- name: How long are the templates?
+  debug:
+    msg: "{{ app.value.templates | length }}"
+  when: app.value.templates is defined and debug is defined and debug == true
+
+- name: How long are the templates?
+  debug:
+    msg: "{{ app.value.templates }}"
+  when: app.value.templates is defined and debug is defined and debug == true
+
+- name: Create Folder
+  file: 
+   path: "{{ tpl.value.dest | dirname }}"
+   recurse: yes
+   state: directory  
+  with_dict: "{{ app.value.templates }}"
+  loop_control:
+    loop_var: tpl
+  when: app.value.templates is defined and app.value.templates | length != 0
 
 - name: "Create Config-Files"
   template:
     src: "{{ tpl.value.src }}"
     dest: "{{ tpl.value.dest }}"
-    mode: "{{ tpl.value.mode | default ('') }}"
-    owner: "{{ tpl.value.owner | default ('') }}"
-    group: "{{ tpl.value.group | default ('') }}"
+    mode: "{{ tpl.value.mode | default ('755') }}"
+    owner: "{{ tpl.value.owner | default ('root') }}"
+    group: "{{ tpl.value.group | default ('root') }}"
   with_dict: "{{ app.value.templates }}"
   loop_control:
     loop_var: tpl
