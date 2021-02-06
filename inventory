@@ -125,6 +125,8 @@ pis
 
 [docker_hosts]
 dockerhost
+dockerhost-abn
+dockerhost
 jumphost
 dockerhost.muc
 dockerhost-testing

@@ -8,5 +8,4 @@ disallowed_users:
 sophos_av_disableMTD: true
 debug: true
 
-
 ...
