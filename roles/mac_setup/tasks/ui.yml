@@ -2,7 +2,7 @@
 # yamllint disable rule:line-length
 
 - name: Expand save panel by default
-  shell: "write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true"
+  shell: "defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true"
 
 - name: Expand print panel by default
   shell: "defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true"
