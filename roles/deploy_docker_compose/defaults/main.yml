@@ -1,11 +1,14 @@
 ---
 
-composerFilePath: "docker-compose"
+debug:  false
 remote: false
-debug: false
+
 BASEFQDN: "localhost"
+
+composerFilePath: "docker-compose"
+
+DOCKER_DBNET:    "database"
 DOCKER_PROXYNET: "proxy"
-DOCKER_DBNET: "database"
 DOCKER_WORLDNET: "publicwww"
 
 ...
