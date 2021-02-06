@@ -38,7 +38,7 @@ applications:
 
     ssh:
       name: worksuite
-      image: devopsansible/worksuite:latest
+      image: devopsansiblede/worksuite:latest
       restartPolicy: always
       ports:
         - "222:22"
