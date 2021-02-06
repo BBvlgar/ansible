@@ -2,7 +2,7 @@
 applications:
     wordpress:
       image: iteconomics/wordpress:latest
-      container_name: website
+      name: website
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -37,7 +37,7 @@ applications:
 
     portainer:
       image: portainer/portainer-ce:latest
-      container_name: portainer
+      name: portainer
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -56,7 +56,7 @@ applications:
 
     ssh:
       image: felixkazuyade/worksuite:latest
-      container_name: worksuite
+      name: worksuite
       restartPolicy: always
       ports:
         - "222:22"
