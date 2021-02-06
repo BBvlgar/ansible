@@ -11,18 +11,18 @@
   become: true
 
   tasks:
-#     - debug:
-#         msg: "{{ app }}"
-#       with_dict: "{{ applications }}"
-#       loop_control:
-#         loop_var: app
+    - debug:
+        msg: "{{ app }}"
+      with_dict: "{{ applications }}"
+      loop_control:
+        loop_var: app
 
-   - name: "Create Docker-Compose-Files"
-     include_role:
-       name: create_docker_compose
-     with_dict: "{{ applications }}"
-     loop_control:
-       loop_var: app
+    - name: "Create Docker-Compose-Files"
+      include_role:
+        name: create_docker_compose
+      with_dict: "{{ applications }}"
+      loop_control:
+        loop_var: app
 
 
 ...
