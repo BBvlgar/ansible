@@ -1,5 +1,5 @@
 ---
-docker_host: true
+
 composerFilePath: '/mnt/shared/compose/dockerhost'
 disallowed_users:
   - mthanner

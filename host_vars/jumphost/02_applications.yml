@@ -1,6 +1,7 @@
 ---
 
 applications:
+
   wireguard-stack:
     wireguard:
       name: wireguard

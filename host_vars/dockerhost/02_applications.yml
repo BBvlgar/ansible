@@ -687,4 +687,5 @@ applications:
         DEFAULT_TEMPLATE: "{{ limesurvey.DEFAULT_TEMPLATE }}"
       networks:
         - "backbone"
+
 ...

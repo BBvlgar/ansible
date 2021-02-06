@@ -3,17 +3,10 @@
 docker_host:     no
 traefik_enabled: no
 disallowed_users: []
-sophos_av_disableMTD: true
-remote: true
-debug: false
-host_ufw_rules:
-  # Wireguard
-  - rule: allow
-    port: "60002"
-    proto: "tcp"
-  # Wireguard
-  - rule: allow
-    port: "60002"
-    proto: "udp"
+sophos_av_disableMTD: yes
+remote: yes
+debug:  no
+disallowed_users:
+  - mthanner
 
 ...
