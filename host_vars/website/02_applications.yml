@@ -1,5 +1,6 @@
 ---
 applications:
+  website_stack:
     wordpress:
       image: iteconomics/wordpress:latest
       name: website
@@ -35,6 +36,26 @@ applications:
           src: "custom/wordpress/upload.ini.j2"
           dest: "/mnt/shared/applications/website/upload.ini"
 
+    ssh:
+      name: worksuite
+      image: devopsansible/worksuite:latest
+      restartPolicy: always
+      ports:
+        - "222:22"
+      environment:
+        ROOT_PASSWORD: "{{ websiteSsh.ROOT_PASSWORD }}"
+        UBUNTU_PASSWORD: "{{ websiteSsh.UBUNTU_PASSWORD }}"
+        CRON: "{{ websiteSsh.CRON }}"
+      volumes:
+        - "/mnt/shared/applications/website/wordpress:/mnt/website"
+        - "/mnt/shared/applications/website/ssh/authorized_keys:/root/.ssh/authorized_keys"
+        - "/mnt/shared/applications/website/crontab:/var/spool/cron/crontabs"
+        - "/mnt/shared/applications/website/www-data-id_rsa:/var/www/.ssh"
+      labels:
+        - "traefik.enable: 'false'"     
+
+
+  portainer_stack: 
     portainer:
       image: portainer/portainer-ce:latest
       name: portainer
@@ -53,24 +74,6 @@ applications:
         - "/mnt/shared/applications/portainer/data:/data"
       networks:
         backbone:
-
-    ssh:
-      name: worksuite
-      image: devopsansible/worksuite:latest
-      restartPolicy: always
-      ports:
-        - "222:22"
-      environment:
-        ROOT_PASSWORD: "{{ websiteSsh.ROOT_PASSWORD }}"
-        UBUNTU_PASSWORD: "{{ websiteSsh.UBUNTU_PASSWORD }}"
-        CRON: "{{ websiteSsh.CRON }}"
-      volumes:
-        - "/mnt/shared/applications/website/wordpress:/mnt/website"
-        - "/mnt/shared/applications/website/ssh/authorized_keys:/root/.ssh/authorized_keys"
-        - "/mnt/shared/applications/website/crontab:/var/spool/cron/crontabs"
-        - "/mnt/shared/applications/website/www-data-id_rsa:/var/www/.ssh"
-      labels:
-        - "traefik.enable: 'false'"     
 
   portainer_agent_stack:
     portainer_agent:
