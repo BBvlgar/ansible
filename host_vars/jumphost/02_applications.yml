@@ -68,8 +68,8 @@ applications:
 
 
   openvpn-testing-stack:
-    devopenvpn:
-      name: devopenvpn
+    openvpn-testing:
+      name: openvpn-testing
       privileged: true
       image: iteconomics/openvpn:testing
       restartPolicy: always
