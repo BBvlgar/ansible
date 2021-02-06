@@ -3,9 +3,9 @@ version: '2.1'
 services:
 
 {% for key, container in app.value.items() %}  {{ container.name }}:
-    container_name: {{ container.name }}
-    image:  {{ container.image }}
-    restart: {{ container.restartPolicy }}
+    container_name: "{{ container.name }}"
+    image:   "{{ container.image }}"
+    restart: "{{ container.restartPolicy }}"
     {% if (container.privileged is defined) and container.privileged %}privileged: true 
     {% endif %}{% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
     {% for volume in container.volumes %}  - {{ volume }}
