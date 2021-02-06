@@ -1,17 +1,60 @@
 ---
-
 applications:
+  events-app_stack:
+    events-app-backend:
+      name: events-app-backend
+      image: iteconomics/events-backend:latest
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications/appstore/web/certs:/certs"
+        - "/mnt/shared/applications/appstore/web/config:/etc/apache2/sites-enabled"
+        - "/mnt/shared/applications/appstore/data:/var/www/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.events-app-backend.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.events-app-backend_http.rule: 'Host(`events-app-backend.it-economics.de`)'"
+        - "traefik.http.routers.events-app-backend_http.entrypoints: 'web'"
+        - "traefik.http.routers.events-app-backend_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.events-app-backend.rule: 'Host(`events-app-backend.it-economics.de`)'"
+        - "traefik.http.routers.events-app-backend.entrypoints: 'websecure'"
+        - "traefik.http.routers.events-app-backend.tls: 'true'"
+        - "traefik.http.routers.events-app-backend.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.events-app-backend.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.events-app-backend.tls.domains[0].sans: '*.it-economics.de'"
+      environment:
+        DATABASE_HOSTNAME: "{{ events-app-backend.DATABASE_HOSTNAME }}"
+        DATABASE_PASSWORD: "{{ events-app-backend.DATABASE_PASSWORD }}"
+        DATABASE_USER: "{{ events-app-backend.DATABASE_USER }}"
+        DATABASE_DB: "{{ events-app-backend.DATABASE_DB }}"
+      networks:
+        - "database"
+        - "backbone"
+
+    events-app-backend_db:
+      name: events-app-backend_db
+      image: postgres:11.1
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications/events/database/:/var/lib/postgresql/data"
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        POSTGRES_USER: "{{ events-app-backend.DATABASE_USER }}"
+        POSTGRES_PASSWORD: "{{ events-app-backend.DATABASE_PASSWORD }}"
+        POSTGRES_DB: {{ events-app-backend.DATABASE_DB }}
+      networks:
+        - database
 
   skillmatrix_stack:
     skillmatrix-service:
-      name: skillmatrix-service
+      name: skillmatrix-service            
       image: iteconomics/mindmap-service:24
-      restartPolicy: always
+      restartPolicy: always      
       environment:
-        POSTGRESQL_URL: "{{ skillmatrixservice.POSTGRESQL_URL }}"
-        POSTGRESQL_USER: "{{ skillmatrixservice.POSTGRESQL_USER }}"
-        POSTGRESQL_PASSWORD: "{{ skillmatrixservice.POSTGRESQL_PASSWORD }}"
-        STATIC_CONTENT_PATH: "/usr/share/nginx/html"
+        POSTGRESQL_URL: {{ skillmatrix-service.POSTGRESQL_URL }}
+        POSTGRESQL_USER: {{ skillmatrix-service.POSTGRESQL_USER }}
+        POSTGRESQL_PASSWORD: {{ skillmatrix-service.POSTGRESQL_PASSWORD }}
+        STATIC_CONTENT_PATH: /usr/share/nginx/html
       volumes:
         - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
       labels:
@@ -28,14 +71,14 @@ applications:
         - "traefik.http.routers.skillmatrix-service.tls.domains[0].sans: '*.it-economics.de'"
       networks:
         - "backbone"
-        - "database"
+        - "database" 
 
     skillmatrix-gui:
-      name: skillmatrix-gui
+      name: skillmatrix-gui                  
       image: iteconomics/d3-skills-mindmap:23
       volumes:
         - "/mnt/shared/applications/skillmatrix/html/:/usr/share/nginx/html"
-      restartPolicy: always
+      restartPolicy: always      
       labels:
         - "traefik.enable: 'true'"
         - "traefik.http.services.skillmatrix.loadbalancer.server.port: '8080'"
@@ -49,10 +92,10 @@ applications:
         - "traefik.http.routers.skillmatrix.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.skillmatrix.tls.domains[0].sans: '*.it-economics.de'"
       environment:
-        VUE_APP_BACKEND_URL: "https://skillmatrix-service.it-economics.de"
+        VUE_APP_BACKEND_URL: https://skillmatrix-service.it-economics.de
       networks:
         - "backbone"
-        - "database"
+        - "database" 
 
   appstore_stack:
     appstore:
@@ -82,7 +125,7 @@ applications:
 
     appstore_ssh:
       name: appstore_ssh
-      image: devopsansiblede/worksuite:latest
+      image: felixkazuyade/worksuite:latest
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/appstore/ssh/authorized_keys:/root/.ssh/authorized_keys"
@@ -112,13 +155,13 @@ applications:
         - "traefik.http.routers.atlassian-quote.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.atlassian-quote.tls.domains[0].sans: '*.it-economics.de'"
       environment:
-        OpenID_ClientSecret: "{{ atlassianquote.OpenID_ClientSecret }}"
-        OpenID_ClientID: "{{ atlassianquote.OpenID_ClientID }}"
-        OpenID_MetaDataURL: "{{ atlassianquote.OpenID_MetaDataURL }}"
-        OpenID_RedirectURL: "{{ atlassianquote.OpenID_RedirectURL }}"
-        OpenID_Mailpost: "{{ atlassianquote.OpenID_Mailpost }}"
-        LDAP_Host: "{{ atlassianquote.LDAP_Host }}"
-        LDAP_Group: "{{ atlassianquote.LDAP_Group }}"
+        OpenID_ClientSecret: "{{ atlassian-quote.OpenID_ClientSecret }}"
+        OpenID_ClientID: "{{ atlassian-quote.OpenID_ClientID }}"
+        OpenID_MetaDataURL: "{{ atlassian-quote.OpenID_MetaDataURL }}"
+        OpenID_RedirectURL: "{{ atlassian-quote.OpenID_RedirectURL }}"
+        OpenID_Mailpost: "{{ atlassian-quote.OpenID_Mailpost }}"
+        LDAP_Host: "{{ atlassian-quote.LDAP_Host }}"
+        LDAP_Group: "{{ atlassian-quote.LDAP_Group }}"
         LDAP_BindDN: "{{ ldap_directory_user }}"
         LDAP_BindPassword: "{{ ldap_directory_pass }}"
       networks:
@@ -178,7 +221,7 @@ applications:
   directory-test_stack:
     directory-test:
       name: directory-test
-      image: iteconomics/directory:testing
+      image: iteconomics/directory:latest
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/certs/data/data:/var/www/html/storage/app/certs"
@@ -223,7 +266,7 @@ applications:
         - "traefik.http.routers.directory.rule: 'Host(`directory.it-economics.de`)'"
         - "traefik.http.routers.directory.entrypoints: 'websecure'"
         - "traefik.http.routers.directory.tls: 'true'"
-        - "traefik.http.routers.directory.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.directory.tls.certresolver: 'letsencrypt'" 
         - "traefik.http.routers.directory.tls.domains[0].main: 'it-economics.de'"
         - "traefik.http.routers.directory.tls.domains[0].sans: '*.it-economics.de'"
       environment:
@@ -252,28 +295,6 @@ applications:
         - "traefik.http.routers.teamsurvey-dashboard.tls.domains[0].sans: '*.it-economics.de'"
       environment:
         GRAPHQL_ENDPOINT: "https://teamsurvey-api.it-economics.de/graphql"
-      networks:
-        - "backbone"
-
-  teamsurvey-dashboard-testing_stack:
-    teamsurvey-dashboard-testing:
-      name: teamsurvey-dashboard-testing
-      image: iteconomics/teamsurvey-dashboard:testing
-      restartPolicy: always
-      labels:
-        - "traefik.enable: 'true'"
-        - "traefik.http.services.teamsurvey-dashboard-testing.loadbalancer.server.port: '80'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing_http.rule: 'Host(`teamsurvey-test.it-economics.de`)'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing_http.entrypoints: 'web'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing_http.middlewares: 'forcehttps@file'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.rule: 'Host(`teamsurvey-test.it-economics.de`)'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.entrypoints: 'websecure'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.tls: 'true'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.domains[0].main: 'it-economics.de'"
-        - "traefik.http.routers.teamsurvey-dashboard-testing.tls.domains[0].sans: '*.it-economics.de'"
-      environment:
-        GRAPHQL_ENDPOINT: "https://teamsurvey-api-testing.it-economics.de/graphql"
       networks:
         - "backbone"
 
@@ -449,9 +470,6 @@ applications:
         - "traefik.http.routers.portainer.tls.domains[0].sans: '*.it-economics.de'"
       networks:
         - "backbone"
-      ports:
-        - "9000:9000"
-        - "8000:8000"
 
   phonestat_stack:
     phonestat:
@@ -525,32 +543,6 @@ applications:
       networks:
         - "backbone"
 
-  memorysourceexport-testing_stack:
-    memorysourceexport-testing:
-      name: memorysourceexport-testing
-      image: iteconomics/memorysourceexport:testing
-      restartPolicy: always
-      labels:
-        - "traefik.enable: 'true'"
-        - "traefik.http.services.memory.loadbalancer-test.server.port: '80'"
-        - "traefik.http.routers.memory_http-test.rule: 'Host(`memory-testing.it-economics.de`)'"
-        - "traefik.http.routers.memory_http-test.entrypoints: 'web'"
-        - "traefik.http.routers.memory_http-test.middlewares: 'forcehttps@file'"
-        - "traefik.http.routers.memory-test.rule: 'Host(`memory-testing.it-economics.de`)'"
-        - "traefik.http.routers.memory-test.entrypoints: 'websecure'"
-        - "traefik.http.routers.memory-test.tls: 'true'"
-        - "traefik.http.routers.memory-test.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.memory-test.tls.domains[0].main: 'it-economics.de'"
-        - "traefik.http.routers.memory-test.tls.domains[0].sans: '*.it-economics.de'"
-      environment:
-        LDAP_BindDN: "{{ ldap_directory_user }}"
-        AUTH_USERS_JSON: "{{ memorysourceexport.AUTH_USERS_JSON }}"
-        LDAP_Host: "{{ ldap_url }}"
-        LDAP_BASE_DN: "{{ ldap_base_dn }}"
-        LDAP_BindPassword: "{{ ldap_directory_pass }}"
-      networks:
-        - "backbone"
-
   ldap01_stack:
     ldap01:
       name: ldap01
@@ -588,7 +580,7 @@ applications:
   ldap-test_stack:
     ldap-test:
       name: ldap-test
-      image: iteconomics/openldap:testing
+      image: iteconomics/openldap:latest
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/ldap-test/data/certs:/certs"
@@ -637,7 +629,7 @@ applications:
         - "88:88/tcp"
         - "88:88/udp"
       networks:
-        - "database"
+        - "database"        
 
   limesurvey_stack:
     limesurvey:
