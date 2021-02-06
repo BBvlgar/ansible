@@ -5,11 +5,7 @@
 - name: 'merge tools to be installed'
   set_fact:
     install_tools: "{{ basic_toolset + additional_basic_tools | default([]) }}"
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 - name: 'merge pip tools to be installed'
   set_fact:
     install_pip_tools: "{{ basic_pip_toolset + additional_basic_pip_tools | default([]) }}"
@@ -53,26 +49,15 @@
       - pip
       # - python3-keyczar
       # - ansible
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 - name: install pip packages, force upgrade
   pip:
     name: "{{ item.name }}"
     executable: pip3
-<<<<<<< HEAD
-    state: latest      
-  with_items: "{{ install_pip_tools }}"
-  become: yes
-  
-=======
     state: latest
   with_items: "{{ install_pip_tools }}"
   become: yes
 
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 - name: download files, i.e. CA certificates
   get_url:
     url:   "{{ item.url }}"

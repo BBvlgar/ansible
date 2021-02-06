@@ -3,12 +3,8 @@
 composerFilePath: "/Users/cwalonka/devops/docker-compose"
 remote: false
 debug: false
-<<<<<<< HEAD
-
-=======
 BASEFQDN: "localhost"
 DOCKER_PROXYNET: "proxy"
 DOCKER_DBNET: "database"
 DOCKER_WORLDNET: "publicwww"
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 ...

@@ -44,20 +44,10 @@
       install_options: "{{ item.install_options | default(omit) }}"
       state: present
     loop: "{{ homebrew_installed_packages }}"
-<<<<<<< HEAD
-    notify:
-      - Clear homebrew cache
-=======
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
   - name: Upgrade all homebrew packages (if configured).
     homebrew: update_homebrew=yes upgrade_all=yes
     when: homebrew_upgrade_all_packages
-<<<<<<< HEAD
-    notify:
-      - Clear homebrew cache
-=======
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
   - name: Check for Brewfile.
     stat:

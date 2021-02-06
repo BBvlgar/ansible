@@ -2,11 +2,7 @@
 # yamllint disable rule:line-length
 
 - name: Expand save panel by default
-<<<<<<< HEAD
-  shell: "write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true"
-=======
   shell: "defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true"
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 - name: Expand print panel by default
   shell: "defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true"
@@ -30,18 +26,10 @@
 
 - name: Enable Notification Center
   shell: "launchctl load -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist && open /System/Library/CoreServices/NotificationCenter.app/"
-<<<<<<< HEAD
-  when: disable_notofication_center==false
-
-- name: Disable Notification Center
-  shell: "launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null"
-  when: disable_notofication_center==true
-=======
   when: not disable_notofication_center
 
 - name: Disable Notification Center
   shell: "launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null"
   when: disable_notofication_center
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 ...

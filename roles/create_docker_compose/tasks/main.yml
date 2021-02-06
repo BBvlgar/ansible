@@ -4,29 +4,17 @@
   when: debug == true
 
 - name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists on remote host"
-<<<<<<< HEAD
-  file: 
-    path: "{{ composerFilePath }}/{{ app.key }}"
-    state: directory
-    recurse: yes
-  when: remote == true 
-=======
   file:
     path: "{{ composerFilePath }}/{{ app.key }}"
     state: directory
     recurse: yes
   when: remote == true
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 - name: Provision docker-compose on remote host
   template:
     src: "docker-compose.yml.j2"
     dest: "{{ composerFilePath }}/{{ app.key }}/docker-compose.yml"
-<<<<<<< HEAD
-  when: remote == true  
-=======
   when: remote == true
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 - name: "Ensures {{ composerFilePath }}/{{ app.key }} dir exists on localhost"
   file:

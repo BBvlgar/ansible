@@ -5,18 +5,6 @@
 # commands ... so let's define some facts =)
 
 - name: split hostname
-<<<<<<< HEAD
-    set_fact:
-      # the fqdn of the hostname will be split by dots
-      split_hostname: "{{ app.hostname.split('.') }}"
-
-- name: combine hostname parts
-    set_fact:
-      # the last two elements within the hostname are the domain
-      zone:   "{{ split_hostname[-2:] | join('.') }}"
-      # the other elements of the hostname describe the hostname / subdomain parts
-      record: "{{ split_hostname[:-2] | join('.') }}"
-=======
   set_fact:
     # the fqdn of the hostname will be split by dots
     split_hostname: "{{ app.hostname.split('.') }}"
@@ -27,7 +15,6 @@
     zone:   "{{ split_hostname[-2:] | join('.') }}"
     # the other elements of the hostname describe the hostname / subdomain parts
     record: "{{ split_hostname[:-2] | join('.') }}"
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 - name: set DNS entry
   # since there is the possibility that still old DNS records exist,
@@ -38,11 +25,7 @@
       cloudflare_dns:
         zone: "{{ zone }}"
         record: "{{ record }}"
-<<<<<<< HEAD
-        type: CNAME 
-=======
         type: CNAME
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
         value: "{{ traefik_fqdn }}"
         account_email: "{{ cloudflare_email }}"
         account_api_token: "{{ cloudflare_api_token }}"
@@ -59,11 +42,7 @@
       cloudflare_dns:
         zone: "{{ zone }}"
         record: "{{ record }}"
-<<<<<<< HEAD
-        type: CNAME 
-=======
         type: CNAME
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
         value: "{{ traefik_fqdn }}"
         account_email: "{{ cloudflare_email }}"
         account_api_token: "{{ cloudflare_api_token }}"

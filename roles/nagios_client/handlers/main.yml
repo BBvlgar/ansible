@@ -1,9 +1,5 @@
 ---
 - name: restart nrpe
-<<<<<<< HEAD
-  service: 
-=======
   service:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     name: nagios-nrpe-server
     state: restarted

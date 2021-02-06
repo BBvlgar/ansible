@@ -1,12 +1,8 @@
 galaxy_info:
   author: Christian Walonka, Martin Winter, Felix Kazuya
   description: Install the Amazon Logs Agent
-<<<<<<< HEAD
-  company: it-economics GmbH, Independent  issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
-=======
   company: it-economics GmbH, Independent
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
   license: CC-BY
 

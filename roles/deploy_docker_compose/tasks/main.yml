@@ -7,11 +7,7 @@
   docker_network:
     name: "{{ traefik_network }}"
     state: present
-<<<<<<< HEAD
-  when: traefik_network is defined and remote == true  
-=======
   when: traefik_network is defined and remote == true
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 - name: remote -Create internal network
   docker_network:
@@ -29,10 +25,6 @@
   docker_network:
     name: "{{ traefik_network }}"
     state: present
-<<<<<<< HEAD
-  when: traefik_network is defined
-=======
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
   delegate_to: localhost
   when: remote != true and traefik_network is defined
 
@@ -70,8 +62,6 @@
   delegate_to: localhost
   when: remote != true
 
-<<<<<<< HEAD
-=======
 - name: Deploy Bootup.sh
   copy:
     src: bootup.sh
@@ -83,7 +73,6 @@
     src: env.j2
     dest: "{{ composerFilePath }}/.env"
 
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 - debug:
     var: output
 ...

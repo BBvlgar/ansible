@@ -1,11 +1,7 @@
 galaxy_info:
   author: Martin Winter, Christian Walonka, Felix Kazuya
   description: Deployment for config files
-<<<<<<< HEAD
-  company: it-economics GmbH, Independent 
-=======
   company: it-economics GmbH, Independent
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
   issue_tracker_url: https://jira.it-economics.de/servicedesk/customer/portal/9/create/274
 
   license: CC-BY

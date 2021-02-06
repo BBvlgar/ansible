@@ -24,15 +24,10 @@
     - name: Configure ufw rules
       ufw:
         rule:  "{{ item.rule }}"
-<<<<<<< HEAD
-        port:  "{{ item.port }}"
-        proto: "{{ item.proto | default('tcp') }}"
-=======
         port:  "{{ item.port | default('any') }}"
         proto: "{{ item.proto | default('tcp') }}"
         src: "{{ item.src | default('any') }}"
         dest: "{{ item.dest | default('any') }}"
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
       with_items: "{{ ufw_rules }}"
       when: only_install_ufw is not defined or only_install_ufw | bool
 

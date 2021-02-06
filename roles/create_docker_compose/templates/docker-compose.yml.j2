@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-version: '2'
-=======
 version: '2.1'
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
 
 services:
 
@@ -10,12 +6,8 @@ services:
     container_name: {{ container.name }}
     image:  {{ container.image }}
     restart: {{ container.restartPolicy }}
-<<<<<<< HEAD
-    {% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
-=======
     {% if (container.privileged is defined) and container.privileged %}privileged: true 
     {% endif %}{% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     {% for volume in container.volumes %}  - {{ volume }}
     {% endfor %}{% endif %}{% if (container.cap_add is defined) and (container.cap_add | length() > 0) %}cap_add:
     {% for value in container.cap_add %}  - {{ value }}

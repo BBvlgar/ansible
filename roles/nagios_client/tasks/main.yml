@@ -10,11 +10,7 @@
   become: yes
 
 - name: Ensure folder exists
-<<<<<<< HEAD
-  file: 
-=======
   file:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     path: "{{ folder }}"
     state: directory
     owner: "{{ nagios.user }}"
@@ -26,11 +22,7 @@
     loop_var: folder
 
 - name: Ensure plugins are installed
-<<<<<<< HEAD
-  copy: 
-=======
   copy:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     src: "{{ filename }}"
     dest: "/usr/lib/nagios/plugins/{{ filename | basename }}"
     mode: 0755
@@ -40,13 +32,8 @@
     loop_var: filename
 
 - name: Ensure config is installed
-<<<<<<< HEAD
-  template: 
-    src: nrpe.cfg.j2 
-=======
   template:
     src: nrpe.cfg.j2
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     dest: /etc/nagios/nrpe.cfg
     mode: 0644
     owner: root
@@ -54,11 +41,7 @@
   notify: restart nrpe
 
 - name: Ensure nagios-nrpe-server on client is restarted
-<<<<<<< HEAD
-  service: 
-=======
   service:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     name: nagios-nrpe-server
     state: restarted
 
@@ -86,11 +69,7 @@
   become: yes
   register: ufw_status
   ignore_errors: yes
-<<<<<<< HEAD
-  when: 
-=======
   when:
->>>>>>> 9b05568c7bb83042d844a59b2c80196f145f5479
     - ufw_installed is defined
     - ufw_installed.rc == 0
 
