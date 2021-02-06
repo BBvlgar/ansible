@@ -7,17 +7,10 @@
     - defaults.yml
 
   vars_prompt:
-    - name: homebrew_user
-      prompt: What is the UserID of the new User?
-      private: no
-      default: "{{ lookup('env', 'USER') }}"
-
-    - name: newUserPass
-      prompt: What is the new Users Password password?
-
     - name: configureSublime
       prompt: Shall we configure sublime?
-      default: false
+      private: false
+      default: false  
 
   pre_tasks:
     - include_vars: "{{ item }}"
