@@ -173,4 +173,24 @@ applications:
       labels:
         - "traefik.enable: 'false'"
 
+  portainer_agent_stack:
+    portainer_agent:
+      name: portainer_edge_agent
+      image:  portainer/agent
+      restartPolicy: always
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+        - "/:/host"
+        - "portainer_agent_data:/data"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+      labels:
+        - "traefik.enable: false"
+      environment:
+        EDGE: 1
+        EDGE_ID: ffa38b27-d464-4cd9-a6f0-fc22979ce9d5
+        EDGE_KEY: aHR0cDovL25sYi5pdC1lY29ub21pY3MuZGU6OTAwMHxubGIuaXQtZWNvbm9taWNzLmRlOjgwMDB8ZDc6MDE6Mjk6ODc6NjM6NjQ6MDc6Zjg6YmM6OGI6Yjc6Y2E6NjU6NGY6Yzk6NDF8OA
+        CAP_HOST_MANAGEMENT: 1
+      networks:
+        - "database"        
 ...
