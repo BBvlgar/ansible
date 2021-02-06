@@ -449,6 +449,9 @@ applications:
         - "traefik.http.routers.portainer.tls.domains[0].sans: '*.it-economics.de'"
       networks:
         - "backbone"
+      ports:
+        - "9000:9000"
+        - "8000:8000"
 
   phonestat_stack:
     phonestat:
