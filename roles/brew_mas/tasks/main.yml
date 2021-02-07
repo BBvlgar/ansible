@@ -1,0 +1,9 @@
+---
+
+- include: fixdependencies.yml
+
+- include: appstoreaccount.yml
+
+- include: apps.yml
+
+...

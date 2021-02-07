@@ -1,0 +1,48 @@
+---
+# yamllint disable rule:line-length
+# Set Home as the default location for new Finder windows
+# For other paths, use `PfLo` and `file:///full/path/here/`
+- name: Set Home as the default location for new Finder windows
+  shell: 'defaults write com.apple.finder NewWindowTarget -string "PfDe"'
+
+- name: Set Home as the default location for new Finder windows
+  shell: "defaults write com.apple.finder NewWindowTargetPath -string 'file://${HOME}/'"
+
+- name: Show icons for hard drives, servers, and removable media on the desktop
+  shell: "defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool {{ ShowExternalHardDrivesOnDesktop }}"
+
+- name: Show icons for hard drives, servers, and removable media on the desktop
+  shell: "defaults write com.apple.finder ShowHardDrivesOnDesktop -bool {{ ShowHardDrivesOnDesktop }}"
+
+- name: Show icons for hard drives, servers, and removable media on the desktop
+  shell: "defaults write com.apple.finder ShowMountedServersOnDesktop -bool {{ ShowMountedServersOnDesktop }}"
+
+- name: Show icons for hard drives, servers, and removable media on the desktop
+  shell: "defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool {{ ShowRemovableMediaOnDesktop }}"
+
+- name: Show hidden files in Finder by default
+  shell: "defaults write com.apple.finder AppleShowAllFiles -bool {{ show_hidden_files_in_finder }}"
+
+- name: show all filename extensions
+  shell: "defaults write NSGlobalDomain AppleShowAllExtensions -bool {{ show_hidden_file_extensions_in_finder }}"
+
+- name: Show Finder status bar
+  shell: "defaults write com.apple.finder ShowStatusBar -bool {{ show_finder_status_bar }}"
+
+- name: show Finder path bar
+  shell: "defaults write com.apple.finder ShowPathbar -bool {{ ShowPathbar }}"
+
+- name: allow text selection in Finder Quick Look
+  shell: "defaults write com.apple.finder QLEnableTextSelection -bool true"
+
+- name: Display full POSIX path as Finder window title
+  shell: "defaults write com.apple.finder _FXShowPosixPathInTitle -bool {{ FXShowPosixPathInTitle }}"
+
+- name: Avoid creating .DS_Store files on network volumes
+  shell: "defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true"
+
+- name: Show the ~/Library folder
+  shell: "chflags nohidden ~/Library"
+  when: show_library_folder
+
+...
