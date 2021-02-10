@@ -1,0 +1,23 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+##
+###
+- hosts: 'all:!localhost'
+  become: yes
+
+  tasks:
+
+    - name: 'create users and give permissions'
+      include_role:
+        name: admin_user
+
+    - name: 'ensure SSH users if not working with groups'
+      include_role:
+        name: ssh_server
+      when:
+        - ssh_users_instead_groups is defined and ssh_users_instead_groups
+
+...
