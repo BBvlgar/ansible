@@ -47,7 +47,7 @@ applications:
       networks:
         - "backbone"
       ports:
-        - 443:443
+        - 6443:443
 
   devopenvpn-stack:
     devopenvpn:
@@ -104,5 +104,30 @@ applications:
         CAP_HOST_MANAGEMENT: 1
       networks:
         - "database"        
+
+  guacamole_stack:
+    guacamole:
+      name: guacamole
+      image: oznu/guacamole:latest
+      restartPolicy: always
+      volumes:
+        - "{{ docker_home }}/guacamole/postgres:/config"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.guacamole.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.guacamole_http.rule: 'Host(`jump2.it-economics.de`)'"
+        - "traefik.http.routers.guacamole_http.entrypoints: 'web'"
+        - "traefik.http.routers.guacamole_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.guacamole.rule: 'Host(`jump2.it-economics.de`)'"
+        - "traefik.http.routers.guacamole.entrypoints: 'websecure'"
+        - "traefik.http.routers.guacamole.tls: 'true'"
+        - "traefik.http.routers.guacamole.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.guacamole.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.guacamole.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+      environment:
+        EXTENSIONS: "auth-quickconnect,auth-totp"
+
 
 ...
