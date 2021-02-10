@@ -1,18 +1,20 @@
 ---
-- name: pip_packages
-  src: https://github.com/devops-ansible/ansible-pip-packages.git
-  version: master
-- name: mac_setup
-  src: https://github.com/devops-ansible/ansible-setup-mac.git
-  version: master
-- name: homebrew
-  src: https://github.com/devops-ansible/ansible-homebrew.git
-  version: master
-- name: brew_mas
-  src: https://github.com/devops-ansible/ansible-brew-mas.git
-  version: master
-- name: ansible_sublime_text3
-  src: https://github.com/devops-ansible/ansible-sublime-text3.git
-  version: master
+collections: []
+roles:
+  - name: pip_packages
+    src: https://github.com/devops-ansible/ansible-pip-packages.git
+    version: master
+  - name: mac_setup
+    src: https://github.com/devops-ansible/ansible-setup-mac.git
+    version: master
+  - name: homebrew
+    src: https://github.com/devops-ansible/ansible-homebrew.git
+    version: master
+  - name: brew_mas
+    src: https://github.com/devops-ansible/ansible-brew-mas.git
+    version: master
+  - name: ansible_sublime_text3
+    src: https://github.com/devops-ansible/ansible-sublime-text3.git
+    version: master
 
 ...
