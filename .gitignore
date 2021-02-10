@@ -24,6 +24,8 @@ __pycache__
 docker-compose/*
 !docker-compose/.gitkeep
 
+screenshot*.png
+
 ###
 ## this repo should not contain secret data
 ## so we'll ignore .git-crypt
