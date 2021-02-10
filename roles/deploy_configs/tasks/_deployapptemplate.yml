@@ -49,10 +49,10 @@
   when: app.value.templates is defined and debug is defined and debug == true
 
 - name: Create Folder
-  file: 
+  file:
    path: "{{ tpl.value.dest | dirname }}"
    recurse: yes
-   state: directory  
+   state: directory
   with_dict: "{{ app.value.templates }}"
   loop_control:
     loop_var: tpl
