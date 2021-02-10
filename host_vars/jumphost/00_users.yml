@@ -1,0 +1,11 @@
+---
+
+hostadmins:
+  - name: mgoers
+    pub_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6Lius8ympLP7EJWF8+D1B7wRwnqFrj8ju2pnwJGSN28DXrIOonQ0/7OtIP0JZGAiYn29rHVXSDwppePmlwbgIRLpD3lSPgi04RJ4+OuqmcsfppHUj6xGwoAghyF9dPdfAVZ2pY7pw9wlFyKeXliAw3yXWAzcCYxRtfR8W1VGVRcJN6dlKeKo4yJzQ9pOKBPNeVE8+5FHHFwvysQ2CZ5uxd8m+k0RNQX3nfuLi5QMFhUA5w74z3zLPG7WBFVebnFDzxsxw6C5RtARIWbMoabnheQDGUvtLIJbENU64stdfTVeuRNtzqj1EzAxvo/8pzqtsjJ6+cXQkUaJkf5O9iJzn MG-Key
+
+host_user_groups:
+  - group: ssh_users
+    users:
+      - mgoers
+...
