@@ -10,7 +10,7 @@
     - name: configureSublime
       prompt: Shall we configure sublime?
       private: false
-      default: false  
+      default: false
 
   pre_tasks:
     - name: loading config file if exists
