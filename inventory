@@ -67,6 +67,7 @@ freepbx                     ansible_port=60022        	 ansible_host=pbx.it-econ
 monitoring                  ansible_port=60022           ansible_host=ip-10-0-1-25.eu-central-1.compute.internal    									ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 dockerhost                  ansible_port=60022           ansible_host=dockerhost.aws.it-economics.de                                                                                    ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 dockerhost-testing          ansible_port=60022           ansible_host=dockerhost-testing.aws.it-economics.de                                                                            ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
+status                      ansible_port=60022           ansible_host=status.aws.it-economics.de                                                                                        ansible_ssh_common_args='-A -J ubuntu@bastion.aws.it-economics.de:22'
 
 ###
 ## PIs
@@ -101,6 +102,7 @@ dockerhost
 freepbx
 website
 dockerhost-testing
+status
 # atlassian-pi.muc
 # hass-pi.muc
 # okr-pi.muc
@@ -130,6 +132,7 @@ dockerhost.muc
 dockerhost-testing
 hs2
 website
+status
 
 [personio_backup]
 
