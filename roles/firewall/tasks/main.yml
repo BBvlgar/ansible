@@ -24,7 +24,7 @@
     - name: Configure ufw rules
       ufw:
         rule:  "{{ item.rule }}"
-        port:  "{{ item.port | default('any') }}"
+        port:  "{{ item.port | default( none ) }}"
         proto: "{{ item.proto | default('tcp') }}"
         src: "{{ item.src | default('any') }}"
         dest: "{{ item.dest | default('any') }}"
