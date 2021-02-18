@@ -1,8 +1,29 @@
 ---
+
 host_ufw_rules:
+
+  - rule: allow
+    port: "any"
+    proto: "any"
+    src: "212.114.221.222/32"
+
+  - rule: allow
+    port: "443"
+    proto: "tcp"
+
+  - rule: allow
+    port: "80"
+    proto: "udp"
+
+  # nagios
+  - rule: allow
+    port: "5666"
+    proto: "any"
+
   # bareos-dir
   - rule: allow
     port: "9102"
     proto: "any"
+    src: "95.216.187.35/32"
 
 ...

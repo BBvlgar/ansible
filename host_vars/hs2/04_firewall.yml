@@ -1,10 +1,12 @@
 ---
+
 host_ufw_rules:
+
   - rule: allow
     port: "any"
     proto: "any"
     src: "212.114.221.222/32"
-  
+
   # nagios
   - rule: allow
     port: "5666"
@@ -30,4 +32,4 @@ host_ufw_rules:
     proto: "any"
     src: "3.125.97.169/32"
 
-... 
+...
