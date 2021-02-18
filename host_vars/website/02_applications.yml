@@ -13,6 +13,7 @@ applications:
         - "traefik.http.routers.website.entrypoints: 'websecure'"
         - "traefik.http.routers.website.tls: 'true'"
         - "traefik.http.routers.website.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.website_http.middlewares: 'forcehttps@file'"        
       environment:
         WORDPRESS_DB_HOST: "{{ websiteWordpress.WORDPRESS_DB_HOST }}"
         WORDPRESS_DB_NAME: "{{ websiteWordpress.WORDPRESS_DB_NAME }}"
@@ -69,6 +70,7 @@ applications:
         - "traefik.http.routers.portainer.entrypoints: 'websecure'"
         - "traefik.http.routers.portainer.tls: 'true'"
         - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"                
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
         - "/mnt/shared/applications/portainer/data:/data"
