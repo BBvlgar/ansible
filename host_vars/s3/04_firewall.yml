@@ -4,6 +4,5 @@ host_ufw_rules:
   - rule: allow
     port: "9102"
     proto: "any"
-    src: "95.216.187.35/32"
 
 ...
