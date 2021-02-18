@@ -14,7 +14,7 @@ host_ufw_rules:
 
   - rule: allow
     port: "80"
-    proto: "udp"
+    proto: "tcp"
 
   # nagios
   - rule: allow
