@@ -37,7 +37,7 @@ pki.muc                    ansible_port=22               ansible_host=pki.muc.it
 # s2
 # s4
 # proxmox                   ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
-apps2-mirror.muc           ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
+apps2-mirror.muc            ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
 
 ###
 ## Hetzner Root Servers

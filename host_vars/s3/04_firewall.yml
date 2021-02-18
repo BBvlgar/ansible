@@ -12,13 +12,13 @@ host_ufw_rules:
     src: "212.114.221.222/32"
 
   # nagios
-  - rule: allow
-    port: "5666"
+  - rule:  allow
+    port:  5666
     proto: "any"
 
   # bareos-dir
-  - rule: allow
-    port: "9102"
+  - rule:  allow
+    port:  9102
     proto: "any"
 
 ...
