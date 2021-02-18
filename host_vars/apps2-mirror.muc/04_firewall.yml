@@ -1,0 +1,9 @@
+---
+host_ufw_rules:
+  # bareos-dir
+  - rule: allow
+    port: "9103"
+    proto: "any"
+    src: "95.216.187.35/32"
+
+...
