@@ -87,7 +87,10 @@
       include_role:
         name: firewall
       vars:
-        only_install_ufw: "yes"
+        install_ufw:   "yes"
+        configure_ufw: "yes"
+        restart_ufw:   "no"
+        enable_ufw:    "no"
 
     - name: 'execute additional installation roles'
       include_role:
@@ -104,9 +107,10 @@
       include_role:
         name: firewall
       vars:
-        only_install_ufw: "no"
-        enable_ufw: "yes"
-        restart_ufw: "yes"
+        install_ufw:   "no"
+        configure_ufw: "no"
+        restart_ufw:   "yes"
+        enable_ufw:    "yes"
 
     - name: 'DEBUG: Wait for user to continue'
       pause:

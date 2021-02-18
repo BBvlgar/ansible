@@ -30,6 +30,14 @@ Including an example of how to use your role (for instance, with variables passe
 ...
 ```
 
+### ENV Variables to change run of role
+
+| Variable        | Description |
+| --------------- | ----------- |
+| `install_ufw`   | Defaults to `true` and determines if the `ufw` tool should be installed |
+| `configure_ufw` | Defaults to `true` and determines if the configuration of `ufw` should be deployed |
+| `restart_ufw`   | Defaults to `true` and determines if the `ufw` service should be restarted to apply configuration changes |
+| `enable_ufw`    | Defaults to `true` and determines if the `ufw` service should be enabled to take effect |
 
 ## License
 
