@@ -1,14 +1,8 @@
 ---
 
-host_ufw_rules:
-
-  # global_ufw_rules defined by firewall role
-  # respects HTTP/S (80, 443 without protocol
-  # restrictions) and SSH
-
-  # Wireguard
-  - rule: allow
-    port: "60022"
-    proto: "tcp"
+install_ufw: false
+configure_ufw: false
+restart_ufw: false  
+enable_ufw: false
 
 ...
