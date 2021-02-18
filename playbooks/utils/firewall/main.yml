@@ -10,6 +10,10 @@
 
   tasks:
 
+    - name: 'determine if ufw should be installed'
+      set_fact:
+        install_ufw: "{{ install_ufw | default( 'no' ) }}"
+
     - name: 'configure basic firewall'
       include_role:
         name: firewall
