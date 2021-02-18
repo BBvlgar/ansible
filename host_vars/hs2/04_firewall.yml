@@ -1,15 +1,13 @@
 ---
+
 host_ufw_rules:
+
+  # allow any connection from office
   - rule: allow
-    port: "any"
     proto: "any"
     src: "212.114.221.222/32"
-  
-  # nagios
-  - rule: allow
-    port: "5666"
-    proto: "any"
 
+  # allow http/s
   - rule: allow
     port: "443"
     proto: "tcp"
@@ -18,16 +16,19 @@ host_ufw_rules:
     port: "80"
     proto: "udp"
 
+  # nagios
+  - rule: allow
+    port: "5666"
+    proto: "any"
+
   # bareos-dir
   - rule: allow
     port: "9102"
     proto: "any"
-    src: "95.216.187.35/32"
 
   # aws (monitoring)
   - rule: allow
-    port: "any"
     proto: "any"
     src: "3.125.97.169/32"
 
-... 
+...
