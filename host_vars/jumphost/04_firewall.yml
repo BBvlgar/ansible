@@ -1,26 +1,32 @@
 ---
 
 host_ufw_rules:
+
   # Wireguard
   - rule: allow
     port: "60002"
     proto: "tcp"
+
   # Wireguard
   - rule: allow
     port: "60002"
     proto: "udp"
+
   # OpenVPN
   - rule: allow
     port: "443"
     proto: "tcp"
+
   # OpenVPN
   - rule: allow
     port: "443"
     proto: "udp"
+
   # OpenVPN
   - rule: allow
     port: "8443"
     proto: "tcp"
+
   # OpenVPN
   - rule: allow
     port: "8443"

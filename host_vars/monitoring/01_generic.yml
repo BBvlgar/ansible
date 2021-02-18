@@ -1,11 +1,11 @@
 ---
 
-docker_host:     no
-traefik_enabled: no
-disallowed_users: []
+debug:                no
+remote:               yes
+docker_host:          no
+traefik_enabled:      no
 sophos_av_disableMTD: yes
-remote: yes
-debug:  no
+
 disallowed_users:
   - mthanner
 
