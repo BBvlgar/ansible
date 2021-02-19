@@ -21,9 +21,16 @@ host_ufw_rules:
     port: "9102"
     proto: "any"
 
-  # aws (monitoring)
+
+  # Faktura
   - rule: allow
+    port: "3306"
     proto: "any"
-    src: "3.125.97.169/32"
+
+
+  # MYSQL-Repl via STUNNEL
+  - rule: allow
+    port: "63306"
+    proto: "any"    
 
 ...
