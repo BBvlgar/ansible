@@ -24,6 +24,7 @@ nagios_default_command_file_paths:
 nagios_install_tools:
   - name: nagios-nrpe-server
   - name: nagios-plugins
+  - name: nsca-client
 
 package_state: latest
 
