@@ -1,11 +1,8 @@
 ---
-host_ufw_rules:
-  # Wireguard
-  - rule: allow
-    port: "60022"
-    proto: "tcp"
-#tbd
-disallowed_users:
-  - mthanner
+
+install_ufw   : false
+configure_ufw : false
+restart_ufw   : false
+enable_ufw    : false
 
 ...

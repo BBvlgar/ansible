@@ -26,9 +26,9 @@ host_ufw_rules:
     port: "3306"
     proto: "any"
 
-  # MYSQL-Repl via STUNNEL
+  # MYSQL-Repl
   - rule: allow
-    port: "63306"
+    port: "3308"
     proto: "any"    
 
 ...

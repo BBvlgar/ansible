@@ -21,14 +21,4 @@ host_ufw_rules:
     port: "9102"
     proto: "any"
 
-  # Faktura
-  - rule: allow
-    port: "3306"
-    proto: "any"
-
-  # MYSQL-Repl via STUNNEL
-  - rule: allow
-    port: "63306"
-    proto: "any"    
-
 ...

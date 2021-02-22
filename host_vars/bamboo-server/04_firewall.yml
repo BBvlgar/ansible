@@ -1,17 +1,26 @@
 ---
+
 host_ufw_rules:
+
+  # global_ufw_rules defined by firewall role
+  # respects HTTP/S (80, 443 without protocol
+  # restrictions) and SSH
+
   # bamboo
   - rule: allow
     port: "8085"
     proto: "tcp"
+
   # bamboo
   - rule: allow
     port: "8085"
     proto: "udp"
+
   # bamboo broker
   - rule: allow
     port: "54663"
     proto: "tcp"
+
   # bamboo broker
   - rule: allow
     port: "54663"
