@@ -133,6 +133,7 @@ dockerhost-testing
 hs2
 website
 status
+s3
 
 [personio_backup]
 

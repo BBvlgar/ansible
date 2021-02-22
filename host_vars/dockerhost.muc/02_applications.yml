@@ -1,7 +1,6 @@
 ---
 
 applications:
-
   portainer_stack:
     portainer:
       name: portainer
@@ -18,95 +17,12 @@ applications:
         - "traefik.http.routers.portainer.rule: 'Host(`portainer.muc.it-economics.de`)'"
         - "traefik.http.routers.portainer.entrypoints: 'websecure'"
         - "traefik.http.routers.portainer.tls: 'true'"
-        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"     
         - "traefik.http.routers.portainer.tls.domains[0].main: 'portainer.muc.it-economics.de'"
-        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.muc.it-economics.de'"
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.muc.it-economics.de'" 
       networks:
         - "backbone"
 
-  alfresco-stack:
-    alfresco-prd:
-      name: alfresco-prd
-      image: iteconomics/alfresco
-      container_name: alfresco-prd
-      restartPolicy: always
-      labels:
-        - "traefik.enable: 'false'"
-      volumes:
-        - "/srv/alfresco-prd/config:/srv/project/config"
-        - "/srv/alfresco-prd/config/custom-log4j.properties:/opt/alfresco/tomcat/shared/classes/alfresco/extension/custom-log4j.properties"
-    alfresco-prd_web:
-      name: alfresco_web
-      image: iteconomics/apache
-      container_name: alfresco-prd_web
-      restartPolicy: always
-      labels:
-        - "traefik.enable: 'false'"
-      environment:
-        MODS: "proxy proxy_ajp ssl headers"
-    alfresco-prd_db:
-      name: alfresco-prd_db
-      image: mysql:5.6
-      container_name: alfresco-prd_db
-      restartPolicy: always
-      labels:
-        - "traefik.enable: 'false'"
-      environment:
-        MYSQL_ROOT_PASSWORD: "{{ alfresco.MYSQL_ROOT_PASSWORD }}"
-        MYSQL_DATABASE: "{{ alfresco.MYSQL_DATABASE }}"
-        MYSQL_USER: "{{ alfresco.MYSQL_USER }}"
-        MYSQL_PASSWORD: "{{ alfresco.MYSQL_PASSWORD }}"
-      volumes:
-        - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
-        - "/srv/alfresco-prd/db/backup:/mnt/backup/db"
-        - "/srv/alfresco-prd/db/data:/var/lib/mysql"
-      networks:
-        - "database"
-
-  social-partner-stack:
-    social-partner:
-      name: confluence-ite
-      image: iteconomics/confluence-ite:latest
-      container_name: confluence-ite
-      restartPolicy: always
-      environment:
-        CATALINA_OPTS: "-Xms2048m -Xmx8192m -Djdk.tls.trustNameService=true -Duser.timezone=Europe/Berlin"
-        PROXY: "social-partner.muc.it-economics.de"
-      labels:
-        - "traefik.enable: 'true'"
-        - "traefik.http.services.share.loadbalancer.server.port: '8080'"
-        - "traefik.http.routers.share_http.rule: 'Host(`social-partner.muc.it-economics.de`)'"
-        - "traefik.http.routers.share_http.entrypoints: 'web'"
-        - "traefik.http.routers.share_http.middlewares: 'forcehttps@file'"
-        - "traefik.http.routers.share.rule: 'Host(`social-partner.muc.it-economics.de`)'"
-        - "traefik.http.routers.share.entrypoints: 'websecure'"
-        - "traefik.http.routers.share.tls: 'true'"
-        - "traefik.http.routers.share.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.share.tls.domains[0].main: 'social-partner.muc.it-economics.de'"
-      volumes:
-        - "/srv/social-partner/confluence/data:/var/atlassian/application-data/confluence"
-    social-partner_db:
-      name: confluence_db
-      image: mysql:5.6
-      container_name: confluence_db
-      restartPolicy: always
-      environment:
-        MYSQL_ROOT_PASSWORD: "{{ social-partner.MYSQL_ROOT_PASSWORD }}"
-        MYSQL_DATABASE: "{{ social-partner.MYSQL_DATABASE }}"
-        MYSQL_USER: "{{ social-partner.MYSQL_USER }}"
-        MYSQL_PASSWORD: "{{ social-partner.MYSQL_PASSWORD }}"
-      volumes:
-        - "/srv/social-partner/mysql/config:/etc/mysql/conf.d"
-        - "/srv/social-partner/mysql/data:/var/lib/mysql"
-      networks:
-        - "database"
-      labels:
-        - "traefik.enable: 'false'"
-
-#  personio_backup-stack:
-#    personio_backup:
-#      name: alfresco
-#      image: iteconomics/wireguard
   ldap-stack:
     ldap03:
       name: ldap03
@@ -115,12 +31,15 @@ applications:
       volumes:
         - "/srv/ldap03/certs:/certs"
         - "/srv/ldap03/import:/import"
+        - "/srv/ldap03/data/slapd.d:/etc/ldap/slapd.d"
+        - "/srv/ldap03/data/ldap:/var/lib/ldap"
       labels:
         - "traefik.enable: false"
       ports:
         - "636:636"
       networks:
         - "database"
+
   kdc-stack:
     kdc:
       name: kdc03
@@ -130,15 +49,18 @@ applications:
       labels:
         - "traefik.enable: 'false'"
       ports:
-      - "88:88"
-      - "464:464"
-      - "749:749"
+      - "88:88/tcp"
+      - "464:464/tcp"
+      - "749:749/tcp"
       - "88:88/udp"
       - "464:464/udp"
       - "749:749/udp"
       volumes:
-        - "/dev/random:/dev/urandom"
-        - "/kdc:/srv/kdc03/config"
+        - "/dev/urandom:/dev/random"
+        - "/srv/kdc03/config:/kdc"
+      networks:
+        - "backbone"
+
   pihole-stack:
     pihole:
       name: pihole
@@ -146,6 +68,7 @@ applications:
       container_name: pihole
       restartPolicy: always
       ports:
+      - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
       volumes:
@@ -154,7 +77,21 @@ applications:
       networks:
         - "backbone"
       labels:
-        - "traefik.enable: 'false'"
+        - "traefik.enable: 'true'"
+        - "traefik.backend: 'pihole'"
+        - "traefik.frontend.rule: 'Host:pihole.muc.it-economics.de'"
+        - "traefik.port: '80'"
+        - "traefik.http.services.pihole.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.pihole_http.rule: 'Host(`pihole.muc.it-economics.de`)'"
+        - "traefik.http.routers.pihole_http.entrypoints: 'web'"
+        - "traefik.http.routers.pihole_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.pihole.rule: 'Host(`pihole.muc.it-economics.de`)'"
+        - "traefik.http.routers.pihole.entrypoints: 'websecure'"
+        - "traefik.http.routers.pihole.tls: 'true'"
+        - "traefik.http.routers.pihole.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.pihole.tls.domains[0].main: 'pihole.muc.it-economics.de'"
+        - "traefik.http.routers.pihole.tls.domains[0].sans: '*.muc.it-economics.de'"        
+
   freeradius-stack:
     freeradius:
       name: freeradius
@@ -174,4 +111,63 @@ applications:
       labels:
         - "traefik.enable: 'false'"
 
+  portainer_agent_stack:
+    portainer_agent:
+      name: portainer_edge_agent
+      image:  portainer/agent
+      restartPolicy: always
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+        - "/:/host"
+        - "/srv/portainer_agent/data:/data"
+      labels:
+        - "traefik.enable: false"
+      environment:
+        EDGE: 1
+        EDGE_ID: 47f86fb3-7a01-477e-8ba9-30236417b1cc
+        EDGE_KEY: aHR0cDovL25sYi5pdC1lY29ub21pY3MuZGU6OTAwMHxubGIuaXQtZWNvbm9taWNzLmRlOjgwMDB8ZDc6MDE6Mjk6ODc6NjM6NjQ6MDc6Zjg6YmM6OGI6Yjc6Y2E6NjU6NGY6Yzk6NDF8MTI
+        CAP_HOST_MANAGEMENT: 1
+      networks:
+        - "database"     
+
+  personio-backup_stack:
+    personio-backup:
+      name: personio-backup
+      image:  iteconomics/personio-backup
+      restartPolicy: always
+      volumes:
+        - "/srv/personio-backup/data:/data/"
+      labels:
+        - "traefik.enable: false"
+      environment:
+        PERSONIO.BACKUP.BACKUPPATH: '/data/'
+        PERSONIO.BACKUP.PERSONIOUSERNAME: 'personio-backup@it-economics.de'
+        PERSONIO.BACKUP.PERSONIOPASSWORD: "{{ personiobackup.PERSONIOPASSWORD }}"
+        PERSONIO.BACKUP.PERSONIOBASEURL: 'https://it-economics.personio.de'
+        PERSONIO.BACKUP.BACKUPSTATUSMAILRECEIVER: 'personal@it-economics.de'
+        PERSONIO.BACKUP.CRON: '0 * * * *'
+        PERSONIO.BACKUP.MAIL.SENDHOST: 'smtp.office.de'
+        PERSONIO.BACKUP.MAIL.RECEIVEHOST: 'outlook.office.de'
+        PERSONIO.BACKUP.MAIL.USERNAME: 'personio-backup@it-economics.de'
+        PERSONIO.BACKUP.MAIL.PASSWORD: "{{ personiobackup.PASSWORD }}"
+        PERSONIO.BACKUP.MAIL.SENDPORT: '587'
+        PERSONIO.BACKUP.MAIL.RECEIVEPORT: '993'
+      networks:
+        - "backbone"  
+
+  ntpd-stack:
+    ntpd:
+      name: ntpd
+      image: cturra/ntp:latest
+      container_name: ntpd
+      restartPolicy: always
+      ports:
+      - "123:123/udp"
+      networks:
+        - "backbone"
+      environment:
+        NTP_SERVERS: "time.cloudflare.com"
+      labels:
+        - "traefik.enable: 'false'"
 ...
