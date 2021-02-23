@@ -92,11 +92,10 @@ applications:
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
         - "/var/lib/docker/volumes:/var/lib/docker/volumes"
-        - "/:/host"
-        - "portainer_agent_data:/data"
-        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+#        - "/:/host"
+        - "/var/portainer_agent/data:/data"
       labels:
-        - "traefik.enable: false"
+        - "traefik.enable: 'false'"
       environment:
         EDGE: 1
         EDGE_ID: ffa38b27-d464-4cd9-a6f0-fc22979ce9d5
