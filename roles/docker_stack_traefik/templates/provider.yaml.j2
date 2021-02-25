@@ -21,29 +21,31 @@ http:
 
     security:
       headers:
-        frameDeny: true
-        sslRedirect: true
-        browserXssFilter: true
-        contentTypeNosniff: true
-        #HSTS
-        stsIncludeSubdomains: true
-        stsPreload: true
-        stsSeconds: 31536000
+        frameDeny:            {{ override_traefik_http_security_headers.frameDeny            | default( traefik_http_security_headers.frameDeny  ) }}
+        sslRedirect:          {{ override_traefik_http_security_headers.sslRedirect          | default( traefik_http_security_headers.sslRedirect  ) }}
+        browseXssFilter:      {{ override_traefik_http_security_headers.browseXssFilter      | default( traefik_http_security_headers.browseXssFilter  ) }}
+        contentTypeNosniff:   {{ override_traefik_http_security_headers.contentTypeNosniff   | default( traefik_http_security_headers.contentTypeNosniff  ) }}
+        # HSTS
+        stsIncludeSubdomains: {{ override_traefik_http_security_headers.stsIncludeSubdomains | default( traefik_http_security_headers.stsIncludeSubdomains  ) }}
+        stsPreload:           {{ override_traefik_http_security_headers.stsPreload           | default( traefik_http_security_headers.stsPreload  ) }}
+        stsSeconds:           {{ override_traefik_http_security_headers.stsSeconds           | default( traefik_http_security_headers.stsSeconds  ) }}
 
 tls:
 
   options:
 
     default:
-      minVersion: VersionTLS12
+
+      minVersion: {{ override_traefik_tls_default_options.minVersion | default ( traefik_tls_default_options.minVersion ) }}
+
       cipherSuites:
-        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384   # TLS 1.2
-        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305    # TLS 1.2
-        - TLS_AES_256_GCM_SHA384                  # TLS 1.3
-        - TLS_CHACHA20_POLY1305_SHA256            # TLS 1.3
+        {% for suite in override_traefik_tls_default_options.cipherSuites | default ( traefik_tls_default_options.cipherSuites ) %}- {{ suite }}
+        {% endfor %}
+
       curvePreferences:
-        - CurveP521
-        - CurveP384
-      sniStrict: true
+        {% for curve in override_traefik_tls_default_options.curvePreferences | default ( traefik_tls_default_options.curvePreferences ) %}- {{ curve }}
+        {% endfor %}
+
+      sniStrict: {{ override_traefik_tls_default_options.sniStrict | default ( traefik_tls_default_options.sniStrict ) }}
 
 ...
