@@ -22,15 +22,21 @@
   roles:
     - role: homebrew
       tags: ['homebrew']
+      ignore_errors: true
     - role: brew_mas
       when: mas_installed_apps
       tags: ['mas']
+      ignore_errors: true
     - role: mac_setup
       tags: ['mac_setup']
+      ignore_errors: true
     - role: pip_packages
       tags: ['pip_packages']
+      ignore_errors: true
     - role: ansible_sublime_text3
       tags: ['ansible_sublime_text3']
       when: configureSublime
+      ignore_errors: true
+
 
 ...
