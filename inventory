@@ -135,6 +135,12 @@ website
 status
 s3
 
+[aws_dockerhosts]
+dockerhost
+dockerhost-testing
+website
+status
+
 [personio_backup]
 
 [native_ldap_client]
