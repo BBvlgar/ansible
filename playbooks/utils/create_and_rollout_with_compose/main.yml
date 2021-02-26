@@ -10,10 +10,10 @@
   become: true
 
   tasks:
-   - name: "Deploy Traefik"
-     include_role:
-       name: docker_stack_traefik
-     when: traefik_enabled is defined and traefik_enabled
+    - name: "Deploy Traefik"
+      include_role:
+        name: docker_stack_traefik
+      when: traefik_enabled is defined and traefik_enabled
 
     - name: "Create Application-Config-Files"
       include_role:
