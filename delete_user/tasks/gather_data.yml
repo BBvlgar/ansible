@@ -40,16 +40,6 @@
       private: yes
       when: office_password is not defined
 
-    - name: "office_2fa_method"
-      prompt: "Please enter your 2fa method (Code or PopUp) for office"
-      private: no
-      when: office_2fa_method is not defined
-
-    - name: "office_2fa_code"
-      prompt: "Please enter your 2fa code for office"
-      private: yes
-      when:  office_2fa_code is not defined
-
   tasks:
 
     - name: Get data fields from ticket
