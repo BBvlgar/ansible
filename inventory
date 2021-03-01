@@ -32,6 +32,7 @@ dockerhost.muc                         ansible_port=60022            ansible_hos
 bareos-int                 ansible_port=60022            ansible_host=bareos-int.muc.it-economics.de
 jumphost                   ansible_port=60022            ansible_host=hq1-muc.it-economics.de
 pki.muc                    ansible_port=22               ansible_host=pki.muc.it-economics.de
+bamboo-builder-muc	   ansible_port=60022		ansible_host=bamboo-builder.muc.it-economics.de
 ## Do not Touch Systems Muc
 # nas4
 # s2
@@ -103,6 +104,7 @@ freepbx
 website
 dockerhost-testing
 status
+bamboo-builder-muc
 # atlassian-pi.muc
 # hass-pi.muc
 # okr-pi.muc
@@ -134,6 +136,7 @@ hs2
 website
 status
 s3
+bamboo-builder-muc
 
 [aws_dockerhosts]
 dockerhost
