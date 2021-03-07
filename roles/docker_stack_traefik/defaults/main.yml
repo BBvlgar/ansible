@@ -46,7 +46,7 @@ traefik_stack:
       network_mode: "host"
 
 traefik_http_security_headers:
-  frameDeny:            'true'
+  frameDeny:            'false'
   sslRedirect:          'true'
   browseXssFilter:      'true'
   contentTypeNosniff:   'true'
