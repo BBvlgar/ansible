@@ -15,6 +15,7 @@ internal: &internal
   ? survey_user
   ? bitbucket_users
   ? vpn_user
+  ? bamboo-user
 
 sopra: &sopra
   << : *base
