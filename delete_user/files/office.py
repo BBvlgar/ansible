@@ -65,18 +65,22 @@ def changePassword():
                 EC.presence_of_element_located((By.XPATH, "//*[text()='Microsoft 365 admin center']"))
             )
 
+    time.sleep(10)
     browser.find_element_by_xpath("//input[@role='searchbox']").clearAndType(args.u)
     time.sleep(6)
     browser.find_element_by_xpath("//*[text()='"+ args.u + "']").click()
+    time.sleep(20)
+    browser.find_element_by_xpath("//i[@data-icon-name='Permissions']").click()
+
     time.sleep(10)
-    browser.find_element_by_xpath('/html/body/div[4]/div/div/div/div/div[3]/div/div[2]/div[2]/div[2]/div/div/div/div/div[1]/button').click()
-
-    time.sleep(6)
-    browser.find_element_by_xpath("/html/body/div[5]/div/div/div/div[2]/div[3]/div/div[3]/div").click()
+    browser.find_element_by_xpath("//span[text()='Automatisch ein Kennwort erstellen']").click()
+    time.sleep(3)
     browser.find_element_by_xpath("//input[@type='password']").clearAndType(args.up)
-    browser.find_element_by_xpath("/html/body/div[5]/div/div/div/div[2]/div[3]/div/div[4]").click()
-    browser.find_element_by_xpath('/html/body/div[5]/div/div/div/div[2]/div[3]/div/div[6]/div/button').click()
-
+    time.sleep(3)
+    browser.find_element_by_xpath("//span[text()='Anfordern, dass dieser Benutzer bei der ersten Anmeldung sein Kennwort ändert']").click()
+    time.sleep(3)
+    browser.find_element_by_xpath("//button[@data-automation-id='UserDetailPanelRegion,PasswordResetPrimaryButtonDetailsPanelV2']").click()
+    time.sleep(10)
 
 try:
     browser.get("https://office.de")
