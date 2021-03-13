@@ -13,14 +13,14 @@ applications:
         - "traefik.http.routers.website.entrypoints: 'websecure'"
         - "traefik.http.routers.website.tls: 'true'"
         - "traefik.http.routers.website.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.website_http.middlewares: 'forcehttps@file'"        
+        - "traefik.http.routers.website_http.middlewares: 'forcehttps@file'"
       environment:
         WORDPRESS_DB_HOST: "{{ websiteWordpress.WORDPRESS_DB_HOST }}"
         WORDPRESS_DB_NAME: "{{ websiteWordpress.WORDPRESS_DB_NAME }}"
         WORDPRESS_DB_USER: "{{ websiteWordpress.WORDPRESS_DB_USER }}"
         WORDPRESS_DB_PASSWORD: "{{ websiteWordpress.WORDPRESS_DB_PASSWORD }}"
         WORDPRESS_TABLE_PREFIX: "{{ websiteWordpress.WORDPRESS_TABLE_PREFIX }}"
-        WORDPRESS_DEBUG: "{{ websiteWordpress.WORDPRESS_DEBUG }}"
+#        WORDPRESS_DEBUG: "{{ websiteWordpress.WORDPRESS_DEBUG }}"
       volumes:
         - "/mnt/shared/applications/website/logs:/var/log/apache2"
         - "/mnt/shared/applications/website/wordpress/.htaccess:/var/www/html/.htaccess"
@@ -53,10 +53,10 @@ applications:
         - "/mnt/shared/applications/website/crontab:/var/spool/cron/crontabs"
         - "/mnt/shared/applications/website/www-data-id_rsa:/var/www/.ssh"
       labels:
-        - "traefik.enable: 'false'"     
+        - "traefik.enable: 'false'"
 
 
-  portainer_stack: 
+  portainer_stack:
     portainer:
       image: portainer/portainer-ce:latest
       name: portainer
@@ -70,7 +70,7 @@ applications:
         - "traefik.http.routers.portainer.entrypoints: 'websecure'"
         - "traefik.http.routers.portainer.tls: 'true'"
         - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
-        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"                
+        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
         - "/mnt/shared/applications/portainer/data:/data"
