@@ -8,6 +8,5 @@ composerFilePath: "/mnt/shared/compose"
 traefik_network: proxy
 internal_network: internal
 traefik_fqdn: "traefik.hs2.it-economics.de"
-disallowed_users:
-  - mthanner
+
 ...

@@ -5,6 +5,7 @@ disallowed_users:
   - mthanner
   - tfischer
   - mmenzel
+  - rschneider
 sophos_av_disableMTD: true
 debug: true
 

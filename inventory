@@ -56,7 +56,7 @@ bamboo-server               ansible_port=60022           ansible_host=bamboo.it-
 bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de
 meet.it-economics.de        ansible_port=60022           ansible_host=meet.it-economics.de
 office.it-economics.de      ansible_port=60022           ansible_host=office.it-economics.de
-
+fiscon			    ansible_port=60022           ansible_host=fiscon.it-economics.de 			
 
 
 ###
@@ -114,7 +114,7 @@ bamboo-builder-muc
 # teamviewer-pi.karlsruhe
 # teamviewer-pi.bonn
 # teamviewer-pi.sofia
-
+fiscon
 
 [production:children]
 ssh_hosts
@@ -136,6 +136,7 @@ website
 status
 s3
 bamboo-builder-muc
+fiscon
 
 [aws_dockerhosts]
 dockerhost

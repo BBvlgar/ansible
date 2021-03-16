@@ -6,7 +6,4 @@ docker_host:          no
 traefik_enabled:      no
 sophos_av_disableMTD: yes
 
-disallowed_users:
-  - mthanner
-
 ...

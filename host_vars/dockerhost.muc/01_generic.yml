@@ -2,7 +2,5 @@
 
 debug:           yes
 traefik_enabled: yes
-disallowed_users:
-  - mthanner
 
 ...
