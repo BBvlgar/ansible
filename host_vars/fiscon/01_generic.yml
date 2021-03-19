@@ -1,0 +1,9 @@
+---
+docker_host: true
+composerFilePath: "/mnt/shared/compose/"
+remote: true
+disallowed_users:
+  - mmenzel
+  - tfischer
+  - mthanner
+...

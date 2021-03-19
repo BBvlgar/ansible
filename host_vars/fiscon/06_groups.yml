@@ -1,0 +1,44 @@
+---
+
+# user groups and permissions are given by the following list of dictionaries
+user_groups:
+
+  - group: sudo
+    users:
+      - cwalonka
+      - mwinter
+      - lpohl
+      - mvoelkl
+      - rschneider
+      - pbassewitz
+      - egoldkin
+      - mgoers
+
+  - group: adm
+    users:
+      - cwalonka
+      - mwinter
+      - lpohl
+      - mvoelkl
+      - rschneider
+      - pbassewitz
+      - egoldkin
+      - mgoers
+
+  - group: docker
+    users:
+      - cwalonka
+      - mwinter
+
+  - group: ssh_users
+    users:
+      - cwalonka
+      - mwinter
+      - lpohl
+      - mvoelkl
+      - rschneider
+      - pbassewitz
+      - egoldkin
+      - mgoers
+...
+
