@@ -15,35 +15,59 @@
   tasks:
     - pause: prompt="Create user __ {{ hostvars['localhost']['user']['registration']['user']['username'] }} __ in environment __ {{ env }} __ and system __ {{ hostvars.get('localhost').get('ldap_url') }} __, press ENTER to continue (abort with ctrl+c)."
       when: env == 'production'
+  tags:
+    - ssl
+    - achievo
+    - mail
+    - welcomemail
 
 - name: Check SSL Cert
   include: check_cert.yml
+  tags:
+    - ssl  
 
 - name: Check achievo
   include: check_achievo.yml
   when: skipAchievo is not defined
+  tags:
+    - achievo  
 
 - name: Create ldap account
   include: ldap.yml
+  tags:
+    - ldap  
 
 - name: Create achievo account
   import_playbook: achievo.yml
-  when: skipAchievo is not defined
+  tags:
+    - achievo  
 
 - name: Generate SSL certificate
   import_playbook: ssl.yml
+  tags:
+    - ssl  
 
 - name: Upload certificate to LDAP
   import_playbook: ssl_ldap.yml
+  tags:
+    - ssl  
 
 - name: Upload SSL certificate
   import_playbook: ssl_upload.yml
+  tags:
+    - ssl  
 
 - name: Cleanup temp files
   import_playbook: cleanup.yml
+  tags:
+    - ssl  
 
 - name: Create Mail account
   include: tm-mittelstand.yml
+  tags:
+    - mail  
 
 - name: Send welcome mail
   import_playbook: welcomemail.yml
+  tags:
+    - welcomemail  
