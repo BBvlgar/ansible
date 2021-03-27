@@ -9,6 +9,11 @@
 
 - name: Fetch data from ticket system
   import_playbook: gather_data.yml
+  tags:
+    - ssl
+    - achievo
+    - mail
+    - welcomemail
 
 - name: Confirmation
   hosts: localhost
