@@ -58,7 +58,7 @@ bareos                      ansible_port=60022           ansible_host=bareos.it-
 meet.it-economics.de        ansible_port=60022           ansible_host=meet.it-economics.de
 office.it-economics.de      ansible_port=60022           ansible_host=office.it-economics.de
 fiscon			    ansible_port=60022           ansible_host=fiscon.it-economics.de 			
-
+camunda-showcase            ansible_port=60022           ansible_host=camunda-showcase.it-economics.de
 
 ###
 ## AWS Servers (intern)
@@ -117,6 +117,7 @@ bamboo-builder-muc
 # teamviewer-pi.sofia
 fiscon
 docker
+camunda-showcase
 
 [production:children]
 ssh_hosts
@@ -140,6 +141,7 @@ s3
 bamboo-builder-muc
 fiscon
 docker
+camunda-showcase
 
 [aws_dockerhosts]
 dockerhost
