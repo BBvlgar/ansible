@@ -23,7 +23,7 @@ http:
       headers:
         frameDeny:            {{ override_traefik_http_security_headers.frameDeny            | default( traefik_http_security_headers.frameDeny  ) }}
         sslRedirect:          {{ override_traefik_http_security_headers.sslRedirect          | default( traefik_http_security_headers.sslRedirect  ) }}
-        browseXssFilter:      {{ override_traefik_http_security_headers.browseXssFilter      | default( traefik_http_security_headers.browseXssFilter  ) }}
+        browserXssFilter:     {{ override_traefik_http_security_headers.browseXssFilter      | default( traefik_http_security_headers.browseXssFilter  ) }}
         contentTypeNosniff:   {{ override_traefik_http_security_headers.contentTypeNosniff   | default( traefik_http_security_headers.contentTypeNosniff  ) }}
         # HSTS
         stsIncludeSubdomains: {{ override_traefik_http_security_headers.stsIncludeSubdomains | default( traefik_http_security_headers.stsIncludeSubdomains  ) }}
