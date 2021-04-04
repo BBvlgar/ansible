@@ -61,6 +61,7 @@
 
     - name: Verify that docker works
       command: docker run --rm hello-world
+      ignore_errors: true
 
 - name: Set pull credentials as root user
   become: yes
