@@ -333,7 +333,7 @@ applications:
   surveyappproxy_stack:
     surveyappproxy:
       name: surveyappproxy
-      image: "{{ docker_registry }}nginx:latest"
+      image: "{{ docker_registry }}libraey/nginx:latest"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/teamsurveyrest.it-economics.de/nginx.conf:/etc/nginx/nginx.conf"
@@ -357,7 +357,7 @@ applications:
   share_stack:
     share:
       name: share
-      image: "{{ docker_registry }}nextcloud:latest"
+      image: "{{ docker_registry }}library/nextcloud:latest"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/share/data/apps:/var/www/html/apps"
