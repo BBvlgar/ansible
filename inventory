@@ -39,7 +39,7 @@ bamboo-builder-muc	   ansible_port=60022		ansible_host=bamboo-builder.muc.it-eco
 # s4
 # proxmox                   ansible_port=22               ansible_host=192.168.3.226                          alias_fqdn=proxmox.muc.it-economics.de
 apps2-mirror.muc            ansible_port=60022            ansible_host=apps2-mirror.muc.it-economics.de
-docker                      ansible_port=60022            ansible_host=docker.it-economics.de
+admin                       ansible_port=60022            ansible_host=admin.muc.it-economics.de
 
 ###
 ## Hetzner Root Servers
@@ -145,6 +145,7 @@ bamboo-builder-muc
 fiscon
 docker
 camunda-showcase
+admin
 
 [aws_dockerhosts]
 dockerhost
