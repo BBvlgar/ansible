@@ -386,7 +386,6 @@ applications:
         - "/var/lib/docker/volumes:/var/lib/docker/volumes"
         - "/:/host"
         - "portainer_agent_data:/data"
-        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
       labels:
         - "traefik.enable: false"
       environment:
