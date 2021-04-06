@@ -1,5 +1,6 @@
 ---
 
 composerFilePath: '/mnt/shared/compose/dockerhost'
+docker_registry: 'docker.it-economics.de/proxy/'
 
 ...

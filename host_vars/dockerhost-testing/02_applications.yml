@@ -5,7 +5,7 @@ applications:
   skillmatrix_stack:
     skillmatrix-service:
       name: skillmatrix-service
-      image: iteconomics/mindmap-service:testing
+      image: "{{ docker_registry }}iteconomics/mindmap-service:testing"
       restartPolicy: always
       environment:
         POSTGRESQL_URL: "{{ skillmatrixservice.POSTGRESQL_URL }}"
@@ -32,7 +32,7 @@ applications:
 
     skillmatrix-gui:
       name: skillmatrix-gui
-      image: iteconomics/d3-skills-mindmap:testing
+      image: "{{ docker_registry }}iteconomics/d3-skills-mindmap:testing"
       volumes:
         - "/mnt/shared/applications-testing/skillmatrix/html/:/usr/share/nginx/html"
       restartPolicy: always
@@ -57,7 +57,7 @@ applications:
   appstore_stack:
     appstore:
       name: appstore
-      image: iteconomics/apache:testing
+      image: "{{ docker_registry }}iteconomics/apache:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/appstore/web/certs:/certs"
@@ -82,7 +82,7 @@ applications:
 
     appstore_ssh:
       name: appstore_ssh
-      image: devopsansiblede/worksuite:testing
+      image: "{{ docker_registry }}devopsansiblede/worksuite:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/appstore/ssh/authorized_keys:/root/.ssh/authorized_keys"
@@ -97,7 +97,7 @@ applications:
   atlassian-quote_stack:
     atlassian-quote:
       name: atlassian-quote
-      image: iteconomics/atlassian-quote:testing
+      image: "{{ docker_registry }}iteconomics/atlassian-quote:testing"
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -128,7 +128,7 @@ applications:
   crowd_stack:
     crowd:
       name: crowd
-      image: iteconomics/crowd:testing
+      image: "{{ docker_registry }}iteconomics/crowd:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/crowd/conf/server.xml:/opt/atlassian/crowd/apache-tomcat/conf/server.xml"
@@ -151,7 +151,7 @@ applications:
   directory-test_stack:
     directory-test:
       name: directory-test
-      image: iteconomics/directory:testing
+      image: "{{ docker_registry }}iteconomics/directory:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/certs/data/data:/var/www/html/storage/app/certs"
@@ -179,7 +179,7 @@ applications:
   teamsurvey-dashboard_stack:
     teamsurvey-dashboard:
       name: teamsurvey-dashboard
-      image: iteconomics/teamsurvey-dashboard:testing
+      image: "{{ docker_registry }}iteconomics/teamsurvey-dashboard:testing"
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -201,7 +201,7 @@ applications:
   share-secrets_stack:
     share-secrets:
       name: share-secrets
-      image: iteconomics/apache:testing
+      image: "{{ docker_registry }}iteconomics/apache:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/share-secrets/apache/apache.j2:/templates/apache.j2"
@@ -226,7 +226,7 @@ applications:
   roominfo-service_stack:
     roominfo-service:
       name: roominfo-service
-      image: iteconomics/icsviewer:testing
+      image: "{{ docker_registry }}iteconomics/icsviewer:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/roominfo-service/config/.env:/var/www/html/.env"
@@ -248,7 +248,7 @@ applications:
   portainer_stack:
     portainer:
       name: portainer
-      image: portainer/portainer-ce
+      image: "{{ docker_registry }}portainer/portainer-ce"
       restartPolicy: always
       volumes:
             - '/var/run/docker.sock:/var/run/docker.sock'
@@ -271,7 +271,7 @@ applications:
   passcard_stack:
     passcard:
       name: passcard
-      image: iteconomics/passcard:testing
+      image: "{{ docker_registry }}iteconomics/passcard:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/passcard/data:/var/www/html/storage"
@@ -293,7 +293,7 @@ applications:
   ldap-test_stack:
     ldap-test:
       name: ldap-test
-      image: iteconomics/openldap:testing
+      image: "{{ docker_registry }}iteconomics/openldap:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/ldap-test/data/certs:/certs"
@@ -310,7 +310,7 @@ applications:
   kdc01_stack:
     kdc01:
       name: kdc01
-      image:  docker.io/iteconomics/kdc:testing
+      image:  "{{ docker_registry }}iteconomics/kdc:testing"
       restartPolicy: always
       volumes:
         - "/dev/urandom:/dev/urandom"
@@ -330,7 +330,7 @@ applications:
   limesurvey_stack:
     limesurvey:
       name: limesurvey
-      image:  iteconomics/limesurvey:testing
+      image:  "{{ docker_registry }}iteconomics/limesurvey:testing"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications-testing/survey/data/admin_theme:/var/www/html/upload/admintheme/iteconomics"
@@ -379,7 +379,7 @@ applications:
   portainer_agent_stack:
     portainer_agent:
       name: portainer_edge_agent
-      image:  portainer/agent
+      image:  "{{ docker_registry }}portainer/agent"
       restartPolicy: always
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
