@@ -333,7 +333,7 @@ applications:
   surveyappproxy_stack:
     surveyappproxy:
       name: surveyappproxy
-      image: "{{ docker_registry }}libraey/nginx:latest"
+      image: "{{ docker_registry }}library/nginx:latest"
       restartPolicy: always
       volumes:
         - "/mnt/shared/applications/teamsurveyrest.it-economics.de/nginx.conf:/etc/nginx/nginx.conf"
