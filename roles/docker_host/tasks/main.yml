@@ -65,7 +65,7 @@
 
 - name: Set pull credentials as root user
   become: yes
-  command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }}
+  command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }} {{ docker_registry }}
   when: docker_pull_user is defined and docker_pull_password is defined
 
 - name: install pip packages, force upgrade
