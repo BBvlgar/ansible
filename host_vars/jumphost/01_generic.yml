@@ -1,13 +1,10 @@
 ---
 composerFilePath: "/mnt/shared/compose"
 traefik_enabled: true
-disallowed_users:
-  - mthanner
-  - tfischer
-  - mmenzel
-  - rschneider
 sophos_av_disableMTD: true
 debug: true
+
+docker_registry: 'docker.it-economics.de/proxy/'
 
 
 ...

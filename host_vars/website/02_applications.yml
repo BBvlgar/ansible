@@ -2,7 +2,7 @@
 applications:
   website_stack:
     wordpress:
-      image: iteconomics/wordpress:latest
+      image: "{{ docker_registry }}iteconomics/wordpress:latest"
       name: website
       restartPolicy: always
       labels:
@@ -39,7 +39,7 @@ applications:
 
     ssh:
       name: worksuite
-      image: devopsansiblede/worksuite:latest
+      image: "{{ docker_registry }}devopsansiblede/worksuite:latest"
       restartPolicy: always
       ports:
         - "222:22"
@@ -58,7 +58,7 @@ applications:
 
   portainer_stack:
     portainer:
-      image: portainer/portainer-ce:latest
+      image: "{{ docker_registry }}portainer/portainer-ce:latest"
       name: portainer
       restartPolicy: always
       labels:
@@ -80,7 +80,7 @@ applications:
   portainer_agent_stack:
     portainer_agent:
       name: portainer_edge_agent
-      image:  portainer/agent
+      image: "{{ docker_registry }}portainer/agent"
       restartPolicy: always
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"

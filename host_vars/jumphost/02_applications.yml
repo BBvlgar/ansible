@@ -5,7 +5,7 @@ applications:
   wireguard-stack:
     wireguard:
       name: wireguard
-      image: linuxserver/wireguard
+      image: "{{ docker_registry }}linuxserver/wireguard"
       restartPolicy: always
       cap_add:
         - NET_ADMIN
@@ -36,7 +36,7 @@ applications:
     openvpn:
       name: openvpn
       privileged: true
-      image: iteconomics/openvpn:latest
+      image: "{{ docker_registry }}iteconomics/openvpn:latest"
       restartPolicy: always
       volumes:
         - '/srv/openvpn/config/ite.conf:/etc/openvpn/ite.conf'
@@ -53,7 +53,7 @@ applications:
     devopenvpn:
       name: devopenvpn
       privileged: true
-      image: iteconomics/openvpn:latest
+      image: "{{ docker_registry }}iteconomics/openvpn:latest"
       restartPolicy: always
       volumes:
         - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
@@ -71,7 +71,7 @@ applications:
     openvpn-testing:
       name: openvpn-testing
       privileged: true
-      image: iteconomics/openvpn:testing
+      image: "{{ docker_registry }}iteconomics/openvpn:testing"
       restartPolicy: always
       volumes:
         - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
@@ -87,7 +87,7 @@ applications:
   portainer_agent_stack:
     portainer_agent:
       name: portainer_edge_agent
-      image:  portainer/agent
+      image: "{{ docker_registry }}portainer/agent"
       restartPolicy: always
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
@@ -102,12 +102,12 @@ applications:
         EDGE_KEY: aHR0cDovL25sYi5pdC1lY29ub21pY3MuZGU6OTAwMHxubGIuaXQtZWNvbm9taWNzLmRlOjgwMDB8ZDc6MDE6Mjk6ODc6NjM6NjQ6MDc6Zjg6YmM6OGI6Yjc6Y2E6NjU6NGY6Yzk6NDF8OA
         CAP_HOST_MANAGEMENT: 1
       networks:
-        - "database"        
+        - "database"
 
   guacamole_stack:
     guacamole:
       name: guacamole
-      image: oznu/guacamole:latest
+      image: "{{ docker_registry }}oznu/guacamole:latest"
       restartPolicy: always
       volumes:
         - "{{ docker_home }}/guacamole/postgres:/config"

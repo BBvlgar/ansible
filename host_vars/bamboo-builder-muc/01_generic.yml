@@ -2,5 +2,6 @@
 docker_host: true
 composerFilePath: "/mnt/shared/compose/"
 remote: true
+docker_registry: 'docker.it-economics.de/proxy/'
 
 ...

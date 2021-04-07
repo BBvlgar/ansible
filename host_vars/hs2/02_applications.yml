@@ -4,7 +4,7 @@ applications:
   teamsurvey-api_stack:
     teamsurvey-api:
       name: teamsurvey-api
-      image: iteconomics/teamsurvey-api:latest
+      image: "{{ docker_registry }}iteconomics/teamsurvey-api:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -32,7 +32,7 @@ applications:
         - "backbone"
     teamsurvey-api_db:
       name: teamsurvey-api_db
-      image: mongo:latest
+      image: "{{ docker_registry }}mongo:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -48,7 +48,7 @@ applications:
   teamsurvey-api-testing_stack:
     teamsurvey-api-testing:
       name: teamsurvey-api-testing
-      image: iteconomics/teamsurvey-api:latest
+      image: "{{ docker_registry }}iteconomics/teamsurvey-api:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'true'"
@@ -76,7 +76,7 @@ applications:
         - "backbone"
     teamsurvey-api-testing_db:
       name: teamsurvey-api-testing_db
-      image: mongo:latest
+      image: "{{ docker_registry }}mongo:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -92,7 +92,7 @@ applications:
   apps:
     apps-database:
       name: apps-database
-      image: mysql:5.5 
+      image: "{{ docker_registry }}mysql:5.5"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
