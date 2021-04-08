@@ -21,14 +21,14 @@ http:
 
     security:
       headers:
-        frameDeny:            {{ override_traefik_http_security_headers.frameDeny            | default( traefik_http_security_headers.frameDeny  ) }}
-        sslRedirect:          {{ override_traefik_http_security_headers.sslRedirect          | default( traefik_http_security_headers.sslRedirect  ) }}
-        browserXssFilter:     {{ override_traefik_http_security_headers.browseXssFilter      | default( traefik_http_security_headers.browseXssFilter  ) }}
-        contentTypeNosniff:   {{ override_traefik_http_security_headers.contentTypeNosniff   | default( traefik_http_security_headers.contentTypeNosniff  ) }}
+        frameDeny:            {{ override_traefik_http_security_headers.frameDeny            | default( traefik_http_security_headers.frameDeny ) }}
+        sslRedirect:          {{ override_traefik_http_security_headers.sslRedirect          | default( traefik_http_security_headers.sslRedirect ) }}
+        browserXssFilter:     {{ override_traefik_http_security_headers.browserXssFilter     | default( traefik_http_security_headers.browserXssFilter ) }}
+        contentTypeNosniff:   {{ override_traefik_http_security_headers.contentTypeNosniff   | default( traefik_http_security_headers.contentTypeNosniff ) }}
         # HSTS
-        stsIncludeSubdomains: {{ override_traefik_http_security_headers.stsIncludeSubdomains | default( traefik_http_security_headers.stsIncludeSubdomains  ) }}
-        stsPreload:           {{ override_traefik_http_security_headers.stsPreload           | default( traefik_http_security_headers.stsPreload  ) }}
-        stsSeconds:           {{ override_traefik_http_security_headers.stsSeconds           | default( traefik_http_security_headers.stsSeconds  ) }}
+        stsIncludeSubdomains: {{ override_traefik_http_security_headers.stsIncludeSubdomains | default( traefik_http_security_headers.stsIncludeSubdomains ) }}
+        stsPreload:           {{ override_traefik_http_security_headers.stsPreload           | default( traefik_http_security_headers.stsPreload ) }}
+        stsSeconds:           {{ override_traefik_http_security_headers.stsSeconds           | default( traefik_http_security_headers.stsSeconds ) }}
 
 tls:
 
