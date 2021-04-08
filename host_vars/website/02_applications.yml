@@ -29,13 +29,13 @@ applications:
         - "/mnt/shared/applications/website/upload.ini:/usr/local/etc/php/conf.d/upload.ini"
       networks:
           backbone:
-      templates:
-        htaccess:
-          src: "custom/wordpress/htaccess.j2"
-          dest: "/mnt/shared/applications/website/wordpress/.htaccess"
-        uploadini:
-          src: "custom/wordpress/upload.ini.j2"
-          dest: "/mnt/shared/applications/website/upload.ini"
+      # templates:
+      #   htaccess:
+      #     src: "custom/wordpress/htaccess.j2"
+      #     dest: "/mnt/shared/applications/website/wordpress/.htaccess"
+      #   uploadini:
+      #     src: "custom/wordpress/upload.ini.j2"
+      #     dest: "/mnt/shared/applications/website/upload.ini"
 
     ssh:
       name: worksuite

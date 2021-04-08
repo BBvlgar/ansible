@@ -32,7 +32,7 @@ applications:
         - "backbone"
     teamsurvey-api_db:
       name: teamsurvey-api_db
-      image: "{{ docker_registry }}mongo:latest"
+      image: "{{ docker_registry }}library/mongo:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -76,7 +76,7 @@ applications:
         - "backbone"
     teamsurvey-api-testing_db:
       name: teamsurvey-api-testing_db
-      image: "{{ docker_registry }}mongo:latest"
+      image: "{{ docker_registry }}library/mongo:latest"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -92,7 +92,7 @@ applications:
   apps:
     apps-database:
       name: apps-database
-      image: "{{ docker_registry }}mysql:5.5"
+      image: "{{ docker_registry }}/library/mysql:5.5"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -100,7 +100,12 @@ applications:
         MSQL_USER: "{{ teamsurveyapi.MYSQL_USER }}"
         MSQL_PASS: "{{ teamsurveyapi.MYSQL_PASS }}"
         MSQL_HOST: "{{ teamsurveyapi.MYSQL_HOST }}"
+        MYSQL_ROOT_PASSWORD: "{{ teamsurveyapi.MYSQL_PASS }}"
       ports:
       - "127.0.0.1:3306:3306"
       networks:
         - "database"
+      volumes:
+        - "/srv/mysql/config:/etc/mysql/conf.d:ro"
+        - "/srv/mysql/log:/var/log/mysql"
+        - "/srv/mysql/db:/var/lib/mysql"
