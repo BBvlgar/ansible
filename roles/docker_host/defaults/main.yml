@@ -14,7 +14,7 @@ install_docker:
     - name: 'docker-ce'
     - name: 'docker-ce-cli'
     # - name: 'containerd.io'
-  
+
   aws_templates:
     - src: aws-logger.conf.j2
       dest: /etc/docker/aws-logger.conf
@@ -22,5 +22,7 @@ install_docker:
       dest: /etc/default/docker
 
 package_state: latest
+
+docker_registry: ''
 
 ...
