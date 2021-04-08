@@ -63,6 +63,7 @@
         name: update_server
       vars:
         override_user: 'yes'
+        skip_update_reboot: yes
 
     - name: 'install sophos antivirus'
       include_role:
