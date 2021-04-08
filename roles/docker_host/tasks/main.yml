@@ -86,7 +86,7 @@
   with_items: "{{ docker_registry | default( [] ) }}"
   loop_control:
     loop_var: registry
-  when: docker_registry is defined and docker_registry | length > 0
+  when: docker_registries is defined and docker_registries | length > 0
 
 - name: install pip packages, force upgrade
   pip:
