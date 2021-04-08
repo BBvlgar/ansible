@@ -334,6 +334,7 @@
         not ( continue_cnt.user_input | bool )
 
 - name: Control Container
+  become: true
   docker_container: "{{ docker_container }}"
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
