@@ -43,7 +43,7 @@ applications:
       networks:
         - "database"
       volumes:
-        - "/mnt/shared/applications/appstore/teamsurvey-api/db/data:/data/db"
+        - "/mnt/shared/applications/teamsurvey-api/db/data:/data/db"
 
   teamsurvey-api-testing_stack:
     teamsurvey-api-testing:
@@ -87,7 +87,7 @@ applications:
       networks:
         - "database"
       volumes:
-        - "/mnt/shared/applications/appstore/teamsurvey-api-testing/db/data:/data/db"
+        - "/mnt/shared/applications/teamsurvey-api-testing/db/data:/data/db"
 
   apps:
     apps-database:
@@ -109,3 +109,20 @@ applications:
         - "/srv/mysql/config:/etc/mysql/conf.d:ro"
         - "/srv/mysql/log:/var/log/mysql"
         - "/srv/mysql/db:/var/lib/mysql"
+
+  worksuite:
+    teamsurvey-ssh:
+      name: teamsurvey_ssh
+      image: "{{ docker_registry }}devopsansiblede/worksuite:latest"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      ports:
+      - "50022:22"
+      networks:
+        - "database"
+        - "backbone"
+      volumes:
+        - "/mnt/shared/applications/worksuite/teamsurvey_ssh/:/root/.ssh:ro"
+
+...
