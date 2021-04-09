@@ -92,7 +92,7 @@ applications:
   apps:
     apps-database:
       name: apps-database
-      image: "{{ docker_registry }}/library/mysql:5.5"
+      image: "{{ docker_registry }}library/mysql:5.5"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
