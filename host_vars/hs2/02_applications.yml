@@ -32,7 +32,7 @@ applications:
         - "backbone"
     teamsurvey-api_db:
       name: teamsurvey-api_db
-      image: "{{ docker_registry }}library/mongo:latest"
+      image: "{{ docker_registry }}library/mongo:4.2"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -76,7 +76,7 @@ applications:
         - "backbone"
     teamsurvey-api-testing_db:
       name: teamsurvey-api-testing_db
-      image: "{{ docker_registry }}library/mongo:latest"
+      image: "{{ docker_registry }}library/mongo:4.2"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
@@ -92,7 +92,7 @@ applications:
   apps:
     apps-database:
       name: apps-database
-      image: "{{ docker_registry }}/library/mysql:5.5"
+      image: "{{ docker_registry }}library/mysql:5.5"
       restartPolicy: always
       labels:
         - "traefik.enable: 'false'"
