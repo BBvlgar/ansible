@@ -1,12 +1,16 @@
 ---
-docker_host: true
-traefik_enabled: true
+
 remote: true
-debug: true
-# we want to install this server as Docker server
-composerFilePath: "/mnt/shared/compose"
-traefik_network: proxy
-internal_network: internal
-traefik_fqdn: "traefik.it-economics-testing.de"
-  
+debug:  true
+
+docker_host:      true
+traefik_enabled:  true
+
+docker_home:      "/mnt/data"
+composerFilePath: "/mnt/data/compose"
+
+internal_network: "internal"
+traefik_network:  "proxy"
+traefik_fqdn:     "traefik.it-economics-testing.de"
+
 ...

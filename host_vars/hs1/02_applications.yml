@@ -1,5 +1,7 @@
 ---
+
 applications:
+
   portainer_stack:
     portainer:
       name: portainer
@@ -7,7 +9,7 @@ applications:
       restartPolicy: always
       volumes:
             - '/var/run/docker.sock:/var/run/docker.sock'
-            - '/mnt/shared/applications/portainer/data:/data'
+            - '/srv/portainer/data:/data'
       labels:
         - "traefik.enable: 'true'"
         - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"

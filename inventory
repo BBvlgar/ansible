@@ -138,6 +138,7 @@ jumphost
 dockerhost.muc
 dockerhost-testing
 hs2
+hs1
 website
 status
 s3
