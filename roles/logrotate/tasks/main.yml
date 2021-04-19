@@ -1,0 +1,9 @@
+---
+
+- name: Create the configurations for logrotate
+  template:
+    src: logd.j2
+    dest: "{{ logrotate_conf_dir }}/{{ item.key }}"
+  with_dict: "{{ logrotate }}"
+
+...
