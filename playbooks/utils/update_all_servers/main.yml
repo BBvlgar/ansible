@@ -14,4 +14,9 @@
       include_role:
         name: update_server
 
+    - name: 'create logrotate config'
+      include_role:
+        name: logrotate
+      when: logrotate is defined
+
 ...
