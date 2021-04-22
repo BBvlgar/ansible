@@ -68,6 +68,7 @@
   with_items: "{{ basics_to_download }}"
   when: basics_to_download is defined
   become: yes
+  ignore_errors: true
 
 - name:  update certificate chain
   shell: update-ca-certificates
