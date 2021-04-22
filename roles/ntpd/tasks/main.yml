@@ -1,7 +1,13 @@
 ---
+
 - name: Ensure ntp ist installed
-  apt: name=ntp state=present update_cache=yes
+  apt:
+    name: ntp
+    state: present
+    update_cache: yes
 
 - name: Set timezone to {{ timezone }}
   command: "timedatectl set-timezone {{ timezone }}"
   become: true
+
+...

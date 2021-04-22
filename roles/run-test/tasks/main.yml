@@ -1,0 +1,28 @@
+---
+
+- name: Set config ini for confluence
+  set_fact:
+    config_template: "config_confluence.ini.j2"
+  when: hosting_application == "confluence"
+
+- name: Set config ini for jira
+  set_fact:
+    config_template: "config_jira.ini.j2"
+  when: hosting_application == "jira"
+
+- name: Set config ini for bitbucket
+  set_fact:
+    config_template: "config_bitbucket.ini.j2"
+  when: hosting_application == "bitbucket"
+
+- name: Copy config template
+  template:
+    src: "{{ config_template }}"
+    dest: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}/config.ini"
+
+- name: Test {{ hosting_application }} via Selenium
+  shell: "python3 -m unittest -f -v {{ test_to_run }}"
+  args:
+    chdir: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}"
+
+...
