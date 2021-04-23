@@ -10,7 +10,7 @@ playbooks/*
 !playbooks/apps
 !playbooks/server
 !playbooks/utils
-
+!playbooks/hosting
 ###
 ## globally ignore
 ###
