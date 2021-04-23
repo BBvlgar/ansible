@@ -1,0 +1,6 @@
+---
+
+- import_playbook: delete-hosting.yml
+- import_playbook: delete-base.yml
+
+...

@@ -1,0 +1,14 @@
+---
+
+- name: Rollout Playbook Hosting Base
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Rollout Base Cloudformation
+      include_role:
+        name: run-hosting
+      vars:
+        app: "{{ bastion }}"
+
+...

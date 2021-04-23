@@ -1,0 +1,14 @@
+---
+
+- name: Cleanup
+  hosts: amibuilder
+  tasks:
+
+  - name: terminate temporary instance
+    action:
+      module: ec2
+      state: absent
+      region: "{{ region }}"
+      instance_ids: "{{ ami_instance.tagged_instances.0.id }}"
+
+...

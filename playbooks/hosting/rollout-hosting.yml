@@ -1,0 +1,62 @@
+---
+
+- name: Rollout Playbook Hosting Application
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Get informations about Hostingbase Cloudformation Stack
+      cloudformation_info:
+        stack_name: hostingbase
+        stack_resources: yes
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ security_token }}"
+        region: "{{ region }}"
+      register: cloudformation_output
+
+    - name: Set Vars
+      set_fact:
+        database:         "{{ cloudformation_output.cloudformation['hostingbase'].stack_outputs['dataBaseEndpoint'] }}"
+        securityGroupId:  "{{ cloudformation_output.cloudformation['hostingbase'].stack_outputs['SecurityGroupWebApp'] }}"
+        lambda_name:      "{{ cloudformation_output.cloudformation['hostingbase'].stack_resources['rdsCreateLambda'] }}"
+        efsFileSystemID:  "{{ cloudformation_output.cloudformation['hostingbase'].stack_resources['FileSystemResource'] }}"
+        stackname:        "{{ customer }}-{{ hosting_application }}"
+
+    - name: Run {{ hosting_application }} Lambda
+      include_role:
+        name: run-lambda
+      vars:
+        app: "{{ application }}"
+
+    - name: Rollout {{ hosting_application }} Cloudformation
+      include_role:
+        name: run-hosting
+      vars:
+        app: "{{ application }}"
+
+    - name: Get informations about {{ hosting_application }} Cloudformation Stack
+      cloudformation_info:
+        stack_name: "{{ customer }}-{{ hosting_application }}"
+        stack_resources: yes
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ security_token }}"
+        region: "{{ region }}"
+      register: cloudformationapp_output
+
+    - name: Add suspended processes from autoscaling group
+      ec2_asg:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        name: "{{ cloudformationapp_output.cloudformation[vars['stackname']].stack_resources['ApplicationAsg'] }}"
+        suspend_processes: ['HealthCheck', 'ReplaceUnhealthy']
+        state: "present"
+        default_cooldown: 150
+        health_check_period: 900
+        lc_check: "no"
+        metrics_collection: "yes"
+      register: asg_output
+
+...

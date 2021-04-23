@@ -1,0 +1,37 @@
+---
+
+- name: Create an MFA connection to AWS
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: "user_access_key"
+      prompt: "Enter AWS access key"
+      private: no
+    - name: "user_secret_key"
+      prompt: "Enter AWS secret key (hidden)"
+      private: yes
+    - name: "user_mfa_serial"
+      prompt: "Enter AWS MFA serial"
+      private: no
+    - name: "user_token"
+      prompt: "Enter AWS MFA token"
+      private: no
+
+  tasks:
+    - name: Generate temporary access keys and token
+      sts_session_token:
+        duration_seconds: 3600
+        region: "{{ region }}"
+        aws_access_key: "{{user_access_key}}"
+        aws_secret_key: "{{user_secret_key}}"
+        mfa_serial_number: "{{user_mfa_serial}}"
+        mfa_token: "{{user_token}}"
+      register: session_credentials
+
+    - name: Set Vars
+      set_fact:
+        aws_access_key: "{{ session_credentials.sts_creds.access_key }}"
+        aws_secret_key: "{{ session_credentials.sts_creds.secret_key }}"
+        security_token: "{{ session_credentials.sts_creds.session_token }}"
+
+...
