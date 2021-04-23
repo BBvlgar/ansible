@@ -46,7 +46,6 @@ basic_toolset:
   - name: "acl"
   - name: "rsync"
   - name: "python-setuptools"
-  - name: "mailutils"
   - name: "strace"
 
 basic_pip_toolset:
