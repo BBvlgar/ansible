@@ -6,7 +6,7 @@
   roles:
     - update-all-packages
     - awscli
-    - docker_host_hosting
+    - docker_host
     - awsmon
     - awslogs_cloudwatch
     - awsefs
