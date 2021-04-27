@@ -8,7 +8,7 @@
     - awscli
     - docker_host_hosting
     - awsmon
-    - awslogs_hosting
+    - awslogs_cloudwatch
     - awsefs
     - swapfile
     - atlassian_aws
@@ -20,7 +20,7 @@
   tasks:
     - name: Ensure dependencies are installed
       apt:
-        state: present 
+        state: present
         update_cache: yes
         pkg:
         - parted
