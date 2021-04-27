@@ -1,6 +1,0 @@
----
-
-- import_playbook: rollout-base.yml
-- import_playbook: rollout-hosting.yml
-
-...
