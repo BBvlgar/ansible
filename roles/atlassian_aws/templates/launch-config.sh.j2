@@ -44,7 +44,14 @@ clusterTagKey=Cluster
 clusterTagValue=$stackName
 
 # Executables
-AWS=/usr/local/bin/aws
+if [[ -f /usr/local/bin/aws ]]; then
+  AWS=/usr/local/bin/aws
+elif [[ -f /usr/bin/aws ]]
+  AWS=/usr/bin/aws
+else
+  log "AWS CLI not found exit 1"
+  exit 1
+fi
 
 # Startup parameter
 initState=$1
