@@ -13,4 +13,24 @@ internal_network: "internal"
 traefik_network:  "proxy"
 traefik_fqdn:     "traefik.it-economics-testing.de"
 
+traefik_provider_http_additionals:
+  services:
+    harbor_service:
+      loadBalancer:
+        servers:
+          - url: "https://docker.it-economics.de/"
+  routers:
+    harbor_http:
+      rule:        "Host(`docker.it-economics.de`)"
+      entrypoints: "web"
+      middlewares: "forcehttps@file"
+      service:     "harbor_service@file"
+    harbor_https:
+      rule:        "Host(`docker.it-economics.de`)"
+      entrypoints: "websecure"
+      middlewares: "security@file"
+      tls:
+        certResolver: "letsencrypt"
+      service:     "harbor_service@file"
+
 ...
