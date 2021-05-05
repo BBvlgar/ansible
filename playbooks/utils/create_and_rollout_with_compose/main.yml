@@ -10,6 +10,11 @@
   become: true
 
   tasks:
+    - name: 'create logrotate config'
+      include_role:
+        name: logrotate
+      when: logrotate is defined
+
     - name: "Deploy Traefik"
       include_role:
         name: docker_stack_traefik
@@ -35,6 +40,5 @@
       with_dict: "{{ applications }}"
       loop_control:
         loop_var: app
-
 
 ...

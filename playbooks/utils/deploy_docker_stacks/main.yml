@@ -10,6 +10,10 @@
   become: yes
 
   tasks:
+    - name: 'create logrotate config'
+      include_role:
+        name: logrotate
+      when: logrotate is defined
 
     # include_* is processed in place, import_* would be pre-processed, so it should not be used here.
     - include_tasks: "_prepare.yml"
