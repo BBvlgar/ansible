@@ -46,7 +46,7 @@ clusterTagValue=$stackName
 # Executables
 if [[ -f /usr/local/bin/aws ]]; then
   AWS=/usr/local/bin/aws
-elif [[ -f /usr/bin/aws ]]
+elif [[ -f /usr/bin/aws ]]; then
   AWS=/usr/bin/aws
 else
   log "AWS CLI not found exit 1"
