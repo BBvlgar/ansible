@@ -5,7 +5,8 @@
 ## Licenced under CC-BY
 ###
 
-- hosts: 'docker:!localhost'
+- name:  'deploy docker stacks'
+  hosts: 'docker_hosts:docker:!localhost'
   become: yes
 
   tasks:

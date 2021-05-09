@@ -5,8 +5,8 @@
 ## Licenced under CC-BY
 ###
 
-- name: Create Composefiles for Hosts
-  hosts: docker_hosts
+- name:  'Create Composefiles for Hosts'
+  hosts: 'docker_hosts:docker:!localhost'
   become: true
 
   tasks:
