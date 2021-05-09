@@ -63,6 +63,20 @@
       command: docker run --rm hello-world
       ignore_errors: true
 
+- name: install pip packages, force upgrade
+  pip:
+    name: "{{ pip_list }}"
+    executable: pip3
+    state: latest
+  vars:
+    pip_list:
+      - setuptools
+      - pip
+      - virtualenv
+      - chardet
+      - docker
+      - docker-compose
+
 - name: Set pull credentials as root user
   become: true
   command: docker login -u {{ docker_pull_user }} -p {{ docker_pull_password }} {{ docker_registry | default( '' ) }}
@@ -83,24 +97,10 @@
     debug:          "{{ registry.debug          | default( 'no' ) }}"
     config_path:    "{{ registry.config_path    | default( '~/.docker/config.json' ) }}"
     api_version:    "{{ registry.api_version    | default( 'auto' ) }}"
-  with_items: "{{ docker_registry | default( [] ) }}"
+  with_items: "{{ docker_registries | default( [] ) }}"
   loop_control:
     loop_var: registry
   when: docker_registries is defined and docker_registries | length > 0
-
-- name: install pip packages, force upgrade
-  pip:
-    name: "{{ pip_list }}"
-    executable: pip3
-    state: latest
-  vars:
-    pip_list:
-      - setuptools
-      - pip
-      - virtualenv
-      - chardet
-      - docker
-      - docker-compose
 
 - name: Provision AWS-Templates
   template:
