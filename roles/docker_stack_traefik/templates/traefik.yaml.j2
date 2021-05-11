@@ -13,6 +13,8 @@ entryPoints:
 {% if insecureOnly is not defined or not insecureOnly %}
   websecure:
     address: ':443'
+  {% if traefik_entrypoints is defined -%}
+  {{ traefik_entrypoints | default( [] ) | to_nice_yaml( indent=2 ) | indent( width=2, indentfirst=False ) }}{% endif %}
 
 certificatesResolvers:
   letsencrypt:

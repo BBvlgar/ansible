@@ -54,4 +54,7 @@ tls:
 
       sniStrict: {{ override_traefik_tls_default_options.sniStrict | default ( traefik_tls_default_options.sniStrict ) }}
 
+{% if traefik_provider_additionals is defined -%}
+{{ traefik_provider_additionals | default( [] ) | to_nice_yaml( indent=2 ) }}{% endif %}
+
 ...
