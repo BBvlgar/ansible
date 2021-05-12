@@ -133,9 +133,6 @@ case $initState in
     /opt/sophos-av/engine/registerMCS {{ sophos_register_token }} {{ sophos_register_url }}
     setSophosThreads
 
-    chown -R ubuntu:ubuntu $hostDir
-    chown -R ubuntu:ubuntu $hostSharedDir
-
     # Start container
     log "INFO: Starting container with image $image on port $externalPort (http) and $externalSecurePort (https)"
 
