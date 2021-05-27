@@ -48,7 +48,7 @@ traefik_stack:
 traefik_http_security_headers:
   frameDeny:            'false'
   sslRedirect:          'true'
-  browserXssFilter:     'true'
+  # browserXssFilter:     'true' ## Deprecated
   contentTypeNosniff:   'true'
   stsIncludeSubdomains: 'true'
   stsPreload:           'true'
