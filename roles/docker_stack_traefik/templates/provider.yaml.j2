@@ -3,12 +3,12 @@
 http:
 
   {% if traefik_provider_http_additionals is defined -%}
-  {{ traefik_provider_http_additionals | default( [] ) | to_nice_yaml( indent=2 ) | indent( width=2, indentfirst=False ) }}{% endif %}
+  {{ traefik_provider_http_additionals | default( [] ) | to_nice_yaml( indent=2 ) | indent( width=2, first=False ) }}{% endif %}
 
   middlewares:
 
     {% if traefik_provider_http_middlewares is defined -%}
-    {{ traefik_provider_http_middlewares | default( [] ) | to_nice_yaml( indent=2 ) | indent( width=4, indentfirst=False ) }}{% endif %}
+    {{ traefik_provider_http_middlewares | default( [] ) | to_nice_yaml( indent=2 ) | indent( width=4, first=False ) }}{% endif %}
 
     forcehttps:
       redirectScheme:
