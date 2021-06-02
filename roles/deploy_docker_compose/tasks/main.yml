@@ -1,5 +1,7 @@
 ---
-- debug:
+
+- name: return app
+  debug:
     msg: "{{ app }}"
   when: debug==true
 
@@ -73,6 +75,8 @@
     src: env.j2
     dest: "{{ composerFilePath }}/.env"
 
-- debug:
+- name: return output var
+  debug:
     var: output
+
 ...

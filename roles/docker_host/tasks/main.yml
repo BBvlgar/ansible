@@ -137,20 +137,23 @@
     warn: false
   ignore_errors: yes
 
-- name: Retrieve latest docker-compose information
-  uri:
-    url: "https://api.github.com/repos/docker/compose/releases/latest"
-    method: "GET"
-    return_content: yes
-    status_code: 200
-    body_format: json
-  register: docker_compose_version_info
+- name: install docker-compose
+  block:
+    - name: Retrieve latest docker-compose information
+      uri:
+        url: "https://api.github.com/repos/docker/compose/releases/latest"
+        method: "GET"
+        return_content: yes
+        status_code: 200
+        body_format: json
+      register: docker_compose_version_info
 
-- name: Install docker-compose
-  become: yes
-  get_url:
-    url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version_info.json.tag_name }}/docker-compose-Linux-x86_64"
-    dest: "/usr/local/bin/docker-compose"
-    mode: "u+x,g+x"
+    - name: Install docker-compose
+      become: yes
+      get_url:
+        url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version_info.json.tag_name }}/docker-compose-Linux-x86_64"
+        dest: "/usr/local/bin/docker-compose"
+        mode: "u+x,g+x"
+  when: installDockerCompose | default(true)
 
 ...

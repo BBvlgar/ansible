@@ -1,0 +1,27 @@
+{
+        "agent": {
+                "metrics_collection_interval": 60,
+                "run_as_user": "root"
+        },
+        "logs": {
+                "logs_collected": {
+                        "files": {
+                                "collect_list": [
+                                        {
+                                            "file_path": "/var/log/syslog",
+                                            "log_group_name": "syslog_group",
+                                            "log_stream_name": "syslog_stream",
+                                            "timestamp_format" :"%b %-d %H:%M:%S"
+                                        },
+                                        {
+                                            "file_path": "application_file_path",
+                                            "log_group_name": "application_group",
+                                            "log_stream_name": "application_stream",
+                                            "timestamp_format" :"%Y-%m-%d %H:%M:%S",
+                                            "multi_line_start_pattern": "{timestamp_format}"
+                                        }
+                                ]
+                        }
+               }
+       }
+}

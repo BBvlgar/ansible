@@ -1,0 +1,120 @@
+; config.ini
+[DB]
+HOST = {{ database }}
+DATABASE = {{ customer }}{{ hosting_application }}db
+USERNAME = {{ customer }}{{ hosting_application }}
+PASSWORD = Def12345
+
+[INSTANCE]
+TITLE = Jira Instanz
+BASEURL = http://{{ customer }}-{{ hosting_application }}.aws.it-economics-testing.de
+LICENCEKEY = {{ licenseJira }}
+APPLICATION_NAME = Jira
+
+[ADMIN]
+FULLNAME = Admin
+EMAIL = lpohl@it-economics.de
+USERNAME = admin
+PASSWORD = Def12345
+
+[PROJECT]
+NAME = Setup Selenium Project
+KEY = SSPSSP
+
+[CREATE_PROJECT]
+NAME = SeleniumP After Setup
+KEY = SASSASSL
+
+[CREATE_PROJECT_UPDATE]
+NAME = SeleniumP After Update
+KEY = SAUSASSASS
+
+[LDAP]
+NAME = ''
+TYPE = com.atlassian.crowd.directory.OpenLDAP
+HOST = ''
+PORT = ''
+SSL = TRUE
+USERNAME = ''
+PASSWORD = ''
+BASEDN = ''
+USERDN = ''
+GROUPDN = ''
+PERMISSION = configure-ldap-form-ldapPermissionOption-READ_ONLY
+
+
+[LDAP-ADVANCED]
+ENABLE-NESTED-GROUPS = TRUE
+UPDATE-GROUP-MEMBERSHIP = ALWAYS
+
+[LDAP-USER]
+OBJECT-CLASS = inetOrgPerson
+OBJECT-FILTER = (objectclass=inetOrgPerson)
+NAME-ATTRIBUTE = uid
+NAME-RDN-ATTRIBUTE = uid
+FIRST-NAME-ATTRIBUTE = givenName
+LAST-NAME-ATTRIBUTE = sn
+DISPLAY-NAME-ATTRIBUTE = cn
+EMAIL-ATTRIBUTE = mail
+PASSWORD-ATTRIBUTE = userPassword
+PASSWORD-ENCRYPTION = ssha
+UNIQUE-ID-ATTRIBUTE = entryUUID
+
+[LDAP-GROUP]
+OBJECT-CLASS = ''
+OBJECT-FILTER = ''
+NAME-ATTRIBUTE = cn
+DESCRIPTION-ATTRIBUTE = description
+
+[LDAP-MEMBERSHIP]
+GROUP-MEMBERS-ATTRIBUTE = member
+USER-MEMBERSHIP-ATTRIBUTE = memberOf
+USE-USER-MEMBERSHIP-ATTRIBUTE = TRUE
+
+[SELENIUM]
+GRID_URL = http://selenium_ami_test:4444/wd/hub
+USE_GRID = Yes
+
+[ASSERTS]
+DB_SUCCESS = The database connection test was successful.
+PROJECT_BOARD = SSPSSP board
+VERSION = {{ versionJira }}
+VERSION_UPDATE = {{ versionUpdateJira }}
+ADMIN_LOGIN = Administrator Access
+ADMIN_PAGE = Administration
+USER = Users
+UPGRADE_WARNING = Preparing to start Jira
+UPGRADE = You've just been upgraded!
+SETUP_START = Jira setup
+SETUP_LICENSE = Specify your license key
+SETUP_DB = Database setup
+SETUP_PROPERTIES = Set up application properties
+SETUP_ADMIN_USER = Set up administrator account
+SETUP_EMAIL_NOTIFY = Set up email notifications
+SETUP_ADMIN_LANG = Welcome to Jira, Admin!
+SETUP_CHOOSE_OPTION = Choose an option below to get started.
+SETUP_SAMPLE_PROJECT = Create project with sample data
+SETUP_SUCCESS = Setup Successful
+CREATE_PROJECT = Create project
+SCRUM_PROJECT = Scrum software development
+CREATE_ISSUE = Create Issue
+
+[CREATEUSER]
+USERNAME = test
+FULLNAME = Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+[CREATEUSER_UPDATE]
+USERNAME = testupdate
+FULLNAME = Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+[CREATEISSUE]
+SUM = Automatic Issue
+DESC = Automatic Description
+
+[CREATEISSUE_UPDATE]
+SUM = Automatic Issue After Update
+DESC = Automatic Description After update
