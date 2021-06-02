@@ -288,6 +288,7 @@
       name:            "{{ container.name }}"
       capabilities:    "{{ container.capabilities   | default( [] ) }}"
       command:         "{{ container.command        | default( '' ) }}"
+      devices:         "{{ container.devices        | default( [] ) }}"
       domainname:      "{{ container.domainname     | default( '' ) }}"
       env:             "{{ container.env            | default( {} ) }}"
       exposed:         "{{ container.expose_ports   | default( [] ) }}"
