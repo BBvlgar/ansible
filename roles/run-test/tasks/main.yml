@@ -20,9 +20,28 @@
     src: "{{ config_template }}"
     dest: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}/config.ini"
 
+- name: Start selenium container
+  docker_container:
+    name: selenium_ami_test
+    image: docker.it-economics.de/proxy/selenium/standalone-chrome
+    volumes:
+      - "/dev/shm:/dev/shm"
+    ports:
+      - "4445:4444"
+      - "5901:5900"
+
+- name: Take a short break
+  pause:
+    seconds: 30
+
 - name: Test {{ hosting_application }} via Selenium
   shell: "python3 -m unittest -f -v {{ test_to_run }}"
   args:
     chdir: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}"
+
+- name: Remove selenium container
+  docker_container:
+    name: selenium_ami_test
+    state: absent
 
 ...
