@@ -40,18 +40,19 @@ class FilterModule(object):
 
     def prepareSharedHome(self, stack_items, stackname):
         for i, cnt in enumerate(stack_items):
-            stack_items[i]['shared_home_app'] = stackname
-            if stack_items[i]['name'] != 'data':
-                iterators = [
-                    "directories",
-                    "directories_no_backup",
-                    "mountfiles",
-                    "mountfiles_no_backup",
-                ]
-                for k in iterators:
-                    if k in cnt:
-                        for j in range( len( stack_items[i][k] ) ):
-                            stack_items[i][k][j][0][0] = self.prepareString( stack_items[i]['name'] ) + '/' + stack_items[i][k][j][0][0]
+            if 'shared_home_app' not in stack_items[i]:
+                stack_items[i]['shared_home_app'] = stackname
+                if stack_items[i]['name'] != 'data':
+                    iterators = [
+                        "directories",
+                        "directories_no_backup",
+                        "mountfiles",
+                        "mountfiles_no_backup",
+                    ]
+                    for k in iterators:
+                        if k in cnt:
+                            for j in range( len( stack_items[i][k] ) ):
+                                stack_items[i][k][j][0][0] = self.prepareString( stack_items[i]['name'] ) + '/' + stack_items[i][k][j][0][0]
         return stack_items
 
     def prepareDataContainer(self, stack_items, stackname, stack_data={} ):
