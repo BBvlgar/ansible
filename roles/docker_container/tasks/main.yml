@@ -95,31 +95,6 @@
   ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
-# now that we prepared all bind commands for our folders that should be bound,
-# we have to ensure that the folders on the host system do exist.
-- name: Create needed dirs – if they do not already exist
-  become: yes
-  file:
-    path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ dir.0 }}"
-    state: directory
-    mode: "{{ dir.3 | default('0755') }}"
-  with_items: "{{ container.directories | default([]) }}"
-  loop_control:
-    loop_var: dir
-  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
-
-# copy tasks / roles could prepare some (templated) files that have to be
-# moved to their correct destination within Host binds.
-- name: move prepared files
-  copy:
-    src: "{{ cpf.src }}"
-    dest: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ cpf.dest }}"
-    remote_src: yes
-  with_items: "{{ container.prepared_files.binds | default([]) }}"
-  loop_control:
-    loop_var: cpf
-  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
-
 # If there is defined one or more git repository to be checked out, prepare the
 # checkout.
 - name: correct git destinations
@@ -145,6 +120,31 @@
   with_items: "{{ docker_git | default([]) }}"
   loop_control:
     loop_var: repo
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# now that we prepared all bind commands for our folders that should be bound,
+# we have to ensure that the folders on the host system do exist.
+- name: Create needed dirs – if they do not already exist
+  become: yes
+  file:
+    path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ dir.0 }}"
+    state: directory
+    mode: "{{ dir.3 | default('0755') }}"
+  with_items: "{{ container.directories | default([]) }}"
+  loop_control:
+    loop_var: dir
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# copy tasks / roles could prepare some (templated) files that have to be
+# moved to their correct destination within Host binds.
+- name: move prepared files
+  copy:
+    src: "{{ cpf.src }}"
+    dest: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ cpf.dest }}"
+    remote_src: yes
+  with_items: "{{ container.prepared_files.binds | default([]) }}"
+  loop_control:
+    loop_var: cpf
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
 # define docker host repository url
