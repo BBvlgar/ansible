@@ -21,14 +21,10 @@
     dest: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}/config.ini"
 
 - name: Start selenium container
-  docker_container:
-    name: selenium_ami_test
-    image: docker.it-economics.de/proxy/selenium/standalone-chrome
-    volumes:
-      - "/dev/shm:/dev/shm"
-    ports:
-      - "4445:4444"
-      - "5901:5900"
+  docker_compose:
+    project_src: {{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/
+    build: no
+  register: output
 
 - name: Take a short break
   pause:
@@ -40,8 +36,9 @@
     chdir: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}"
 
 - name: Remove selenium container
-  docker_container:
-    name: selenium_ami_test
+  docker_compose:
+    project_src: {{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/
     state: absent
+  register: output
 
 ...
