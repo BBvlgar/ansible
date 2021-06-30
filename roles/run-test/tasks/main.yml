@@ -29,16 +29,17 @@
 - name: Take a short break
   pause:
     seconds: 30
-
-- name: Test {{ hosting_application }} via Selenium
-  shell: "python3 -m unittest -f -v {{ test_to_run }}"
-  args:
-    chdir: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}"
-
-- name: Remove selenium container
-  docker_compose:
-    project_src: "{{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/"
-    state: absent
-  register: output
+- name: Run Selenium test
+  block:
+  - name: Test {{ hosting_application }} via Selenium
+    shell: "python3 -m unittest -f -v {{ test_to_run }}"
+    args:
+      chdir: "{{ ansible_folder_for_files }}/files/{{ hosting_application}}"
+  always:
+  - name: Remove selenium container
+    docker_compose:
+      project_src: "{{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/"
+      state: absent
+    register: output
 
 ...
