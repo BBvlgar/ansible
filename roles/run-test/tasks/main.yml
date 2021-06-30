@@ -22,7 +22,7 @@
 
 - name: Start selenium container
   docker_compose:
-    project_src: {{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/
+    project_src: "{{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/"
     build: no
   register: output
 
@@ -37,7 +37,7 @@
 
 - name: Remove selenium container
   docker_compose:
-    project_src: {{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/
+    project_src: "{{ ansible_folder_for_files }}/ansible/roles/run-test/files/seleniumstack/"
     state: absent
   register: output
 
