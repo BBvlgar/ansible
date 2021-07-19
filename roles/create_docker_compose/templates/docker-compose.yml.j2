@@ -6,6 +6,8 @@ services:
     container_name: {{ container.name }}
     image:  {{ container.image }}
     restart: {{ container.restartPolicy }}
+    logging:
+      {{ ( container.logging | default( docker_logging ) ) | to_nice_yaml( indent = 2 ) | indent( 6, False ) }}
     {% if (container.privileged is defined) and container.privileged %}privileged: true 
     {% endif %}{% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
     {% for volume in container.volumes %}  - {{ volume }}
