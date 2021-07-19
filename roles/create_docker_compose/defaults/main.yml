@@ -1,10 +1,13 @@
 ---
 
-composerFilePath: "/Users/cwalonka/devops/docker-compose"
-remote: false
-debug: false
-DOCKER_PROXYNET: proxy
-DOCKER_DBNET: database
-DOCKER_WORLDNET: publicwww
-traefik_network: proxy
+# use the `docker-compose` folder below the execution folder `ansible`
+composerFilePath: "docker-compose"
+
+DOCKER_PROXYNET:  "proxy"
+DOCKER_DBNET:     "database"
+DOCKER_WORLDNET:  "publicwww"
+traefik_network:  "proxy"
+
+remote:           false
+debug:            false
 ...

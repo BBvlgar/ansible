@@ -1,4 +1,5 @@
 ---
+
 - debug:
     msg: "{{ app }}"
   when: debug == true
@@ -30,4 +31,5 @@
     dest: "{{ composerFilePath }}/{{ app.key }}/docker-compose.yml"
   delegate_to: localhost
   when: remote != true
+
 ...
