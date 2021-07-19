@@ -278,6 +278,15 @@
   ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
+# We have to check, if `log_driver` is `json-file` to determine
+# if our default `log_options` may be used
+- name: "reset docker logging options"
+  set_fact:
+    container_log_options: {}
+  when:
+    (container.log_driver is defined and container.log_driver != docker_logging.driver) and
+    (container.log_options is not defined)
+
 # Now the final app container will be started with all defined variables
 # For more information on this task:
 # https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
@@ -296,8 +305,8 @@
       hostname:        "{{ container.hostname       | default( container.name ) }}"
       init:            "{{ container.init           | default( 'no' ) }}"
       labels:          "{{ containerlabels }}"
-      log_driver:      "{{ container.log_driver     | default( 'json-file' ) }}"
-      log_options:     "{{ container.log_options    | default( {} ) }}"
+      log_driver:      "{{ container.log_driver     | default( docker_logging.driver ) }}"
+      log_options:     "{{ container_log_options    | default( container.log_options | default( docker_logging.options ) ) }}"
       memory:          "{{ container.memory_limit   | default( '0' )}}"
       networks:        "{{ container_networks }}"
       network_mode:    "{{ container.network_mode   | default ('bridge') }}"
