@@ -45,4 +45,10 @@ traefik_labels:
     - key: "traefik.http.routers.{{ container.name | replace('.', '_') }}.middlewares"
       value: "{{ ( traefik_websecure_middlewares | default( [] ) + container.traefik_websecure_middlewares | default( [] ) + container.traefik_middlewares | default( [] ) ) | join( ', ' ) }}"
 
+docker_logging:
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "5"
+
 ...
