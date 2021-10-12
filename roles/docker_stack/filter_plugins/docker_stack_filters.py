@@ -131,4 +131,6 @@ class FilterModule(object):
                 for network in networks:
                     if isinstance(network, str) :
                         stack_items[i]['networks'].append( { 'name': network } )
+                    elif isinstance(network, dict) and network.__contains__( 'name' ):
+                        stack_items[i]['networks'].append( network )
         return stack_items
