@@ -271,7 +271,9 @@
 
 # create Docker networks if they are defined and needed
 - name: Make sure docker networks exists
-  docker_network: "{{ network | combine( { 'appends': 'true' | bool } ) }}"
+  docker_network:
+    name:    "{{ network.name }}"
+    appends: yes
   with_items: "{{ container_networks }}"
   loop_control:
     loop_var: network
