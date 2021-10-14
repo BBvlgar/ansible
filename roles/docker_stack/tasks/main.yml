@@ -40,7 +40,7 @@
 # and therefor eases up the backup process
 - name: 'prepare data for data container'
   set_fact:
-    stack_data: "{{ stackitems | prepareDataContainer ( workstack.name, { 'volumes': datacontainer_volumes | default( [] ) } )}}"
+    stack_data: "{{ stackitems | prepareDataContainer ( workstack.name, docker_home, { 'volumes': datacontainer_volumes | default( [] ) } )}}"
 
 - name: 'prepare datacontainer for easing up backups'
   set_fact:

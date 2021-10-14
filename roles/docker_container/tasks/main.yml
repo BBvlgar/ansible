@@ -84,6 +84,7 @@
 # * `path_on_host:path_on_container:mode` if all three elements are defined
 - name: reduce first volume helper
   set_fact:
+    # directories
     volumes1: "{{ volume_helper1.results | map(attribute='ansible_facts.volvar') | list }}"
   ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
@@ -91,6 +92,7 @@
 # again the same thing for files:
 - name: reduce second volume helper
   set_fact:
+    # mountfiles
     volumes2: "{{ volume_helper2.results | map(attribute='ansible_facts.volvar') | list }}"
   ignore_errors: yes
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)

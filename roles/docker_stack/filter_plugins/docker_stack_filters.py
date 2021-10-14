@@ -55,7 +55,7 @@ class FilterModule(object):
                                 stack_items[i][k][j][0][0] = self.prepareString( stack_items[i]['name'] ) + '/' + stack_items[i][k][j][0][0]
         return stack_items
 
-    def prepareDataContainer(self, stack_items, stackname, stack_data={} ):
+    def prepareDataContainer(self, stack_items, stackname, docker_home, stack_data={} ):
 
         mandatoryKeys = [
             "directories",
@@ -68,22 +68,24 @@ class FilterModule(object):
 
         for cnt in stack_items:
             backup_prefix = '/backup/' + stackname + '/' + self.prepareString( cnt['name'] ) + '/'
-            print(cnt)
-            print()
-            if "directories" in cnt:
-                helper = cnt['directories']
-                for i in range( len( helper ) ):
-                    if helper[i][0][1][0] == '/':
-                        helper[i][0][1] = helper[i][0][1][1:]
-                    helper[i][0][1] = backup_prefix + 'directories/' + helper[i][0][1]
-                stack_data['directories'] = stack_data['directories'] + helper
-            if "mountfiles" in cnt:
-                helper = cnt['mountfiles']
-                for i in range( len( helper ) ):
-                    if helper[i][0][1][0] == '/':
-                        helper[i][0][1] = helper[i][0][1][1:]
-                    helper[i][0][1] = backup_prefix + 'mountfiles/' + helper[i][0][1]
-                stack_data['mountfiles']  = stack_data['mountfiles'] + helper
+            volumeInstead = ( cnt[ 'shared_home_app' ] != stackname )
+            for key in mandatoryKeys:
+                if key != 'volumes' and key in cnt:
+                    helper = cnt[ key ]
+                    for i in range( len( helper ) ):
+                        if helper[i][0][1][0] == '/':
+                            helper[i][0][1] = helper[i][0][1][1:]
+                        helper[i][0][1] = backup_prefix + key + '/' + helper[i][0][1]
+                    if volumeInstead:
+                        # due to `shared_home_app` set for current container, directories and
+                        # mountfiles should be converted to full volume paths for data container
+                        for i in range( len( helper ) ):
+                            volsrc = docker_home + '/' + cnt[ 'shared_home_app' ] + '/' + helper[i][0][0]
+                            helper[i] = volsrc + ':' + helper[i][0][1]
+                        stack_data['volumes']  = stack_data['volumes'] + helper
+                    else:
+                        # we can pass directories, mountfiles and volumes as regular
+                        stack_data[ key ] = stack_data[ key ] + helper
             if "volumes" in cnt:
                 helper = cnt['volumes']
                 for i in range( len( helper ) ):
@@ -93,7 +95,7 @@ class FilterModule(object):
                     vol[1] = backup_prefix + 'volumes/' + vol[1]
                     helper[i] = ':'.join(vol)
                     # print(helper[i])
-                stack_data['volumes']     = stack_data['volumes'] + helper
+                stack_data['volumes'] = stack_data['volumes'] + helper
         return stack_data
 
     def unifyVolumes(self, stack_items):
