@@ -135,6 +135,10 @@ each environment is wanted to be encrypted: the `all.yml` group vars file.
 That's for pull requests and repository development beeing more transparent.
 
 
+## Licence
+
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
+
 
 ## Usage
 
