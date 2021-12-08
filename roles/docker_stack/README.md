@@ -88,7 +88,7 @@ If you want to two or all three of MySQL, MariaDB or PostgreSQL with different s
 
 ## License
 
-BSD
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 
 
 ## Author Information
