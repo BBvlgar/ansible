@@ -16,7 +16,7 @@ on a host.
 
 ## License
 
-CC-BY
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 
 ## Author Information
 
