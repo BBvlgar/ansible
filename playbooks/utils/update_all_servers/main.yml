@@ -19,4 +19,9 @@
         name: logrotate
       when: logrotate is defined
 
+    - name: 'roll out Message of the Day'
+      include_role:
+        name: motd_server
+      when: motd_active is defined and motd_active
+
 ...

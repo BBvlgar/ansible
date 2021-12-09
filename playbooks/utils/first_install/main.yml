@@ -13,6 +13,7 @@
     ansible_ssh_extra_args:
       -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
     skip_update_reboot: yes
+    backup_motd: yes
 
   tasks:
 
@@ -64,6 +65,11 @@
       vars:
         override_user: 'yes'
         skip_update_reboot: yes
+
+    - name: 'roll out Message of the Day'
+      include_role:
+        name: motd_server
+      when: motd_active is defined and motd_active
 
     - name: 'install sophos antivirus'
       include_role:

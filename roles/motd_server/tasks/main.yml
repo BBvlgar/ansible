@@ -1,3 +1,58 @@
 ---
 
+# the basic toolset within roles default variables can be extended by the
+# usage of the variable `additional_basic_tools` on host or group level.
+- name: 'merge tools to be installed'
+  set_fact:
+    motd_tools: "{{ motd_basic_tools + custom_motd_tools | default([]) }}"
+
+- name: 'install the latest version of basic toolset'
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default( package_state) }}"
+  with_items: "{{ motd_tools }}"
+  become: yes
+
+- name: 'backup current existing motd files'
+  archive:
+    path: "{{ motd_dir }}"
+    dest: "{{ backup_destination }}/motd_backup_{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}.tgz"
+  become: yes
+  when: backup_motd is defined and backup_motd
+
+- name: 'remove all existing motd files'
+  file:
+    state: "absent"
+    path: "{{ motd_dir }}"
+  become: yes
+  when: remove_existing_motd
+
+- name: 'recreate motd directory'
+  file:
+    state: "directory"
+    path: "{{ motd_dir }}"
+    mode: '{{ motd_dir_mode }}'
+  become: yes
+  when: remove_existing_motd
+
+- name: 'remove specific existing motd files unless all were cleared'
+  file:
+    state: "absent"
+    path: "{{ motd_dir }}{{ motd_name }}"
+  become: yes
+  with_items: "{{ remove_motd | default([]) }}"
+  loop_control:
+    loop_var: motd_name
+  when: not remove_existing_motd
+
+- name: "place motd scripts"
+  template:
+    src:   "file.j2"
+    dest:  "{{ motd_dir }}{{ item.key }}"
+    owner: "root"
+    mode:  "0755"
+  vars:
+    content: "{{ item.value }}"
+  loop: "{{ motd_templates | dict2items }}"
+
 ...
