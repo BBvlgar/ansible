@@ -1,0 +1,115 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+##
+###
+- hosts: 'all:!localhost'
+  become: yes
+
+  vars:
+    # disable hostkey check and other things if host is installed first
+    ansible_ssh_extra_args:
+      -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    skip_update_reboot: yes
+    backup_motd: yes
+
+  tasks:
+
+    - name: 'get current hostname fqdn of the server'
+      set_fact:
+        fqdn_hn: "{{ alias_fqdn | default( ansible_host ) | lower }}"
+
+    - name: 'set hostname variable'
+      set_fact:
+        hostname_var: "{{ fqdn_hn.split('.')[0] }}"
+
+    - name: 'change hostname'
+      hostname:
+        name: "{{ hostname_var }}"
+
+    - name: 'ensure local route in /etc/hosts'
+      shell: 'if ! grep -q -e "127\.0\.[0-1]\.1\s*{{ hostname_var }}" /etc/hosts ; then echo "127.0.1.1       {{ hostname_var }}" >> /etc/hosts ; echo "changed"; else echo "ok" ; fi'
+      register: hostchanged
+      changed_when:
+        - '"changed" in hostchanged.stdout'
+      failed_when:
+        - hostchanged.rc != 0
+
+    - name: 'Ensure timezone is set correct'
+      include_role:
+        name: timezone
+
+    - name: 'apt update - since Ansible could not do anything without this command ...'
+      command:
+        cmd:  'apt-get update'
+        warn: no
+      become: yes
+
+    - name: 'update Server'
+      include_role:
+        name: update_server
+      vars:
+        override_user: 'yes'
+        skip_update_reboot: yes
+
+    - name: 'roll out Message of the Day'
+      include_role:
+        name: motd_server
+      when: motd_active is defined and motd_active
+
+    - name: 'install basic toolset and configuration'
+      include_role:
+        name: install_basics
+
+    - name: 'install docker tools'
+      include_role:
+        name: docker_host
+      when: docker_host is defined and docker_host
+
+    - name: 'create users and give permissions'
+      include_role:
+        name: admin_user
+
+    - name: 'configure basic firewall'
+      include_role:
+        name: firewall
+      vars:
+        install_ufw:   "yes"
+        configure_ufw: "yes"
+        restart_ufw:   "no"
+        enable_ufw:    "no"
+
+    - name: 'execute additional installation roles'
+      include_role:
+        name: "{{ item.role }}"
+      vars:
+        role_vars: "{{ item.vars }}"
+      with_items: "{{ additional_roles_on_install | default([]) }}"
+
+    - name: 'create logrotate config'
+      include_role:
+        name: logrotate
+      when: logrotate is defined
+
+    - name: 'install SSH server things and permit users to login via SSH'
+      include_role:
+        name: ssh_server
+
+    - name: 'configure basic firewall'
+      include_role:
+        name: firewall
+      vars:
+        install_ufw:   "no"
+        configure_ufw: "no"
+        restart_ufw:   "yes"
+        enable_ufw:    "yes"
+
+
+    - name: reboot
+      reboot:
+        reboot_timeout: 300
+      ignore_errors: yes
+
+...
