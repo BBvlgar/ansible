@@ -7,6 +7,9 @@
 ###
 - hosts: 'all:!localhost'
   become: yes
+  serial:
+    - 1
+  order: inventory
 
   vars:
     # disable hostkey check and other things if host is installed first
