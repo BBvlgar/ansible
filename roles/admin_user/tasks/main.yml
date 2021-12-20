@@ -26,7 +26,7 @@
     - name: Grant admin & sudo to admins
       user:
         name:             "{{ item.name }}"
-        shell:            "/bin/bash"
+        shell:            "{{ item.shell | default( default_shell | default( admin_default_shell ) ) }}"
         groups:           "{{ fullgroups[ item.name ] }}"
         append:           yes
         state:            "{% if item.remove | default( 'no' | bool ) %}absent{% else %}present{% endif %}"

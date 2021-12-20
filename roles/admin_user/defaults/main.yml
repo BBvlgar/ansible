@@ -1,7 +1,8 @@
 ---
 
-admins:           []
-user_groups:      []
-disallowed_users: []
+admins:              []
+user_groups:         []
+disallowed_users:    []
+admin_default_shell: '/bin/bash'
 
 ...
