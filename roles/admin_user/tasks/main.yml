@@ -99,6 +99,14 @@
         - admins is defined and admins | length > 0
         - item.name not in disallowed_users|default([])
 
+
+    - name: Get user data for all interactive users on the system
+      get_users:
+        min_uid: "{{security_min_interactive_uid }}"
+      register: interactive_user_list
+    - debug: 
+        var: interactive_user_list
+
   become: yes
 
 ...
