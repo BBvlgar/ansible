@@ -19,7 +19,10 @@
     backup_motd: yes
 
   tasks:
-
+    - name: 'disable sophos'
+      shell: '/opt/sophos-av/bin/savdctl disable'
+      ignore_errors: yes
+        
     - name: 'get current hostname fqdn of the server'
       set_fact:
         fqdn_hn: "{{ alias_fqdn | default( ansible_host ) | lower }}"
@@ -101,6 +104,10 @@
         configure_ufw: "no"
         restart_ufw:   "yes"
         enable_ufw:    "yes"
+
+    - name: 'enable sophos'
+      shell: '/opt/sophos-av/bin/savdctl enable'
+      ignore_errors: yes
 
 
 ...
