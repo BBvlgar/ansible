@@ -50,13 +50,6 @@
         warn: no
       become: yes
 
-    - name: 'update Server'
-      include_role:
-        name: update_server
-      vars:
-        override_user: 'yes'
-        skip_update_reboot: yes
-
     - name: 'roll out Message of the Day'
       include_role:
         name: motd_server
@@ -109,10 +102,5 @@
         restart_ufw:   "yes"
         enable_ufw:    "yes"
 
-
-    - name: reboot
-      reboot:
-        reboot_timeout: 300
-      ignore_errors: yes
 
 ...
