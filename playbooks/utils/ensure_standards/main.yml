@@ -91,9 +91,22 @@
         restart_ufw:   "yes"
         enable_ufw:    "yes"
 
+
+    - name: 'update Server'
+      include_role:
+        name: update_server
+      vars:
+        override_user: 'yes'
+        skip_update_reboot: yes
+
+
     - name: 'enable sophos'
       shell: '/opt/sophos-av/bin/savdctl enable'
       ignore_errors: yes
 
-
+#    - name: reboot
+#      reboot:
+#        reboot_timeout: 300
+#      ignore_errors: yes
+      
 ...
