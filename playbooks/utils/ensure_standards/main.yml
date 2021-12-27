@@ -112,7 +112,7 @@
 
     - name: reboot
       reboot:
-        reboot_timeout: 300
+        reboot_timeout: 600
       ignore_errors: yes
 
 ...
