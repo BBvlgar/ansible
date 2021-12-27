@@ -23,6 +23,25 @@
       shell: '/opt/sophos-av/bin/savdctl disable'
       ignore_errors: yes
         
+        
+    - name: Apt Update
+      apt:
+        update-cache: yes
+
+    - name: Aptitude must be present
+      apt:
+        name: aptitude
+
+    - name: Check for upgradeable
+      apt:
+        upgrade: 'yes'
+      check_mode: yes
+      register: upgradeable
+
+    - name: Show me
+      debug:
+        msg: "{{ upgradeable.stdout_lines }}"
+
     - name: 'get current hostname fqdn of the server'
       set_fact:
         fqdn_hn: "{{ alias_fqdn | default( ansible_host ) | lower }}"
@@ -91,14 +110,15 @@
         restart_ufw:   "yes"
         enable_ufw:    "yes"
 
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: 'yes'
+        state: latest
 
-    - name: 'update Server'
-      include_role:
-        name: update_server
-      vars:
-        override_user: 'yes'
-        skip_update_reboot: yes
-
+    - name: reboot
+      reboot:
+        reboot_timeout: 300
+      ignore_errors: yes
 
     - name: 'enable sophos'
       shell: '/opt/sophos-av/bin/savdctl enable'
