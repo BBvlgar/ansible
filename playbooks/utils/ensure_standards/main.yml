@@ -115,13 +115,14 @@
         upgrade: 'yes'
         state: latest
 
-    - name: reboot
-      reboot:
-        reboot_timeout: 300
-      ignore_errors: yes
 
     - name: 'enable sophos'
       shell: '/opt/sophos-av/bin/savdctl enable'
+      ignore_errors: yes
+
+    - name: reboot
+      reboot:
+        reboot_timeout: 300
       ignore_errors: yes
 
 #    - name: reboot
