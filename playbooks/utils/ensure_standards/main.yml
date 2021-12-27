@@ -77,13 +77,6 @@
         restart_ufw:   "no"
         enable_ufw:    "no"
 
-    - name: 'execute additional installation roles'
-      include_role:
-        name: "{{ item.role }}"
-      vars:
-        role_vars: "{{ item.vars }}"
-      with_items: "{{ additional_roles_on_install | default([]) }}"
-
     - name: 'create logrotate config'
       include_role:
         name: logrotate
