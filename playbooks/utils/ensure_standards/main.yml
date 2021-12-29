@@ -86,16 +86,6 @@
         name: docker_host
       when: docker_host is defined and docker_host
 
-
-    - name: 'configure basic firewall'
-      include_role:
-        name: firewall
-      vars:
-        install_ufw:   "yes"
-        configure_ufw: "yes"
-        restart_ufw:   "no"
-        enable_ufw:    "no"
-
     - name: 'create logrotate config'
       include_role:
         name: logrotate
@@ -104,11 +94,6 @@
     - name: 'configure basic firewall'
       include_role:
         name: firewall
-      vars:
-        install_ufw:   "no"
-        configure_ufw: "no"
-        restart_ufw:   "yes"
-        enable_ufw:    "yes"
 
     - name: Update all packages to the latest version
       apt:
