@@ -9,7 +9,7 @@
 - name: gather facts
   set_fact:
     files_glob:           "{{ nagios_default_command_file_paths + cfile_helper | default( [] ) }}"
-    nagios_allowed_hosts: "{{ nagios_default_allowed_hosts + nagios_group_allowed_hosts | default( [] ) + nagios_host_allowed_hosts | default( [] ) }}"
+    nagios_allowed_hosts: "{{ nagios_group_allowed_hosts | default( [] ) + nagios_host_allowed_hosts | default( [] ) }}"
     nagios_commands:      "{{ nagios_default_commands | combine( nagios_group_commands | default( {} ) ) | combine( nagios_host_commands | default( {} ) ) }}"
 
 - name: Ensure dependencies are installed

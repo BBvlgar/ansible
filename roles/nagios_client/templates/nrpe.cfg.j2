@@ -17,7 +17,8 @@ nrpe_group={{ nagios.user }}
 
 # NOTE: This option is ignored if NRPE is running under either inetd or xinetd
 # Will also be enforced by UFW
-allowed_hosts={{ nagios_allowed_hosts | join( ',' ) }}
+{% if nagios_allowed_hosts is defined and nagios_allowed_hosts | length > 0 %}allowed_hosts={{ nagios_allowed_hosts | join(',') }}
+{% endif %}
 
 # *** ENABLING THIS OPTION IS A SECURITY RISK! ***
 # Read the SECURITY file for information on some of the security implications
