@@ -7,8 +7,6 @@
 
 - hosts: 'all:!localhost'
   become: yes
-#  serial:
-#    - 1
   order: inventory
 
   vars:
