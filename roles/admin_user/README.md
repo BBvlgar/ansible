@@ -43,11 +43,3 @@ None.
   roles:
     - { role: admin_user, admins: "{{ myAdminDictionary }}" }
 ```
-
-## ToDos
-
-[Disable users](https://www.thegeekdiary.com/unix-linux-how-to-lock-or-disable-an-user-account/)
-
-```sh
-chage -E0 testuser
-```

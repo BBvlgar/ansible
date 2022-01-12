@@ -5,11 +5,15 @@
 - name: 'merge all users into the admins variable'
   set_fact:
     admins: "{{ admins + hostadmins | default([]) }}"
+    admin_usernames: []
     role_groups: "{{ user_groups + host_user_groups | default([]) }}"
 
 - name: 'fetch groups for users'
   set_fact:
+    # generate list of groups the user should be part of
     fullgroups: "{{ fullgroups|default({}) | combine ( { item.name : item_groups[1:] } ) }}"
+    # append username to list `admin_usernames` which was defined as empty list above
+    admin_usernames: "{{ admin_usernames + [ item.name ] }}"
   vars:
     item_groups: "{% for g in role_groups %}{% if item.name in g.users %},{{ g.group }}{% endif %}{% endfor %}"
   with_items: "{{ admins }}"
@@ -51,6 +55,22 @@
       when:
         - admins is defined and admins | length > 0
         - item.name not in disallowed_users|default([])
+
+    - name: "Generate user data for all interactive users on the system"
+      get_users:
+        min_uid: "{{security_min_interactive_uid }}"
+      register: interactive_user_list
+
+    - name: "Delete user {{ item.name }}?"
+      user:
+        name:   "{{ item.name }}"
+        state:  "absent"
+        remove: yes
+      # for each user within the list of interactive users
+      with_items: "{{ interactive_user_list.users }}"
+      # check if the name is still known in `admin_usernames`,
+      # otherwise delete the user from the server by task `user`
+      when: "item.name not in admin_usernames"
 
     # The SSH keys for admin users / SSH users are stored within the file
     # `$Home/.ssh/authorized_keys` for each user by default. To centralize that
@@ -98,14 +118,6 @@
         - ssh_authorized_keys_dir is not defined
         - admins is defined and admins | length > 0
         - item.name not in disallowed_users|default([])
-
-
-    - name: Get user data for all interactive users on the system
-      get_users:
-        min_uid: "{{security_min_interactive_uid }}"
-      register: interactive_user_list
-    - debug: 
-        var: interactive_user_list
 
   become: yes
 
