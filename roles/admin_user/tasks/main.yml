@@ -5,7 +5,9 @@
 - name: 'merge all users into the admins variable'
   set_fact:
     admins: "{{ admins + hostadmins | default([]) }}"
-    admin_usernames: []
+    admin_usernames:
+      - "root"
+      - "nobody"
     role_groups: "{{ user_groups + host_user_groups | default([]) }}"
 
 - name: 'fetch groups for users'
