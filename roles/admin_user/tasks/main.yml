@@ -63,7 +63,7 @@
         min_uid: "{{security_min_interactive_uid }}"
       register: interactive_user_list
 
-    - name: "Delete user {{ item.name }}?"
+    - name: "Delete user that shall not exist"
       user:
         name:   "{{ item.name }}"
         state:  "absent"
