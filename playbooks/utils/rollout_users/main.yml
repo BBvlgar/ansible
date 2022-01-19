@@ -7,9 +7,9 @@
 ###
 - hosts: 'all:!localhost'
   become: yes
-  serial:
-    - 1
-  order: inventory
+#  serial:
+#    - 1
+#  order: inventory
 
   tasks:
 
@@ -20,7 +20,7 @@
     - name: 'ensure SSH users if not working with groups'
       include_role:
         name: ssh_server
-      when:
-        - ssh_users_instead_groups is defined and ssh_users_instead_groups
+#      when:
+#        - ssh_users_instead_groups is defined and ssh_users_instead_groups
 
 ...
