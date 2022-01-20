@@ -106,8 +106,8 @@
       shell: '/opt/sophos-av/bin/savdctl enable'
       ignore_errors: yes
 
-- name: Pause for 1 minutes
-  pause:
-    minutes: 1
+    - name: Pause for 1 minutes
+      pause:
+        minutes: 1
 
 ...
