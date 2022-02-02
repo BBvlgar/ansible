@@ -49,7 +49,7 @@
     state: present
     build: no
     pull: yes
-    recreate: always
+    recreate: smart
   register: output
   when: remote == true
 
@@ -59,7 +59,7 @@
     state: present
     build: no
     pull: yes
-    recreate: always
+    recreate: smart
   register: output
   delegate_to: localhost
   when: remote != true
