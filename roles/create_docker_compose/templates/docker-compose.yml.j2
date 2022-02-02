@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-{% for key, container in app.value.items() %}  {{ container.name }}:
+{% for key, container in app.value.items() %}{% if key != 'recreate' %}  {{ container.name }}:
     container_name: "{{ container.name }}"
     image:   "{{ container.image }}"
     restart: "{{ container.restartPolicy }}"
@@ -27,7 +27,7 @@ services:
     {% endif %}{% if (container.command is defined) %}command: '{{ container.command }}'
     {% endif %}
 
-{% endfor %}
+{% endif %}{% endfor %}
 
 networks:
   frontend:
