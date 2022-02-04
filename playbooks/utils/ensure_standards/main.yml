@@ -100,7 +100,6 @@
         upgrade: 'yes'
         state: latest
 
-
     - name: 'enable sophos'
       shell: '/opt/sophos-av/bin/savdctl enable'
       ignore_errors: yes
