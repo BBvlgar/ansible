@@ -4,6 +4,11 @@ admins:              []
 user_groups:         []
 disallowed_users:    []
 admin_default_shell: '/bin/bash'
+
 security_min_interactive_uid: 1000
+
+role_global_admin_usernames:
+  - "root"
+  - "nobody"
 
 ...
