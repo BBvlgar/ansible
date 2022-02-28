@@ -108,7 +108,6 @@ The single dictionaries within this list consist out of two entries:
 
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 
-
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

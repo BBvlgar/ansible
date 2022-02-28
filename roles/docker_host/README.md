@@ -33,8 +33,8 @@ Usage of this role within playbooks could look like that:
 
 ## License
 
-BSD
+CC-BY
 
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

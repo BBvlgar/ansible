@@ -3,7 +3,6 @@
 
 ###
 ## Licenced under CC-BY
-##
 ###
 
 - name:  'Create Composefiles for Hosts'
@@ -23,6 +22,5 @@
       with_dict: "{{ applications }}"
       loop_control:
         loop_var: app
-
 
 ...

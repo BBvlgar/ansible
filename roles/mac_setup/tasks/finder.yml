@@ -1,5 +1,6 @@
 ---
 # yamllint disable rule:line-length
+
 # Set Home as the default location for new Finder windows
 # For other paths, use `PfLo` and `file:///full/path/here/`
 - name: Set Home as the default location for new Finder windows

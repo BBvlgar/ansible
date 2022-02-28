@@ -1,4 +1,5 @@
 ---
+
 - name: Check Appstore account status
   command: mas account
   register: mas_account_result

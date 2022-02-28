@@ -3,20 +3,19 @@
 nagios:
   port: "5666"
   user: nagios
-  allowed_ips:
-    - "127.0.0.1"
-    - "192.168.2.221"
-    - "10.0.2.2"
-    - "82.135.62.124"
-    - "87.139.241.239"
-    - "78.47.68.141"
-    - "212.114.221.222"
-    - "192.168.3.15"
-    - "0.0.0.0"
-    - "192.168.2.120"
-    - "3.125.97.169"
-    - "192.168.2.17"
-    - "10.0.1.25"
+
+nagios_default_commands:
+  check_users:        '/usr/lib/nagios/plugins/check_users -w 5 -c 10'
+  check_load:         '/usr/lib/nagios/plugins/check_load -w 35,28,22 -c 60,50,40'
+  check_sda1:         '/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /dev/sda1'
+  check_root:         '/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /dev/mnagioser/ubuntu-root'
+  check_total_procs:  '/usr/lib/nagios/plugins/check_procs -w 2000 -c 6000'
+  check_zombie_procs: '/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z'
+  check_drbd:         '/usr/lib/nagios/plugins/check_drbd'
+  check_apt:          '/usr/lib/nagios/plugins/check_apt'
+
+nagios_default_command_file_paths:
+  - '*'
 
 nagios_install_tools:
   - name: nagios-nrpe-server

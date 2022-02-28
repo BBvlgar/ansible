@@ -70,4 +70,5 @@
   when: 'homebrew_clear_cache | bool'
   become: "{{ (homebrew_user != ansible_user_id) | bool }}"
   become_user: "{{ homebrew_user }}"
+
 ...

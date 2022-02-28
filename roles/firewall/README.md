@@ -2,9 +2,7 @@
 
 With this role, we configure the `ufw` firewall.
 
-
 ## Requirements
-
 
 ## Role Variables
 
@@ -41,9 +39,8 @@ Including an example of how to use your role (for instance, with variables passe
 
 ## License
 
-BSD
-
+CC-BY
 
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

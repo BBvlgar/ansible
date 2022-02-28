@@ -58,7 +58,7 @@
   with_items: "{{ install_pip_tools }}"
   become: yes
 
-- name: download files, i.e. CA certificates
+- name: download files, e.g. CA certificates
   get_url:
     url:   "{{ item.url }}"
     dest:  "{{ item.dest }}"
@@ -70,7 +70,7 @@
   become: yes
   ignore_errors: true
 
-- name: update certificate chain
+- name:  update certificate chain
   shell: update-ca-certificates
   become: yes
 

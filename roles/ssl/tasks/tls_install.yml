@@ -1,5 +1,0 @@
-- set_fact:
-    certs_base: ../../../certs
-
-- include: ite.yml
-- include: thawte.yml

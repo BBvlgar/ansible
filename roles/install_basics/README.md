@@ -1,22 +1,21 @@
-Install basics
-===============
+# Install basics
 
 Installs basic tools to be present on every server.
 
-Requirements
-------------
+## Requirements
+
 None.
 
-Role Variables
---------------
+## Role Variables
+
 None.
 
-Dependencies
-------------
+## Dependencies
+
 None.
 
-Example Playbook
-----------------
+## Example Playbook
+
 ```
 - name: add admin users
   hosts: servers
@@ -27,3 +26,12 @@ Example Playbook
       include_role:
         name: install_basics
 ```
+
+## License
+
+CC-BY
+
+
+## Author Information
+
+macwinnie <dev@macwinnie.me>

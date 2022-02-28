@@ -1,6 +1,5 @@
 # Update Server Role
 
-
 ## Annotations
 
 This role does exactly what it is called: it updates the servers.
@@ -13,8 +12,9 @@ This role does exactly what it is called: it updates the servers.
 
 ## License
 
-BSD
+CC-BY
 
 ## Author Information
 
-Christian Walonka <cwalonka@it-economics.de>
+Felix Kazuya <dev@felixkazuya.de>
+macwinnie <dev@macwinnie.me>

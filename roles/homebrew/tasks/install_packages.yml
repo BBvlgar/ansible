@@ -1,4 +1,5 @@
 ---
+
 - block:
   - name: Force update brew after installation.
     command: "{{ homebrew_brew_bin_path }}/brew update --force"

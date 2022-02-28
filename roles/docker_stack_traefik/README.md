@@ -7,8 +7,6 @@ on a host.
 
 ## Variables used in this role
 
-
-
 ## Dependencies
 
 * `docker_container` role since it is used to deploy each single container
@@ -20,7 +18,6 @@ on a host.
 
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 
-
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

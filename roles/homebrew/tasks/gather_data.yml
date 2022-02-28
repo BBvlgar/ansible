@@ -1,4 +1,5 @@
 ---
+
 - name: Determine Homebrew ownership variables
   set_fact:
     homebrew_user: '{{ homebrew_user | default(ansible_user_id) }}'

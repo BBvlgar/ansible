@@ -90,7 +90,6 @@ If you want to two or all three of MySQL, MariaDB or PostgreSQL with different s
 
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)
 
-
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

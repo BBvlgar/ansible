@@ -3,8 +3,8 @@
 
 ###
 ## Licenced under CC-BY
-##
 ###
+
 - hosts: 'all:!localhost'
   become: yes
   order: inventory
@@ -99,6 +99,7 @@
       apt:
         upgrade: 'yes'
         state: latest
+
 
     - name: 'enable sophos'
       shell: '/opt/sophos-av/bin/savdctl enable'

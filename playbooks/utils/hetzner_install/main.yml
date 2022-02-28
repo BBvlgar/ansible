@@ -3,7 +3,6 @@
 
 ###
 ## Licenced under CC-BY
-##
 ###
 
 - hosts: 'all:!localhost'

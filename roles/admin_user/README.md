@@ -43,3 +43,12 @@ None.
   roles:
     - { role: admin_user, admins: "{{ myAdminDictionary }}" }
 ```
+
+## License
+
+CC-BY
+
+
+## Author Information
+
+macwinnie <dev@macwinnie.me>

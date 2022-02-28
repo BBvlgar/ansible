@@ -1,5 +1,7 @@
+---
+
 galaxy_info:
-  author: Martin Winter
+  author: macwinnie
   description: Deployment role for `motd` templates
   license: CC BY-SA 4.0
 
@@ -12,3 +14,5 @@ galaxy_info:
 
   galaxy_tags:
     - deployment
+
+...

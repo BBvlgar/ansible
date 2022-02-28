@@ -1,6 +1,4 @@
-#!/bin/bash
-# Create by: Florian Buchmeier
-# it-economics GmbH
+#!/usr/bin/env bash
 
 # Return codes
 OK=0

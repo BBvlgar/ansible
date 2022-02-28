@@ -3,8 +3,8 @@
 
 ###
 ## Licenced under CC-BY
-##
 ###
+
 - hosts: 'all:!localhost'
   become: yes
   serial:
@@ -13,14 +13,12 @@
 
   tasks:
 
-    - name: 'create users and give permissions'
+    - name: 'create users and give permissions by groups'
       include_role:
         name: admin_user
 
-    - name: 'ensure SSH users if not working with groups'
+    - name: 'run SSH role to ensure SSH config on server'
       include_role:
         name: ssh_server
-#      when:
-#        - ssh_users_instead_groups is defined and ssh_users_instead_groups
 
 ...

@@ -10,7 +10,7 @@ playbooks/*
 !playbooks/apps
 !playbooks/server
 !playbooks/utils
-!playbooks/hosting
+
 ###
 ## globally ignore
 ###
@@ -21,11 +21,10 @@ playbooks/*
 .vagrant
 .DS_Store
 __pycache__
-plugins/vars_plugins/__pycache__/*
-screenshot_login.png
-screenshot_usercreate.png
-screenshot_usercreated.png
 docker-compose/*
+!docker-compose/.gitkeep
+
+screenshot*.png
 
 ###
 ## this repo should not contain secret data

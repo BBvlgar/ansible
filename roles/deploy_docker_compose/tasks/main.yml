@@ -3,7 +3,7 @@
 - name: return app
   debug:
     msg: "{{ app }}"
-  when: debug==true
+  when: debug == true
 
 - name: remote -  Create traefik network
   docker_network:
@@ -78,5 +78,6 @@
 - name: return output var
   debug:
     var: output
+  when: debug == true
 
 ...

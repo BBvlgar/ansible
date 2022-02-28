@@ -2,20 +2,17 @@
 
 Provision a host as SSH host.
 
-
 ## Requirements
 
 None.
 
 ## Role Variables
 
-
 ## Dependencies
 
 None.
 
 ## Example Playbook
-
 
 ```yml
 ---
@@ -30,12 +27,10 @@ None.
 ...
 ```
 
-
 ## License
 
-BSD
-
+CC-BY
 
 ## Author Information
 
-Martin Winter <mwinter@it-economics.de>
+macwinnie <dev@macwinnie.me>

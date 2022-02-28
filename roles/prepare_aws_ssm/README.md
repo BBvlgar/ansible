@@ -1,22 +1,20 @@
-Prepare AWS SSM
-===============
+# Prepare AWS SSM
 
 Prepares host for AWS SSM usage.
 
-Requirements
-------------
+## Requirements
+
 None.
 
-Role Variables
---------------
+## Role Variables
+
 None.
 
-Dependencies
-------------
+## Dependencies
+
 None.
 
-Aftercare
----------
+## Aftercare
 
 You'll have to start and sign up every host for itself for SSM usage:
 
@@ -25,8 +23,8 @@ sudo amazon-ssm-agent -register -code "activation-code" -id "activation-id" -reg
 sudo service amazon-ssm-agent start
 ```
 
-Example Playbook
-----------------
+## Example Playbook
+
 ```
 - name: add admin users
   hosts: servers
@@ -35,3 +33,12 @@ Example Playbook
   roles:
     - { role: prepare_aws_ssm }
 ```
+
+## License
+
+CC-BY
+
+
+## Author Information
+
+macwinnie <dev@macwinnie.me>
