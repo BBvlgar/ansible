@@ -11,23 +11,62 @@
 - name: 'fetch groups for users'
   set_fact:
     # generate list of groups the user should be part of
-    fullgroups: "{{ fullgroups|default({}) | combine ( { item.name : item_groups[1:] } ) }}"
+    fullgroups: "{{ fullgroups|default( {} ) | combine ( { item.name : item_groups[1:] } ) }}"
     # append username to list `admin_usernames` which was defined and pre-filled above
     admin_usernames: "{{ admin_usernames + [ item.name ] }}"
   vars:
     item_groups: "{% for g in role_groups %}{% if item.name in g.users %},{{ g.group }}{% endif %}{% endfor %}"
   with_items: "{{ admins }}"
 
-- name: run things, only root should do
+- name: "run things, only root should do"
   block:
 
-    - name: ensure all groups do exist
+    - name: 'search for currently assigned groups'
+      shell: |
+        id -Gn {{ user }} | \
+        tr ' ' '\n' | \
+        jq --raw-input '{ "all" : [ inputs ] }' | \
+        jq -c --arg "val" "$( id -gn {{ user }} )" '. + { "effective" : $val }'
+      register: "capture_groups"
+      with_items: "{{ fullgroups.keys() | list }}"
+      loop_control:
+        loop_var: "user"
+
+    - name: 'combine captured groups into workable dictionary'
+      set_fact:
+        current_groups: "{{ current_groups|default( {} ) | combine( { item.user: item.stdout | safe | from_json } ) }}"
+      with_items: "{{ capture_groups.results }}"
+
+    - name: 'check for username-differring effective groups'
+      fail:
+        msg: "User “{{ item }}” does have effective group “{{ current_groups[ item ][ 'effective' ] }}” which differs from username ..."
+      when: "current_groups[ item ][ 'effective' ] != item"
+      with_items: "{{ fullgroups.keys() | list }}"
+      ignore_errors: true
+
+    - name: 'determine removable groups of admin users'
+      set_fact:
+        removable_groups: "{{ fullgroups | removableGroupsOfUsers ( current_groups ) }}"
+
+    - name: "remove users from removable groups"
+      shell: |
+        {% for group in removable_groups[ user ] %}
+        gpasswd -d {{ group }} {{ user }}
+        {% endfor %}
+      register: "command_result"
+      changed_when: "not 'is not a member of' in command_result.stderr"
+      failed_when: "'does not exist in /etc/group' in command_result.stderr"
+      with_items: "{{ removable_groups.keys() | list }}"
+      loop_control:
+        loop_var: "user"
+
+    - name: "ensure all groups do exist"
       group:
         name:  "{{ item.group }}"
         state: present
       with_items: "{{ role_groups }}"
 
-    - name: Grant admin & sudo to admins
+    - name: "Create (admin) users on host"
       user:
         name:             "{{ item.name }}"
         shell:            "{{ item.shell | default( default_shell | default( admin_default_shell ) ) }}"
@@ -76,7 +115,7 @@
     # `$Home/.ssh/authorized_keys` for each user by default. To centralize that
     # storage location, our setup wants to place the keys within the folder defined
     # by the variable `ssh_authorized_keys_dir`.
-    - name: Create parent folder for SSH keys
+    - name: "Create parent folder for SSH keys"
       file:
         path:  "{{ ssh_authorized_keys_dir }}"
         owner: "root"
@@ -85,7 +124,7 @@
         state: "directory"
       when: ssh_authorized_keys_dir is defined
 
-    - name: Create folders for authorized keys
+    - name: "Create folders for authorized keys"
       file:
         path:  "{{ ssh_authorized_keys_dir }}/{{ item.name }}"
         owner: "{{ item.name}}"
@@ -98,7 +137,7 @@
         - admins is defined and admins | length > 0
         - item.name not in disallowed_users|default([])
 
-    - name: Write ssh public keys to authorized keys files in dedicated destination
+    - name: "Write ssh public keys to authorized keys files in dedicated destination"
       authorized_key:
         user: "{{ item.name }}"
         key: "{{ item.pub_key }}"
@@ -109,7 +148,7 @@
         - admins is defined and admins | length > 0
         - item.name not in disallowed_users|default([])
 
-    - name: Write ssh public keys to authorized keys files in users homes
+    - name: "Write ssh public keys to authorized keys files in users homes"
       authorized_key:
         user: "{{ item.name }}"
         key: "{{ item.pub_key }}"
