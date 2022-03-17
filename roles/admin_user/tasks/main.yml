@@ -25,7 +25,8 @@
       shell: |
         id -Gn {{ user }} | \
         tr ' ' '\n' | \
-        jq --raw-input '{ "all" : [ inputs ] }' | \
+        jq --raw-input '[.]' | \
+        jq -s '{ "all": . | add }' | \
         jq -c --arg "val" "$( id -gn {{ user }} )" '. + { "effective" : $val }'
       register: "capture_groups"
       with_items: "{{ fullgroups.keys() | list }}"
