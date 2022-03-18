@@ -35,24 +35,29 @@
 
     - name: 'combine captured groups into workable dictionary'
       set_fact:
-        current_groups: "{{ current_groups|default( {} ) | combine( { item.user: item.stdout | safe | from_json } ) }}"
+        current_groups: "{{ current_groups|default( {} ) | combine( item.user | prepareExistingGroups ( item.stdout, item.stderr ) ) }}"
       with_items: "{{ capture_groups.results }}"
 
     - name: 'check for username-differring effective groups'
       fail:
         msg: "User “{{ item }}” does have effective group “{{ current_groups[ item ][ 'effective' ] }}” which differs from username ..."
-      when: "current_groups[ item ][ 'effective' ] != item"
-      with_items: "{{ fullgroups.keys() | list }}"
+      when:
+        - "current_groups[ item ][ 'effective' ] != item"
+      with_items: "{{ current_groups.keys() | list }}"
       ignore_errors: true
 
     - name: 'determine removable groups of admin users'
       set_fact:
         removable_groups: "{{ fullgroups | removableGroupsOfUsers ( current_groups ) }}"
 
+    - name: 'print groups that will be removed from users'
+      debug:
+        msg: "{{ removable_groups }}"
+
     - name: "remove users from removable groups"
       shell: |
         {% for group in removable_groups[ user ] %}
-        gpasswd -d {{ group }} {{ user }}
+        gpasswd -d {{ user }} {{ group }}
         {% endfor %}
       register: "command_result"
       changed_when: "not 'is not a member of' in command_result.stderr"

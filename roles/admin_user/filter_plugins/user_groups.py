@@ -5,6 +5,7 @@ class FilterModule( object ):
     def filters( self ):
         return {
             'removableGroupsOfUsers': self.removableGroupsOfUsers,
+            'prepareExistingGroups': self.prepareExistingGroups,
         }
 
     def removableGroupsOfUsers( self, userDict, currentGroups ):
@@ -17,14 +18,26 @@ class FilterModule( object ):
 
         removable = {}
         for uname, groupCSV in userDict.items():
-            if len( currentGroups[ uname ] ) > 0:
+            if uname in currentGroups and len( currentGroups[ uname ] ) > 0:
                 allowed = groupCSV.split( ',' )
                 rm      = list(
                     set( currentGroups[ uname ][ "all" ] ) -
                     set( allowed ) -
-                    set( currentGroups[ uname ][ "effective" ] )
+                    set( [ currentGroups[ uname ][ "effective" ] ] )
                 )
                 if len( rm ) > 0:
                     removable[ uname ] = rm
 
         return removable
+
+    def prepareExistingGroups( self, username, stdout, stderr ):
+        """
+        function to only merge existing groups if user exists
+        """
+        import json
+        groups = {}
+        if "no such user" not in stderr:
+            groups = {
+                username: json.loads( stdout )
+            }
+        return groups
