@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-class FilterModule(object):
 
-    def filters(self):
+class FilterModule( object ):
+
+    def filters( self ):
+
         return {
             'prepareContainerNames': self.prepareContainerNames,
             'preparestring': self.prepareString,
@@ -13,7 +15,7 @@ class FilterModule(object):
             'adjustNetworks': self.adjustNetworks,
         }
 
-    def prepareString(self, line):
+    def prepareString( self, line ):
         line = line.lower()
         chars = {
             'ä': 'ae',
@@ -27,18 +29,18 @@ class FilterModule(object):
         line = line.replace(' ', '-')
         return line
 
-    def prepareStack(self, stack):
+    def prepareStack( self, stack ):
         newStack = stack
         newStack['name'] = self.prepareString(stack['name'])
         return newStack
 
-    def prepareContainerNames(self, stack_items, stack):
+    def prepareContainerNames( self, stack_items, stack ):
         for i, cnt in enumerate(stack_items):
             new_name = stack['name'] + '_' + cnt['name']
             stack_items[i]['name'] = self.prepareString(new_name)
         return stack_items
 
-    def prepareSharedHome(self, stack_items, stackname):
+    def prepareSharedHome( self, stack_items, stackname ):
         for i, cnt in enumerate(stack_items):
             if 'shared_home_app' not in stack_items[i]:
                 stack_items[i]['shared_home_app'] = stackname
@@ -55,7 +57,7 @@ class FilterModule(object):
                                 stack_items[i][k][j][0][0] = self.prepareString( stack_items[i]['name'] ) + '/' + stack_items[i][k][j][0][0]
         return stack_items
 
-    def prepareDataContainer(self, stack_items, stackname, docker_home, stack_data={} ):
+    def prepareDataContainer( self, stack_items, stackname, docker_home, stack_data={} ):
 
         mandatoryKeys = [
             "directories",
@@ -98,7 +100,7 @@ class FilterModule(object):
                 stack_data['volumes'] = stack_data['volumes'] + helper
         return stack_data
 
-    def unifyVolumes(self, stack_items):
+    def unifyVolumes( self, stack_items ):
         for i, cnt in enumerate(stack_items):
             if "directories_no_backup" in cnt:
                 if "directories" not in cnt:
@@ -117,7 +119,7 @@ class FilterModule(object):
                 stack_items[i].pop('volumes_no_backup', None)
         return stack_items
 
-    def ensurePullRun(self, stack_items):
+    def ensurePullRun( self, stack_items ):
         for i, cnt in enumerate(stack_items):
             if "run" not in cnt:
                 stack_items[i]['run'] = True
@@ -125,7 +127,7 @@ class FilterModule(object):
                 stack_items[i]['pull'] = True
         return stack_items
 
-    def adjustNetworks(self, stack_items):
+    def adjustNetworks( self, stack_items ):
         for i, cnt in enumerate(stack_items):
             if "networks" in cnt:
                 networks = stack_items[i]['networks']

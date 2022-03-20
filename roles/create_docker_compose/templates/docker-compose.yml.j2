@@ -15,8 +15,8 @@ services:
     {% for value in container.cap_add %}  - {{ value }}
     {% endfor %}{% endif %}{% if (container.sysctls is defined) and (container.sysctls | length() > 0) %}sysctls:
     {% for value in container.sysctls %}  - {{ value }}
-    {% endfor %}{% endif %}labels:
-    {% if (container.labels is defined) and (container.labels | length() > 0) %}{% for label in container.labels %}  {{ label }}
+    {% endfor %}{% endif %}{% if (container.labels is defined) and (container.labels | length() > 0) %}labels:
+    {% for label in container.labels %}  {{ label }}
     {% endfor %}{% endif %}{% if (container.environment is defined) and (container.environment | length() >0) %}environment:
     {% for var_name, var_value in container.environment.items() %}  {{ var_name }}: '{{ var_value }}'
     {% endfor %}{% endif %}{% if (container.networks is defined) and (container.networks | length() > 0) %}networks:

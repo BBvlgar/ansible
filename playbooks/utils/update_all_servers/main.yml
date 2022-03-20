@@ -16,6 +16,10 @@
       include_role:
         name: update_server
 
+    - name: 'ensure basic toolset and configuration installed'
+      include_role:
+        name: install_basics
+
     - name: 'create logrotate config'
       include_role:
         name: logrotate
