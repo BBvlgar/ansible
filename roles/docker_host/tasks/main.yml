@@ -29,8 +29,17 @@
 
   rescue:
 
-    - name: Install docker via install script
-      command: "curl -sSL https://get.docker.com | sh"
+    - name: "Rescue #1 – Install docker via install script"
+      block:
+
+        - command: "curl -sSL https://get.docker.com | sh"
+
+      rescue:
+
+        - name: "Rescue #2 – install docker.io"
+          package:
+            name:  "docker.io"
+            state: "present"
 
 - name: define Docker service overrides
   become: yes
