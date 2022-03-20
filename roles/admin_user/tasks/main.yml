@@ -103,7 +103,7 @@
 
     - name: "Generate user data for all interactive users on the system"
       get_users:
-        min_uid: "{{security_min_interactive_uid }}"
+        min_uid: "{{ security_min_interactive_uid }}"
       register: interactive_user_list
 
     - name: "Delete user that shall not exist"
@@ -115,7 +115,9 @@
       with_items: "{{ interactive_user_list.users }}"
       # check if the name is still known in `admin_usernames`,
       # otherwise delete the user from the server by task `user`
-      when: "item.name not in admin_usernames"
+      when:
+        - "item.name not in admin_usernames"
+        - "item.name != ansible_user"
 
     # The SSH keys for admin users / SSH users are stored within the file
     # `$Home/.ssh/authorized_keys` for each user by default. To centralize that
