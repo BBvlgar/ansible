@@ -116,6 +116,15 @@
     docker_git: "{{ dockerAndGit.results | map(attribute='ansible_facts.git') | list }}"
   when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
 
+# fix new “security fix” https://github.com/actions/checkout/issues/760
+- name: unsafe repository fix
+  command: |
+    git config --global --add safe.directory {{ repo.dest }}
+  with_items: "{{ docker_git | default([]) }}"
+  loop_control:
+    loop_var: repo
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
 # run the git checkout process
 - name: checkout git repo if defined
   git: "{{ repo }}"
