@@ -24,8 +24,9 @@ services:
     {% endfor %}{% endif %}{% if (container.ports is defined) and (container.ports | length() > 0) %}ports:
     {% for port in container.ports %}  - "{{ port }}"
     {% endfor %}{% endif %}{% if (container.network_mode is defined) %}network_mode: {{ container.network_mode }} 
-    {% endif %}{% if (container.command is defined) %}command: '{{ container.command }}'
-    {% endif %}
+    {% endif %}{% if (container.command is defined) and (container.command | length() > 0) %}command:
+    {% for command in container.command %}  {{ command }}
+    {% endfor %}{% endif %}
 
 {% endif %}{% endfor %}
 
