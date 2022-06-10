@@ -5,7 +5,7 @@ services:
 {% for key, container in app.value.items() %}{% if key != 'recreate' %}  {{ container.name }}:
     container_name: "{{ container.name }}"
     image:   "{{ container.image }}"
-    restart: "{{ container.restartPolicy }}"
+    restart: "{{ container.restartPolicy | default( docker_default_restart_policy ) }}"
     logging:
       {{ ( container.logging | default( docker_logging ) ) | to_nice_yaml( indent = 2 ) | indent( 6, False ) }}
     {% if (container.privileged is defined) and container.privileged %}privileged: true 

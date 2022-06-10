@@ -47,6 +47,7 @@ basic_toolset:
   - name: "rsync"
   - name: "python-setuptools"
   - name: "strace"
+  - name: "whois"
 
 basic_pip_toolset:
   - name: "pip"

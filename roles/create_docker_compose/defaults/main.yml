@@ -11,6 +11,8 @@ traefik_network:  "proxy"
 remote:           false
 debug:            false
 
+docker_default_restart_policy: 'unless-stopped'
+
 docker_logging:
   driver: "json-file"
   options:
