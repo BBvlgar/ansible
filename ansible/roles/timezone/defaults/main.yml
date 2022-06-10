@@ -1,8 +1,0 @@
----
-
-timezone: "UTC"
-
-# When timedatectl is used
-timezone_use_local_rtc: false
-
-...

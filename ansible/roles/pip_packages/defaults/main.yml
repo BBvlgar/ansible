@@ -1,7 +1,0 @@
----
-
-pip_packages:
-  - name: awscli
-    state: latest
-
-...

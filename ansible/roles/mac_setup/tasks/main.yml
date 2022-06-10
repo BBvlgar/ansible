@@ -1,9 +1,0 @@
----
-
-- include: ui.yml
-- include: screen.yml
-- include: accessories.yml
-- include: finder.yml
-- include: safari.yml
-
-...

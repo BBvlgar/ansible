@@ -1,7 +1,0 @@
----
-
-- name: "add PostgreSQL to `containers` variable"
-  set_fact:
-    containers: "{{ containers + [ postgres_cnt ] }}"
-
-...

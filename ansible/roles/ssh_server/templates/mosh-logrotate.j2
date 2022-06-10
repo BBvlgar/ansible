@@ -1,8 +1,0 @@
-{{ mosh.logfile }} {
-    rotate {{ mosh.logrot.rotate }}
-    {{ mosh.logrot.time }}
-    compress
-    missingok
-    notifempty
-    {{ mosh.logrot.additionals | default('') }}
-}

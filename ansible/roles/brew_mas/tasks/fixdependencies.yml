@@ -1,6 +1,0 @@
----
-
-- name: Ensure MAS Tool is installed via homebrew.
-  homebrew: name=mas state=present
-
-...

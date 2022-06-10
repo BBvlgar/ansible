@@ -1,9 +1,0 @@
----
-#extends: default
-
-yaml-files:
-  - '*.yaml'
-  - '*.yml'
-
-ignore: |
-  .ansible-lint

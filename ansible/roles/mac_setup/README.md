@@ -1,3 +1,0 @@
-# Ansible Role: Homebrew
-
-TBD
