@@ -1,8 +1,0 @@
-- hosts: all
-  become: yes
-  serial:
-    - 1
-  order: inventory
-
-  roles:
-    - { role: log4shell }

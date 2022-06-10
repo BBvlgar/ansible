@@ -1,0 +1,21 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+##
+###
+- hosts: 'all:!localhost'
+  become: yes
+
+  tasks:
+
+    - name: 'determine if ufw should be installed'
+      set_fact:
+        install_ufw: "{{ install_ufw | default( 'no' ) }}"
+
+    - name: 'configure basic firewall'
+      include_role:
+        name: firewall
+
+...

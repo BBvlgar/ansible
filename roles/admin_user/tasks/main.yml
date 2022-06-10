@@ -1,0 +1,171 @@
+---
+
+# Sometimes it is usefull to allow users to be defined per host.
+# For realising that, the variable `hostadmins` can be defined.
+- name: 'merge all users into the admins variable'
+  set_fact:
+    admins: "{{ admins + groupadmins | default([]) + hostadmins | default([]) }}"
+    admin_usernames: "{{ role_global_admin_usernames + admin_usernames | default([]) }}"
+    role_groups: "{{ user_groups + host_user_groups | default([]) + group_user_groups | default([]) }}"
+
+- name: 'fetch groups for users'
+  set_fact:
+    # generate list of groups the user should be part of
+    fullgroups: "{{ fullgroups|default( {} ) | combine ( { item.name : item_groups[1:] } ) }}"
+    # append username to list `admin_usernames` which was defined and pre-filled above
+    admin_usernames: "{{ admin_usernames + [ item.name ] }}"
+  vars:
+    item_groups: "{% for g in role_groups %}{% if item.name in g.users %},{{ g.group }}{% endif %}{% endfor %}"
+  with_items: "{{ admins }}"
+
+- name: "run things, only root should do"
+  block:
+
+    - name: 'search for currently assigned groups'
+      shell: |
+        id -Gn {{ user }} | \
+        tr ' ' '\n' | \
+        jq --raw-input '[.]' | \
+        jq -s '{ "all": . | add }' | \
+        jq -c --arg "val" "$( id -gn {{ user }} )" '. + { "effective" : $val }'
+      register: "capture_groups"
+      with_items: "{{ fullgroups.keys() | list }}"
+      loop_control:
+        loop_var: "user"
+
+    - name: 'combine captured groups into workable dictionary'
+      set_fact:
+        current_groups: "{{ current_groups|default( {} ) | combine( item.user | prepareExistingGroups ( item.stdout, item.stderr ) ) }}"
+      with_items: "{{ capture_groups.results }}"
+
+    - name: 'check for username-differring effective groups'
+      fail:
+        msg: "User “{{ item }}” does have effective group “{{ current_groups[ item ][ 'effective' ] }}” which differs from username ..."
+      when:
+        - "current_groups[ item ][ 'effective' ] != item"
+      with_items: "{{ current_groups.keys() | list }}"
+      ignore_errors: true
+
+    - name: 'determine removable groups of admin users'
+      set_fact:
+        removable_groups: "{{ fullgroups | removableGroupsOfUsers ( current_groups ) }}"
+
+    - name: 'print groups that will be removed from users'
+      debug:
+        msg: "{{ removable_groups }}"
+
+    - name: "remove users from removable groups"
+      shell: |
+        {% for group in removable_groups[ user ] %}
+        gpasswd -d {{ user }} {{ group }}
+        {% endfor %}
+      register: "command_result"
+      changed_when: "not 'is not a member of' in command_result.stderr"
+      failed_when: "'does not exist in /etc/group' in command_result.stderr"
+      with_items: "{{ removable_groups.keys() | list }}"
+      loop_control:
+        loop_var: "user"
+
+    - name: "ensure all groups do exist"
+      group:
+        name:  "{{ item.group }}"
+        state: present
+      with_items: "{{ role_groups }}"
+
+    - name: "Create (admin) users on host"
+      user:
+        name:             "{{ item.name }}"
+        shell:            "{{ item.shell | default( default_shell | default( admin_default_shell ) ) }}"
+        groups:           "{{ fullgroups[ item.name ] }}"
+        append:           yes
+        state:            "{% if item.remove | default( 'no' | bool ) %}absent{% else %}present{% endif %}"
+        password:         "{{ item.password | default() }}"
+        remove:           "{{ item.remove | default( 'no' | bool ) }}"
+        comment:          "{{ item.comment | default('') }}"
+        generate_ssh_key: yes # does not overwrite SSH key
+      with_items: "{{ admins }}"
+      # the `when` below limits the execution to two conditions that are combined by
+      # a logical `AND`:
+      # First of all if there is an admin defined within the `admins` variable and
+      # it is not empty – this first check doesn't even check if `admins` is an
+      # array or not, it only checks for sth. else than `FALSE`, `NONE`, `EMPTY` or
+      # `UNDEFINED`.
+      # The second condition checks – for each loop through the `admins` array – if
+      # the defined username of the current admin (`item.name`) is not within the
+      # relevant instance of `disallowed_users` array.
+      # The `disallowed_users` array is defined with defaults within the `all.yml`
+      # group_vars file, is fully emptied for the servers of the `alladmins`
+      # inventory group within the `alladmins.yml` group_vars file and can be
+      # overridden for each server in its corresponding host_vars file.
+      when:
+        - admins is defined and admins | length > 0
+        - item.name not in disallowed_users|default([])
+
+    - name: "Generate user data for all interactive users on the system"
+      get_users:
+        min_uid: "{{ security_min_interactive_uid }}"
+      register: interactive_user_list
+
+    - name: "Delete user that shall not exist"
+      user:
+        name:   "{{ item.name }}"
+        state:  "absent"
+        remove: yes
+      # for each user within the list of interactive users
+      with_items: "{{ interactive_user_list.users }}"
+      # check if the name is still known in `admin_usernames`,
+      # otherwise delete the user from the server by task `user`
+      when:
+        - "item.name not in admin_usernames"
+        - "item.name != lookup( 'env', 'USER' )"
+
+    # The SSH keys for admin users / SSH users are stored within the file
+    # `$Home/.ssh/authorized_keys` for each user by default. To centralize that
+    # storage location, our setup wants to place the keys within the folder defined
+    # by the variable `ssh_authorized_keys_dir`.
+    - name: "Create parent folder for SSH keys"
+      file:
+        path:  "{{ ssh_authorized_keys_dir }}"
+        owner: "root"
+        group: "root"
+        mode:  "0755"
+        state: "directory"
+      when: ssh_authorized_keys_dir is defined
+
+    - name: "Create folders for authorized keys"
+      file:
+        path:  "{{ ssh_authorized_keys_dir }}/{{ item.name }}"
+        owner: "{{ item.name}}"
+        group: "root"
+        mode:  "0755"
+        state: "directory"
+      with_items: "{{ admins }}"
+      when:
+        - ssh_authorized_keys_dir is defined
+        - admins is defined and admins | length > 0
+        - item.name not in disallowed_users|default([])
+
+    - name: "Write ssh public keys to authorized keys files in dedicated destination"
+      authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ item.pub_key }}"
+        path: "{{ ssh_authorized_keys_dir }}/{{ item.name }}/authorized_keys"
+      with_items: "{{ admins }}"
+      when:
+        - ssh_authorized_keys_dir is defined
+        - admins is defined and admins | length > 0
+        - item.name not in disallowed_users|default([])
+
+    - name: "Write ssh public keys to authorized keys files in users homes"
+      authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ item.pub_key }}"
+      with_items: "{{ admins }}"
+      when:
+        - ssh_authorized_keys_dir is not defined
+        - admins is defined and admins | length > 0
+        - item.name not in disallowed_users|default([])
+
+  become: yes
+
+...

@@ -1,0 +1,51 @@
+---
+
+# the splitting and combination of variables like the hostname
+# should only be executed once and not multiple times within the
+# commands ... so let's define some facts =)
+
+- name: split hostname
+  set_fact:
+    # the fqdn of the hostname will be split by dots
+    split_hostname: "{{ app.hostname.split('.') }}"
+
+- name: combine hostname parts
+  set_fact:
+    # the last two elements within the hostname are the domain
+    zone:   "{{ split_hostname[-2:] | join('.') }}"
+    # the other elements of the hostname describe the hostname / subdomain parts
+    record: "{{ split_hostname[:-2] | join('.') }}"
+
+- name: set DNS entry
+  # since there is the possibility that still old DNS records exist,
+  # we need some error handling here – so we'll use a block
+  block:
+    # try to set the DNS record
+    - name: Ensure DNS Record is set
+      cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "{{ record }}"
+        type: CNAME
+        value: "{{ traefik_fqdn }}"
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_token }}"
+        state: present
+      when: skipdns is undefined
+
+  rescue:
+    # on failure pause the ansible run and wait for the user to fix the problem
+    - name: DNS Error Handling
+      pause: prompt="Please remove the existing Records for {{ app.hostname }}"
+
+    # then re-try setting the DNS record
+    - name: Ensure DNS Record is set
+      cloudflare_dns:
+        zone: "{{ zone }}"
+        record: "{{ record }}"
+        type: CNAME
+        value: "{{ traefik_fqdn }}"
+        account_email: "{{ cloudflare_email }}"
+        account_api_token: "{{ cloudflare_api_token }}"
+        state: present
+
+...

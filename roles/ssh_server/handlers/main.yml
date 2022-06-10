@@ -1,0 +1,11 @@
+---
+
+# Handler to handle ssh notifications. Handlers are called by other plays.
+# See http://ansible.cc/docs/playbooks.html for more information about handlers
+
+- name: restart ssh
+  service:
+    name: "{{ ssh_service_name }}"
+    state: "restarted"
+
+...

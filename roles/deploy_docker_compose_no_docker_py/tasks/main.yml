@@ -1,0 +1,50 @@
+---
+- debug:
+    msg: "{{ app }}"
+  when: debug==true
+
+- name: localhost - Create traefik network
+  command: "docker network create {{ traefik_network }}"
+  when: traefik_network is defined
+  ignore_errors: true
+
+- name: localhost - Create internal network
+  command: "docker network create {{ internal_network }}"
+  when: internal_network is defined
+  ignore_errors: true
+
+- name: remote - Create database network
+  command: "docker network create {{ database_network }}"
+  when: database_network is defined
+  ignore_errors: true
+
+- name: Creates directory for docker-compose
+  file:
+    path: "{{ composerFilePath }}/{{ app.key }}"
+    state: directory
+    recurse: true
+
+- name: recreate or rollout services
+  shell: |
+    CUR=$(pwd)
+    cd "{{ composerFilePath }}/{{ app.key }}"
+    /usr/local/bin/docker-compose pull
+    /usr/local/bin/docker-compose up -d --force-recreate
+    cd "${CUR}"
+  register: output
+
+- name: Deploy Bootup.sh
+  copy:
+    src: bootup.sh
+    dest: "{{ composerFilePath }}/bootup.sh"
+    mode: u+rw,g-wx,o-rwx
+
+- name: Deploy .env
+  template:
+    src: env.j2
+    dest: "{{ composerFilePath }}/.env"
+
+- debug:
+    var: output
+
+...

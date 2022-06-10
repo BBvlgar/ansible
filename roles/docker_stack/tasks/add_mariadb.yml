@@ -1,0 +1,35 @@
+---
+
+- name: "set data paths"
+  set_fact:
+    cnt_cnf_path:  "{{ mdb_cnt.name }}/{{ mdb_path.config }}"
+
+- name: "add mariadb to `containers` variable"
+  set_fact:
+    containers: "{{ containers + [ mdb_cnt ] }}"
+
+- name: "prepare configuration path"
+  set_fact:
+    mdb_templates:
+      - "mysqld.cnf"
+    cnt_cnf_tpl_path: "{{ docker_home }}/{{ workstack.name }}/{{ cnt_cnf_path }}/"
+
+- name:   "prepare mariadb container"
+  become: yes
+  block:
+
+    - name:   "Create needed dirs – if they do not already exist"
+      file:
+        path: "{{ cnt_cnf_tpl_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure MariaDB configs are placed well"
+      template:
+        src: "{{ item }}.j2"
+        dest: "{{ cnt_cnf_tpl_path }}{{ item | basename }}"
+      with_items: "{{ mdb_templates }}"
+      vars:
+        cnf: "{{ mdb_cnf }}"
+
+...

@@ -1,9 +1,0 @@
----
-
-- import_playbook: launch-temporary-instance.yml
-- import_playbook: provision-application-instance.yml
-- import_playbook: bundle-application-ami.yml
-# - import_playbook: run-post-steps.yml
-#- import_playbook: cleanup.yml
-
-...

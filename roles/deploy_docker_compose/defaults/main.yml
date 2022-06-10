@@ -1,0 +1,14 @@
+---
+
+debug:  false
+remote: false
+
+BASEFQDN: "localhost"
+
+composerFilePath: "docker-compose"
+
+DOCKER_DBNET:    "database"
+DOCKER_PROXYNET: "proxy"
+DOCKER_WORLDNET: "publicwww"
+
+...

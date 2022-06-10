@@ -1,7 +1,0 @@
-- name: create cfg2html
-  hosts: atlassian-cfg
-  remote_user: ubuntu
-  become: yes
-
-  roles:
-    - cfg2html

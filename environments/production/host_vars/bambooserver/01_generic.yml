@@ -1,7 +1,0 @@
----
-
-composerFilePath: '/mnt/shared/compose/dockerhost'
-docker_home:      '/mnt/shared/applications'
-docker_registry:  'docker.it-economics.de/proxy/'
-
-...

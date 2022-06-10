@@ -1,13 +1,15 @@
-# ignore all environments
-# (if you add some as Git subtree, those are NOT ignored!)
-environments/*
-!environments/README.md
-!environments/production
-!environments/hosting
-!environments/hosting-test
-!environments/production
-!environments/itergo
-!environments/itergo-test
+###
+## ignore testing
+###
+testing
+
+###
+## playbook directories
+###
+playbooks/*
+!playbooks/apps
+!playbooks/server
+!playbooks/utils
 
 ###
 ## globally ignore
@@ -17,7 +19,15 @@ environments/*
 .directory
 .save
 .vagrant
-.DS_*
+.DS_Store
 __pycache__
+docker-compose/*
+!docker-compose/.gitkeep
 
-._*
+screenshot*.png
+
+###
+## this repo should not contain secret data
+## so we'll ignore .git-crypt
+###
+.git-crypt

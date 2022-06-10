@@ -1,0 +1,33 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+###
+
+- hosts: updatableServers
+  serial:
+    - 1
+  order: inventory
+
+  tasks:
+
+    - name: 'update Server'
+      include_role:
+        name: update_server
+
+    - name: 'ensure basic toolset and configuration installed'
+      include_role:
+        name: install_basics
+
+    - name: 'create logrotate config'
+      include_role:
+        name: logrotate
+      when: logrotate is defined
+
+    - name: 'roll out Message of the Day'
+      include_role:
+        name: motd_server
+      when: motd_active is defined and motd_active
+
+...

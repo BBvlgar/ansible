@@ -1,8 +1,0 @@
----
-
-install_ufw   : false
-configure_ufw : false
-restart_ufw   : false
-enable_ufw    : false
-
-...

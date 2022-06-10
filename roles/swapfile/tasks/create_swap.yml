@@ -1,0 +1,25 @@
+---
+
+- name: Allocate space for swap
+  command: fallocate -l {{ swapsize }}M {{ swapfile }}
+
+- name: Set permissions
+  file:
+    path: "{{ swapfile }}"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Create swap file
+  command: mkswap {{ swapfile }}
+
+- name: Activate swap
+  command: swapon {{ swapfile }}
+
+- name: Add swap to fstab
+  lineinfile:
+    dest: /etc/fstab
+    line: "{{ swapfile }} none swap defaults 0 0"
+    state: present
+
+...

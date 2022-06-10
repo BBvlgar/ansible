@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+{% for key, container in app.value.items() %}{% if key != 'recreate' %}  {{ container.name }}:
+    container_name: "{{ container.name }}"
+    image:   "{{ container.image }}"
+    restart: "{{ container.restartPolicy | default( docker_default_restart_policy ) }}"
+    logging:
+      {{ ( container.logging | default( docker_logging ) ) | to_nice_yaml( indent = 2 ) | indent( 6, False ) }}
+    {% if (container.privileged is defined) and container.privileged %}privileged: true 
+    {% endif %}{% if (container.volumes is defined) and (container.volumes | length() > 0) %}volumes:
+    {% for volume in container.volumes %}  - {{ volume }}
+    {% endfor %}{% endif %}{% if (container.cap_add is defined) and (container.cap_add | length() > 0) %}cap_add:
+    {% for value in container.cap_add %}  - {{ value }}
+    {% endfor %}{% endif %}{% if (container.sysctls is defined) and (container.sysctls | length() > 0) %}sysctls:
+    {% for value in container.sysctls %}  - {{ value }}
+    {% endfor %}{% endif %}{% if (container.labels is defined) and (container.labels | length() > 0) %}labels:
+    {% for label in container.labels %}  {{ label }}
+    {% endfor %}{% endif %}{% if (container.environment is defined) and (container.environment | length() >0) %}environment:
+    {% for var_name, var_value in container.environment.items() %}  {{ var_name }}: '{{ var_value }}'
+    {% endfor %}{% endif %}{% if (container.networks is defined) and (container.networks | length() > 0) %}networks:
+    {% for network in container.networks %}  - {{ network }}
+    {% endfor %}{% endif %}{% if (container.ports is defined) and (container.ports | length() > 0) %}ports:
+    {% for port in container.ports %}  - "{{ port }}"
+    {% endfor %}{% endif %}{% if (container.network_mode is defined) %}network_mode: {{ container.network_mode }} 
+    {% endif %}{% if (container.command is defined) and (container.command | length() > 0) %}command:
+    {% for command in container.command %}  {{ command }}
+    {% endfor %}{% endif %}
+
+{% endif %}{% endfor %}
+
+networks:
+  frontend:
+    external:
+      name: {{ DOCKER_WORLDNET }}
+  backbone:
+    external:
+      name: {{ traefik_network }}
+  database:
+    external:
+      name: {{ DOCKER_DBNET }}

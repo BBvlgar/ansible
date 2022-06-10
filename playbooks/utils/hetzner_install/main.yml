@@ -1,0 +1,30 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+###
+
+- hosts: 'all:!localhost'
+
+  vars:
+    ansible_ssh_extra_args:
+      -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+    install_base: "/root/.oldroot/nfs/install"
+
+  tasks:
+
+    - name: prepare /autosetup
+      template:
+        src:  templates/hetzner_autosetup.j2
+        dest: /autosetup
+
+    - name: run installer
+      command: "{{ install_base }}/installimage"
+
+    - name: reboot into normal mode
+      reboot:
+        reboot_timeout: 300
+      ignore_errors: true
+
+...

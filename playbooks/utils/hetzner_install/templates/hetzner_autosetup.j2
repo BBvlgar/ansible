@@ -1,0 +1,15 @@
+HOSTNAME  {{ hetzner_install.hostname }}
+
+{% for drive in hetzner_install.drives %}
+DRIVE{{ loop.index }}  {{ drive }}
+{% endfor %}
+
+{% for part in hetzner_install.partitions %}
+PART  {{ part.destination }}  {{ part.filesystem }}  {{ part.size }}
+{% endfor %}
+
+IMAGE  {{ hetzner_install.image }}
+
+{% if hetzner_install.additionals is defined and hetzner_install.additionals != '' %}
+{{ hetzner_install.additionals }}
+{% endif %}

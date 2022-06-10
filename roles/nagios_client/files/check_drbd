@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+drbd() {
+  local status=1
+  cat /proc/drbd | grep "UpToDate/UpToDate" > /dev/null
+  status=$?
+
+  case $status in
+    0)
+    echo "DRBD is up to date"
+    return 0
+    ;;
+    *)
+    echo "DRBD NOT up to date! Status: $(cat /proc/drbd | grep ds)"
+    return 1
+    ;;
+  esac
+}
+
+drbd
+exit $?

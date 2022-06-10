@@ -1,0 +1,26 @@
+---
+
+- name: Apt Update
+  apt:
+    force_apt_get: "yes"
+    update-cache: yes
+
+- name: Check for upgradeable
+  apt:
+    upgrade: "yes"
+    force_apt_get: "yes"
+  check_mode: yes
+  register: upgradeable
+  
+- name: Show me
+  debug:
+    msg: "{{ upgradeable.stdout_lines }}"
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: "dist"
+    force_apt_get: "yes"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+...

@@ -1,6 +1,0 @@
----
-
-override_traefik_tls_default_options:
-  sniStrict: 'false'
-
-...

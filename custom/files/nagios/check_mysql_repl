@@ -1,5 +1,0 @@
-#!/bin/bash
-
-source /etc/nagios/mysql.credentials
-
-/usr/lib/nagios/plugins/check_mysql -H localhost -u "$user" -p "$password" -S -w $1 -c $2

@@ -1,6 +1,0 @@
-- name: Install required software
-  hosts: localhost
-  become: yes
-
-  roles:
-    - backup
