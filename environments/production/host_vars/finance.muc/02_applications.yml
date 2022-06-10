@@ -1,0 +1,29 @@
+---
+
+applications:
+  apps2mirror_stack:
+    apps2mirror:
+      name: "apps2mirror"
+      image: "{{ docker_registry }}iteconomics/apache:a2m"
+      restartPolicy: "always"
+      volumes:
+        - "{{ docker_home }}/apps2mirror/apache_config.j2:/templates/apache.j2"
+        - "{{ docker_home }}/apps2mirror/data:/var/www/"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.apps2mirror.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.apps2mirror_http.rule: 'Host(`apps2-mirror.muc.it-economics.de`) || Host(`controlling.muc.it-economics.de`) || Host(`reporting.muc.it-economics.de`)'"
+        - "traefik.http.routers.apps2mirror_http.entrypoints: 'web'"
+        - "traefik.http.routers.apps2mirror_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.apps2mirror.rule: 'Host(`apps2-mirror.muc.it-economics.de`) || Host(`controlling.muc.it-economics.de`) || Host(`reporting.muc.it-economics.de`)'"
+        - "traefik.http.routers.apps2mirror.entrypoints: 'websecure'"
+        - "traefik.http.routers.apps2mirror.tls: 'true'"
+        - "traefik.http.routers.apps2mirror.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.apps2mirror.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.apps2mirror.tls.domains[0].sans: '*.muc.it-economics.de'"
+      environment:
+        MODS: "ssl ldap authnz_ldap php7 rewrite headers"
+      networks:
+        - "backbone"
+
+...

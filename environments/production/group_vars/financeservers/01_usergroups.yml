@@ -1,0 +1,16 @@
+---
+
+group_user_groups:
+  - group: sudo
+    users:
+      - mmenzel
+
+  - group: adm
+    users:
+      - mmenzel
+
+  - group: ssh_users
+    users:
+      - mmenzel
+      
+...

@@ -1,0 +1,44 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+##
+## MAIN FILE to delete a USER ACCOUNT from ITE systems
+###
+
+# Fetch data from ticket system
+- import_playbook: gather_data.yml
+  tags:
+    - achievo
+    - ldap
+    - ssl
+
+- name: Confirmation
+  hosts: localhost
+  tasks:
+    - debug: msg="Please use the following password for the email account {{hostvars.get('localhost').get('email') }} {{ hostvars.get('localhost').get('email_password') }}"
+    - pause: prompt="Deleting user __ {{hostvars.get('localhost').get('username') }} __ from system __ {{ hostvars.get('localhost').get('ldap_url') }} __, do you want to continue?"
+      when: env == 'production' and (run_unattended is not defined or not run_unattended | bool)
+  tags:
+    - achievo
+    - ldap
+    - ssl
+
+- name: disable achievo account
+  import_playbook: achievo.yml
+  when: skipAchievo is not defined and hostvars['localhost']['ticket_number'] != -1
+  tags:
+    - achievo
+
+# Delete ldap account
+- import_playbook: ldap.yml
+  when: hostvars['localhost']['ticket_number'] != -1
+  tags:
+    - ldap
+
+# Revoke SSL certificate
+- import_playbook: ssl.yml
+  when: hostvars['localhost']['ticket_number'] != -1
+  tags:
+    - ssl

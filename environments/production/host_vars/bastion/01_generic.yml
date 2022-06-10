@@ -1,0 +1,10 @@
+---
+composerFilePath: "/mnt/shared/compose"
+traefik_enabled: true
+sophos_av_disableMTD: true
+debug: true
+ssh_port: 22
+docker_registry: 'docker.it-economics.de/proxy/'
+
+
+...

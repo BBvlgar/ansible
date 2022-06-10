@@ -1,0 +1,99 @@
+---
+
+host_fqdn: "gasx.it-economics.de"
+
+gasx:
+  host_ip:         "159.69.246.254"
+  abs_path:        "/CTP"
+  licenseServer:   "3.126.7.84:9999"
+  fullUrl:         "https://{{ host_fqdn }}/"
+  postgresVersion: "11"
+
+applications:
+
+  gasx_stack:
+
+    jira:
+      name:          "gasx-jira"
+      image:         "{{ docker_registry }}iteconomics/jira:latest"
+      restartPolicy: "always"
+      environment:
+          JAVA_OPTS: "-Xms1024m -Xmx1024m -Djdk.tls.trustNameService=true -Duser.timezone=Europe/Berlin -Dfile.encoding=UTF-8 -Djavax.servlet.request.encoding=UTF8 -Dsun.jnu.encoding=UTF-8 -Dconversion.sandbox.java.options=-Xmx512m,-Xss2m,-Dsun.jnu.encoding=UTF-8,-Dfile.encoding=UTF-8"
+          PROXY: "{{ host_fqdn }}"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.gasx.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.gasx_http.rule: 'Host(`{{ host_fqdn }}`)'"
+        - "traefik.http.routers.gasx_http.entrypoints: 'web'"
+        - "traefik.http.routers.gasx_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.gasx.rule: 'Host(`{{ host_fqdn }}`)'"
+        - "traefik.http.routers.gasx.entrypoints: 'websecure'"
+        - "traefik.http.routers.gasx.tls: 'true'"
+        - "traefik.http.routers.gasx.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.gasx.tls.domains[0].main: 'gasx.it-economics.de'"
+      networks:
+        - "backbone"
+        - "database"
+      volumes:
+        - "{{ docker_home }}gasx/jira/data:/var/atlassian/application-data/jira"
+
+    postgres:
+      name:          "gasx-jira_db"
+      image:         "library/postgres:{{ gasx.postgresVersion }}"
+      restartPolicy: "always"
+      environment:
+        POSTGRES_DB:       "{{ gasx_jira.db.name }}"
+        POSTGRES_USER:     "{{ gasx_jira.db.user }}"
+        POSTGRES_PASSWORD: "{{ gasx_jira.db.passwd }}"
+        LANG:              "C.UTF-8"
+      labels:
+        - 'traefik.enable: "false"'
+      networks:
+        - "database"
+      volumes:
+        - "{{ docker_home }}gasx/jira/postgres:/var/lib/postgresql/data"
+
+    backend:
+      name:          "gasx-backend"
+      image:         "{{ docker_registry }}iteconomics/gasxbackend:dev"
+      restartPolicy: "always"
+      labels:
+        - 'traefik.enable: "false"'
+      networks:
+        - "backbone"
+        - "database"
+      environment:
+          DEFAULT_ABS_PATH:       "{{ gasx.abs_path }}/"
+          DEFAULT_LICENSE_SERVER: "{{ gasx.licenseServer }}"
+          JIRA_URL:               "{{ gasx.fullUrl }}"
+          JIRA_AUTH:              "{{ gasx_auth.jira }}"
+          GIT_USERNAME:           "{{ gasx_auth.git.user }}"
+          GIT_TOKEN:              "{{ gasx_auth.git.passwd }}"
+          THREAD_COUNT:           "1"
+      volumes:
+        - "{{ docker_home }}gasx/backend{{ gasx.abs_path }}:{{ gasx.abs_path }}"
+        # the backend is meant to start docker containers ... so it needs access to docker socket
+        - "/var/run/docker.sock:/var/run/docker.sock"
+
+    licenseServer:
+      name:          "gasx-license-server"
+      image:         "{{ docker_registry }}iteconomics/gasxlicenseserver:dev"
+      # will only be manually started when needing that service
+      # only needed for testing new releases
+      restartPolicy: "no"
+      labels:
+        - 'traefik.enable: "false"'
+      volumes:
+        - "{{ docker_home }}gasx/licenseServer/conf:/ProtectionLS/conf"
+        - "{{ docker_home }}gasx/licenseServer/license:/usr/local/opt/ProtectionLS_4.9.4"
+      ports:
+        - "1099:1099"
+        - "9998:9998"
+        - "9999:9999"
+      environment:
+        SERVER_IP: "{{ gasx.host_ip }}"
+        SEC_PORT:  "9999"
+        MGMT_PORT: "1099"
+        RMI_PORT:  "1234"
+
+...

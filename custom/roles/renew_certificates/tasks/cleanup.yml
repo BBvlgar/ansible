@@ -1,0 +1,13 @@
+---
+
+- name: Cleanup files from localhost
+  file:
+    path: "/tmp/it-economics_{{ user.mail }}.{{ deleteMe }}"
+    state: absent
+  with_items:
+    - p12
+    - cer
+  loop_control:
+    loop_var: deleteMe
+
+...

@@ -1,0 +1,18 @@
+- block:
+  # Deploy P12
+  - name: Copy p12 to remote
+    copy: src=/tmp/it-economics_{{ user.mail }}.p12 dest=/tmp/it-economics_{{ user.mail }}.p12
+
+  - name: Move file to destination
+    shell: mkdir -p /mnt/shared/applications/{{ container }}/data/data/{{ user.mail }} && cp /tmp/it-economics_{{ user.mail }}.p12 /mnt/shared/applications/{{ container }}/data/data/{{ user.mail }}/
+
+  # Deploy CER
+  - name: Copy CER to s3
+    local_action: aws_s3 src=/tmp/it-economics_{{ user.mail }}.cer aws_access_key={{ aws_access_key }} aws_secret_key={{ aws_secret_key }} bucket=ca.it-economics.de mode=put region=eu-west-1 object=/public_keys/it-economics_{{ user.mail }}.cer
+
+  always:
+  - name: Cleanup
+    file: path={{ item }} state=absent
+    with_items:
+      - /tmp/it-economics_{{ user.mail }}.p12
+      - /tmp/it-economics_{{ user.mail }}.cer

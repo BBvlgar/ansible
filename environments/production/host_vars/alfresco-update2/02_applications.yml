@@ -1,0 +1,58 @@
+---
+
+applications:
+
+  alfresco-stack:
+
+    alfresco-update:
+      name:          "alfresco-update"
+      image:         "{{ docker_registry }}iteconomics/alfresco"
+      restartPolicy: "always"
+      labels:
+        - "traefik.enable: 'false'"
+      volumes:
+        - "{{ docker_home }}/alfresco/config:/config"
+        - "{{ docker_home }}/alfresco/data:/var/www/html"
+
+    alfresco-update_web:
+      name:          "alfresco-update_web"
+      image:         "{{ docker_registry }}iteconomics/apache"
+      restartPolicy: "always"
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MODS: "proxy proxy_ajp ssl headers"
+
+    alfresco-update_db:
+      name:          "alfresco-update_db"
+      image:         "{{ docker_registry }}library/mysql:5.6"
+      restartPolicy: "always"
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MYSQL_ROOT_PASSWORD: "{{ alfresco.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ alfresco.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ alfresco.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ alfresco.MYSQL_PASSWORD }}"
+      volumes:
+        - "{{ docker_home }}/alfresco/db/config:/etc/mysql/conf.d"
+        - "{{ docker_home }}/alfresco/db/data:/var/lib/mysql"
+      networks:
+        - "database"
+
+    db:
+      name:          "alfresco_postgres_db"
+      image:         "{{ docker_registry }}library/postgres:9.4.12"
+      restartPolicy: "always"
+      volumes:
+        - "{{ docker_home }}/alfresco/db_postgres/data:/var/lib/postgresql/data"
+      environment:
+        POSTGRES_PASSWORD: '{{ postgres.PASSWORD }}'
+        POSTGRES_USER:     '{{ postgres.USER }}'
+        POSTGRES_DB:       '{{ postgres.DATABASE }}'
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "database"
+
+...

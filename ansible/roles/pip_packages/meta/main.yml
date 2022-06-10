@@ -1,0 +1,22 @@
+---
+
+galaxy_info:
+  author: felix-kazuya
+  description: Install Pip Packages
+
+  license: "CC-BY"
+
+  min_ansible_version: 2.9
+
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+        - any
+
+  galaxy_tags:
+    - system
+    - packaging
+    - pip3
+
+...

@@ -1,0 +1,80 @@
+; config.ini
+[DB]
+HOST = {{ database }}
+DATABASE = {{ customer }}{{ hosting_application }}db
+USERNAME = {{ customer }}{{ hosting_application }}
+PASSWORD = Def12345
+
+
+[INSTANCE]
+TITLE = Bitbucket Instanz
+BASEURL = http://{{ customer }}-{{ hosting_application }}.aws.it-economics-testing.de
+LICENCEKEY = {{ licenseBitbucket }}
+APPLICATION_NAME = Bitbucket
+
+
+[ADMIN]
+FULLNAME = Admin
+EMAIL = lpohl@it-economics.de
+USERNAME = admin
+PASSWORD = Def12345
+
+
+[SELENIUM]
+GRID_URL = http://127.0.0.1:4445/wd/hub
+USE_GRID = Yes
+
+
+[ASSERTS]
+DBSUCCESS = Successfully established database connection.
+ADMIN_PAGE = admin
+ADMIN_USERS = admin/users
+ADMIN_CREATE_USER = users?create
+CREATEDUSER = name=create_test_user
+CREATEDUSER_UPDATE = name=update_test_user
+VERSION = {{ versionBitbucket }}
+VERSION_UPDATE = {{ versionUpdateBitbucket }}
+SETUP_LICENSE = Licensing and settings
+SETUP_DB = Bitbucket setup
+SETUP_ADMIN_USER = Administrator account setup
+SETUP_SUCCESS = Setup Successful
+START_UP = Atlassian Bitbucket is starting up
+
+[CREATEUSER]
+USERNAME = create_test_user
+FULLNAME = Create Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+
+[CREATEUSER_UPDATE]
+USERNAME = update_test_user
+FULLNAME = Update Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+
+[CREATEPROJECT]
+PROJECTNAME = Seleniumproject
+PROJECTKEY = sel
+
+
+[CREATEPROJECT_UPDATE]
+PROJECTNAME = ProjectAfterUpdate
+PROJECTKEY = proj
+
+
+[CREATEREPOSITORY]
+REPOSITORYNAME = Seleniumrepository
+
+
+[CREATEREPOSITORY_UPDATE]
+REPOSITORYNAME = RepositoryAfterUpdate
+
+[REPOSITORY_ACTIONS]
+FILENAME_BEFORE_UPDATE = gitactionbeforeupdate.txt
+FILENAME_AFTER_UPDATE = gitactionaftereupdate.txt
+TEXT_DIRECTLY_AFTER_CREATION = This file was created and pushed directly after the repository was created!
+TEXT_AFTER_UPDATE = This file was created and pushed after bitbucket was updated to a new version!
+COMMIT_DIRECTLY_AFTER_CREATION = Add test file
+COMMIT_AFTER_UPDATE = Add test file after bitbucket update

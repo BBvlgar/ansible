@@ -1,0 +1,25 @@
+[general]
+accounts = {{ hostvars.get('localhost').get('username') }}
+maxsyncaccounts = 1
+ui = ttyui
+socktimeout = 90
+
+[Account {{ hostvars.get('localhost').get('username') }}]
+localrepository = {{ hostvars.get('localhost').get('username') }}_local
+remoterepository = {{ hostvars.get('localhost').get('username') }}_remote
+
+[Repository {{ hostvars.get('localhost').get('username') }}_local]
+type = Maildir
+localfolders = /tmp/{{ hostvars.get('localhost').get('username') }}_mail
+
+[Repository {{ hostvars.get('localhost').get('username') }}_remote]
+type = IMAP
+readonly = yes
+remotehost = outlook.office365.com
+remoteuser = {{ hostvars.get('localhost').get('email') }}
+remotepass = {{ hostvars.get('localhost').get('email_password') }}
+ssl = yes
+maxconnections = 4
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+
+folderfilter = lambda folder: not re.search('(^Kalender|^Kontakte|^Synchronisierungsprobleme|^Gelöschte Elemente|^Deleted Items|^Calendar|^Contacts|^Gel&APY-schte Elemente)', folder)

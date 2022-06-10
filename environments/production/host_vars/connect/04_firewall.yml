@@ -1,0 +1,39 @@
+---
+
+install_ufw   : true
+configure_ufw : true
+restart_ufw   : true
+enable_ufw    : true
+
+  # nagios
+  - rule: allow
+    port: "5666"
+    proto: "any"
+
+  # wireguard
+  - rule: allow
+    port: "51820"
+    proto: "any"
+
+  # openvpn
+  - rule: allow
+    port: "1194"
+    proto: "any"
+
+
+  # openvpn
+  - rule: allow
+    port: "6443"
+    proto: "any"
+
+  # web
+  - rule: allow
+    port: "443"
+    proto: "any"
+
+  # web
+  - rule: allow
+    port: "80"
+    proto: "any"
+
+...

@@ -1,0 +1,9 @@
+---
+
+docker_host: true
+composerFilePath: "/mnt/shared/compose/website"
+remote: true
+docker_registry: 'docker.it-economics.de/proxy/'
+traefik_enabled: true
+
+...

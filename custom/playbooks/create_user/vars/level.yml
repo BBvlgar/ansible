@@ -1,0 +1,490 @@
+---
+####### common
+ldap_base: &ldap_base
+  ? app_achievo
+  ? app_directory
+
+ldap_internal: &ldap_internal
+  << : *ldap_base
+  ? app_social
+  ? prm_social_intern
+  ? app_jira
+  ? prm_jira_intern
+  ? app_survey
+  ? app_bitbucket
+  ? app_vpn
+  ? app_bamboo
+
+ldap_sopra: &ldap_sopra
+  << : *ldap_base
+
+####### tracks
+### management
+ldap_management_-_werkstudent:
+  << : *ldap_internal
+  ? lvl_student
+
+ldap_management_-_praktikant:
+  << : *ldap_internal
+  ? lvl_praktikant
+
+ldap_management_-_consultant:
+  << : *ldap_internal
+  ? lvl_mgm_consultant
+
+ldap_management_-_advanced_consultant:
+  << : *ldap_internal
+  ? lvl_mgm_advanced-consultant
+
+ldap_management_-_senior_consultant:
+  << : *ldap_internal
+  ? lvl_mgm_senior-consultant
+
+ldap_management_-_managing_consultant:
+  << : *ldap_internal
+  ? lvl_mgm_managing-consultant
+
+ldap_management_-_manager:
+  << : *ldap_internal
+  ? lvl_mgm_manager
+
+ldap_management_-_senior_manager:
+  << : *ldap_internal
+  ? lvl_mgm_senior-manager
+
+### business
+ldap_business_-_praktikant:
+  << : *ldap_internal
+  ? lvl_praktikant
+
+ldap_business_-_werkstudent:
+  << : *ldap_internal
+  ? lvl_student
+
+ldap_business_-_consultant:
+  << : *ldap_internal
+  ? lvl_bus_consultant
+
+ldap_business_-_advanced_consultant:
+  << : *ldap_internal
+  ? lvl_bus_advanced-consultant
+
+ldap_business_-_senior_consultant:
+  << : *ldap_internal
+  ? lvl_bus_senior-consultant
+
+ldap_business_-_business_analyst:
+  << : *ldap_internal
+  ? lvl_bus_business-analyst
+
+ldap_business_-_business_architect:
+  << : *ldap_internal
+  ? lvl_bus_business-architect
+
+ldap_business_-_senior_business_architect:
+  << : *ldap_internal
+  ? lvl_bus_senior-business-architect
+
+### technologie
+ldap_technologie_-_werkstudent:
+  << : *ldap_internal
+  ? lvl_student
+
+ldap_technologie_-_praktikant:
+  << : *ldap_internal
+  ? lvl_praktikant
+
+ldap_technologie_-_developer:
+  << : *ldap_internal
+  ? lvl_tec_developer
+
+ldap_technologie_-_advanced_developer:
+  << : *ldap_internal
+  ? lvl_tec_advanced-developer
+
+ldap_technologie_-_senior_developer:
+  << : *ldap_internal
+  ? lvl_tec_senior-developer
+
+ldap_technologie_-_application_architect:
+  << : *ldap_internal
+  ? lvl_tec_application-architect
+
+ldap_technologie_-_solution_architect:
+  << : *ldap_internal
+  ? lvl_tec_solution-architect
+
+ldap_technologie_-_senior_solution_architect:
+  << : *ldap_internal
+  ? lvl_tec_senior-solution-architect
+
+ldap_technologie_-_am_developer_-_junior_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_junior-developer
+
+ldap_technologie_-_am_developer_-_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_developer
+
+ldap_technologie_-_am_developer_-_advanced_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_advanced-developer
+
+ldap_technologie_-_am_developer_-_senior_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_senior-developer
+
+ldap_technologie_-_am_developer_-_expert_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_expert-developer
+
+ldap_technologie_-_am_developer_-_lead_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_lead-developer
+
+ldap_technologie_-_am_developer_-_senior_lead_application_maintenance_developer:
+  << : *ldap_internal
+  ? lvl_tec_am_senior-lead-developer
+
+###### Misc
+ldap_office_-_praktikant:
+  << : *ldap_internal
+  ? lvl_praktikant
+
+ldap_office_-_werkstudent:
+  << : *ldap_internal
+  ? lvl_student
+
+ldap_office_-_festangestellt:
+  << : *ldap_internal
+  ? lvl_festangestellt
+
+ldap_management_-_associate_partner:
+  << : *ldap_internal
+  ? lvl_partner
+
+ldap_management_-_partner:
+  << : *ldap_internal
+  ? lvl_partner
+
+ldap_extern_-_freelancer:
+  << : *ldap_base
+  ? lvl_freelancer
+
+ldap_extern_-_subcontractor:
+  << : *ldap_base
+  ? lvl_freelancer
+
+########### BG
+##SAP Consulting
+ldap_sap_-_junior_sap_consultant:
+  << : *ldap_internal
+  ? lvl_junior-sap-consultant
+
+ldap_sap_-_sap_consultant:
+  << : *ldap_internal
+  ? lvl_sap-consultant
+
+ldap_sap_-_advanced_sap_consultant:
+  << : *ldap_internal
+  ? lvl_advanced-sap-consultant
+
+ldap_sap_-_senior_sap_consultant:
+  << : *ldap_internal
+  ? lvl_senior-sap-consultant
+
+ldap_sap_-_expert_sap_consultant:
+  << : *ldap_internal
+  ? lvl_expert-sap-consultant
+
+ldap_sap_-_sap_lead:
+  << : *ldap_internal
+  ? lvl_sap-lead
+
+ldap_sap_-_senior_sap_lead:
+  << : *ldap_internal
+  ? lvl_senior-sap-lead
+
+ldap_sap_-_manager_sap:
+  << : *ldap_internal
+  ? lvl_manager-sap
+
+ldap_sap_-_senior_manager_sap:
+  << : *ldap_internal
+  ? lvl_senior-manager-sap
+
+ldap_sap_-_sap_architect:
+  << : *ldap_internal
+  ? lvl_sap-architect
+
+ldap_sap_-_senior_sap_architect:
+  << : *ldap_internal
+  ? lvl_senior-sap-architect
+
+##ABAP Development
+ldap_sap_-_junior_abap_developer:
+  << : *ldap_internal
+  ? lvl_junior-abap-developer
+
+ldap_sap_-_abap_developer:
+  << : *ldap_internal
+  ? lvl_abap-developer
+
+ldap_sap_-_advanced_abap_developer:
+  << : *ldap_internal
+  ? lvl_advanced-abap-developer
+
+ldap_sap_-_senior_abap_developer:
+  << : *ldap_internal
+  ? lvl_senior-abap-developer
+
+ldap_sap_-_expert_abap_developer:
+  << : *ldap_internal
+  ? lvl_expert-abap-developer
+
+ldap_sap_-_lead_abap_developer:
+  << : *ldap_internal
+  ? lvl_lead-abap-developer
+
+
+###BG TEC
+ldap_technologie_-_junior_software_developer:
+  << : *ldap_internal
+  ? lvl_junior-software-developer
+
+#Technologie -Junior Application Management Specialist
+ldap_technologie_-_junior_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_junior_application_management_specialist
+
+ldap_technologie_-_software_developer:
+  << : *ldap_internal
+  ? lvl_software-developer
+
+ldap_technologie_-_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_application_management_specialist
+
+ldap_technologie_-_advanced_software_developer:
+  << : *ldap_internal
+  ? lvl_advanced-software-developer
+
+#Technologie - Advanced Application Management Specialist
+ldap_technologie_-_advanced_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_advanced_application_management_specialist
+
+ldap_technologie_-_senior_software_developer:
+  << : *ldap_internal
+  ? lvl_senior-software-developer
+
+ldap_technologie_-_senior_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_senior_application_management_specialist
+
+ldap_technologie_-_expert_software_developer:
+  << : *ldap_internal
+  ? lvl_expert-software-developer
+
+#Technologie - Expert Application Management Specialist
+ldap_technologie_-_expert_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_expert_application_management_specialist
+
+ldap_technologie_-_lead_software_developer:
+  << : *ldap_internal
+  ? lvl_lead-software-developer
+
+#Technologie - Lead Application Management Specialist
+ldap_technologie_-_lead_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_lead_application_management_specialist
+
+#Technologie - Senior Lead Software Developer
+ldap_technologie_-_senior_lead_software_developer:
+  << : *ldap_internal
+  ? lvl_senior_lead_software_developer
+
+#Technologie - Senior Lead Application Management Specialist
+ldap_technologie_-_senior_lead_application_management_specialist:
+  << : *ldap_internal
+  ? lvl_senior_lead_application_management_specialist
+
+#Technologie - Software Architect
+ldap_technologie_-_software_architect:
+  << : *ldap_internal
+  ? lvl_software_architect
+
+#Technologie - Application Manager
+ldap_technologie_-_application_manager:
+  << : *ldap_internal
+  ? lvl_application_manager
+
+#Technologie - Senior Software Architect
+ldap_technologie_-_senior_software_architect:
+  << : *ldap_internal
+  ? lvl_senior_software_architect
+
+#Technologie - Senior Application Manager
+ldap_technologie_-_senior_application_manager:
+  << : *ldap_internal
+  ? lvl_senior_application_manager
+
+
+
+### BG MGM
+#Management - Junior Project Office Specialist
+ldap_management_-_junior_project_office_specialist:
+  << : *ldap_internal
+  ? lvl_junior_project_office_specialist
+
+ldap_management_-_project_office_specialist:
+  << : *ldap_internal
+  ? lvl_project-office-specialist
+
+ldap_management_-_senior_project_office_specialist:
+  << : *ldap_internal
+  ? lvl_senior-project-office-specialist
+
+ldap_management_-_head_of_project_office:
+  << : *ldap_internal
+  ? lvl_head-of-project-office
+
+
+#Management - Senior Project Office Consultant
+ldap_management_-_senior_project_office_consultant:
+  << : *ldap_internal
+  ? lvl_senior_project_office_consultant
+
+#Management - Project Office Consultant
+ldap_management_-_project_office_consultant:
+  << : *ldap_internal
+  ? lvl_project_office_consultant
+
+#Management - Project Office Lead
+ldap_management_-_project_office_lead:
+  << : *ldap_internal
+  ? lvl_project_office_lead
+
+#Management - Senior Project Office Lead
+ldap_management_-_senior_project_office_lead:
+  << : *ldap_internal
+  ? lvl_senior_project_office_lead
+
+#Management - Project Manager
+ldap_management_-_project_manager:
+  << : *ldap_internal
+  ? lvl_project_manager
+
+#Management - Senior Project Manager
+ldap_management_-_senior_project_manager:
+  << : *ldap_internal
+  ? lvl_senior_project_manager
+
+
+#Atlassian - Student
+ldap_atlassian_-_student:
+  << : *ldap_internal
+  ? lvl_student
+  ? lvl_atl_student
+  ? vs_atlassian
+
+#Atlassian - Consultant
+ldap_atlassian_-_consultant:
+  << : *ldap_internal
+  ? lvl_atl_consultant
+  ? vs_atlassian
+
+#Atlassian - Senior Consultant
+ldap_atlassian_-_senior_consultant:
+  << : *ldap_internal
+  ? lvl_atl_senior-consultant
+  ? vs_atlassian
+
+
+#BG AML
+#AML - Junior Compliance Specialist
+ldap_aml_-_junior_compliance_specialist:
+  << : *ldap_internal
+  ? lvl_aml_junior-compliance-specialist
+
+#AML - Compliance Specialist
+ldap_aml_-_compliance_specialist:
+  << : *ldap_internal
+  ? lvl_aml_compliance-specialist
+
+#AML - Senior Compliance Specialist
+ldap_aml_-_senior_compliance_specialist:
+  << : *ldap_internal
+  ? lvl_aml_senior-compliance-specialist
+
+#AML - Financial Analyst
+ldap_aml_-_financial_analyst:
+  << : *ldap_internal
+  ? lvl_aml_financial-analyst
+
+#AML - Senior Financial Analyst
+ldap_aml_-_senior_financial_analyst:
+  << : *ldap_internal
+  ? lvl_aml_senior-financial-analyst
+
+#AML - Financial Expert
+ldap_aml_-_financial_expert:
+  << : *ldap_internal
+  ? lvl_aml_financial-expert
+
+#AML - Senior Financial Expert
+ldap_aml_-_senior_financial_expert:
+  << : *ldap_internal
+  ? lvl_aml_senior-financial-expert
+
+#AML - Project Manager Finance
+ldap_aml_-_project_manager_finance:
+  << : *ldap_internal
+  ? lvl_aml_project-manager-finance
+
+#AML - Senior Project Manager Finance
+ldap_aml_-_senior_project_manager_finance:
+  << : *ldap_internal
+  ? lvl_aml_senior-project-manager-finance
+
+
+########### Sopra Steria Consulting
+ldap_ssc_nohours:
+  << : *ldap_sopra
+ldap_ssc_c04:
+  << : *ldap_sopra
+ldap_ssc_c05:
+  << : *ldap_sopra
+ldap_ssc_c06:
+  << : *ldap_sopra
+ldap_ssc_c07:
+  << : *ldap_sopra
+ldap_ssc_c08:
+  << : *ldap_sopra
+ldap_ssc_c09:
+  << : *ldap_sopra
+ldap_ssc_c10:
+  << : *ldap_sopra
+ldap_ssc_c11:
+  << : *ldap_sopra
+ldap_ssc_c12:
+  << : *ldap_sopra
+ldap_ssc_c13:
+  << : *ldap_sopra
+ldap_ssc_c14:
+  << : *ldap_sopra
+ldap_ssc_c15:
+  << : *ldap_sopra
+ldap_ssc_c16:
+  << : *ldap_sopra
+ldap_ssc_c17:
+  << : *ldap_sopra
+ldap_bluecarat_junior:
+  << : *ldap_sopra
+ldap_bluecarat_senior:
+  << : *ldap_sopra
+ldap_bluecarat_manager:
+  << : *ldap_sopra
+ldap_ssc_india_offshore:
+  << : *ldap_sopra

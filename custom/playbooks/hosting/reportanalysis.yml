@@ -1,0 +1,121 @@
+---
+
+- name: Create conf to Disable filesystems
+  lineinfile:
+    path: /etc/modprobe.d/{{ item }}.conf
+    line: install {{ item }} /bin/true
+    create: yes
+    with_items:
+      - cramfs
+      - freevxfs
+      - jffs2
+      - hfs
+      - hfsplus
+      - udf
+
+- name: Disable filesystems
+  command: rmmod {{ item }}
+  with_items:
+    - cramfs
+    - freevxfs
+    - jffs2
+    - hfs
+    - hfsplus
+    - udf
+
+# Only root user can read/write to the grub.cfg
+- name: Configure permissions on bootloader
+  file:
+    path: /boot/grub/grub.cfg
+    mode: og-rwx
+    owner: root
+    group: root
+
+# Set correct ownership to prevent incorrect or misleading information for users after login
+- name: Configure permissions on motd
+  file:
+    path: /etc/motd
+    mode: 0644
+    owner: root
+    group: root
+# Uninstall telnet
+- name: Uninstall telnet
+  apt:
+    name: telnet
+    state: absent
+
+# Restrict access to crontab
+- name: Restrict access to crontab
+  file:
+    path: /etc/crontab
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to cron hourly
+- name: Restrict access to cron hourly
+  file:
+    path: /etc/cron.hourly
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to cron daily
+- name: Restrict access to cron daily
+  file:
+    path: /etc/cron.daily
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to cron weekly
+- name: Restrict access to cron weekly
+  file:
+    path: /etc/cron.weekly
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to cron monthly
+- name: Restrict access to cron monthly
+  file:
+    path: /etc/cron.monthly
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to cron d
+- name: Restrict access to cron d
+  file:
+    path: /etc/cron.d
+    mode: og-rwx
+    owner: root
+    group: root
+# Restrict access to ssh d
+- name: Restrict access to ssh d
+  file:
+    path: /etc/ssh/sshd_config
+    mode: 0600
+    owner: root
+    group: root
+# Restrict access to logs
+# no esay fix to reach the same results with pure ansible
+- name: Restrict access to logs
+  command:  chmod -R g- wx,o-rwx /var/log/*
+
+- name: Limit MaxAuthTries to 4 #MaxAuthTries 6 -> MaxAuthTries 4
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '(\s+)MaxAuthTries(\s+.*)?$'
+    replace: 'MaxAuthTries 4'
+    backup: yes
+
+- name: Set SSH timeout in conf
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "{{ item }}"
+    create: yes
+    with_items:
+      - ClientAliveInterval 300
+      - ClientAliveCountMax 0
+      -  LogLevel INFO
+      - IgnoreRhosts yes
+      - HostbasedAuthentication no
+      - PermitUserEnvironment no
+
+...

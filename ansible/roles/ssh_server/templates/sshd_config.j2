@@ -1,0 +1,82 @@
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+{% if ssh_config_allow_include is not defined or ssh_config_allow_include %}Include /etc/ssh/sshd_config.d/*.conf{% endif %}
+
+{% if ssh_users_instead_groups is defined and ssh_users_instead_groups %}
+{# Would override AllowGroups, so only use one of them #}
+AllowUsers {{ ssh_users | join(" ") }}
+{% else %}
+AllowGroups {{ ssh_groups | join(" ") }}
+{% endif %}
+
+# What ports, IPs and protocols we listen for
+Port {{ sshd.port }}
+{# ToDo: listen on IPv6 #}
+ListenAddress {{ sshd.listen_address }}
+
+# Use these options to restrict which interfaces/protocols sshd will bind to
+Protocol {{ sshd.protocol }}
+HostKey {{ sshd.host_key }}
+
+# Logging
+SyslogFacility {{ sshd.syslog_facility }}
+LogLevel {{ sshd.log_level }}
+
+# Authentication:
+LoginGraceTime {{ sshd.login_grace_time }}
+PermitRootLogin {{ sshd.permit_root_login }}
+StrictModes {{ sshd.strict_modes }}
+MaxAuthTries {{ sshd.max_auth_tries }}
+MaxSessions {{ sshd.max_sessions }}
+
+PubkeyAuthentication {{ sshd.pubkey_authentication }}
+{% if ssh_authorized_keys_dir is defined %}
+AuthorizedKeysFile	{{ ssh_authorized_keys_dir }}/%u/authorized_keys
+{% else %}
+AuthorizedKeysFile	.ssh/authorized_keys
+{% endif %}
+
+# Don't read the user's ~/.rhosts and ~/.shosts files
+IgnoreRhosts {{ sshd.ignore_rhosts }}
+# similar for protocol version 2
+HostbasedAuthentication {{ sshd.hostbased_authentication }}
+# To enable empty passwords, change to yes (NOT RECOMMENDED)
+PermitEmptyPasswords {{ sshd.permit_empty_passwords }}
+# Change to yes to enable challenge-response passwords (beware issues with
+# some PAM modules and threads)
+ChallengeResponseAuthentication {{ sshd.challenge_response_authentication }}
+# Change to no to disable tunnelled clear text passwords
+PasswordAuthentication {{ sshd.password_authentication }}
+
+X11Forwarding {{ sshd.x11_forwarding }}
+X11DisplayOffset {{ sshd.x11_display_offset }}
+PrintMotd {{ sshd.print_motd }}
+PrintLastLog {{ sshd.print_last_log }}
+TCPKeepAlive {{ sshd.tcp_keep_alive }}
+
+# Allow client to pass locale environment variables
+AcceptEnv {{ sshd.accept_env }}
+
+Subsystem sftp {% if ansible_distribution == "CentOS" or ansible_distribution == "SHMZ" %}/usr/libexec/openssh/sftp-server{% else %}/usr/lib/openssh/sftp-server{% endif %}
+
+UsePAM {{ sshd.use_pam }}
+
+Banner {{ sshd.banner }}
+
+ClientAliveCountMax {{ sshd.client_alive_count_max }}
+ClientAliveInterval {{ sshd.client_alive_interval }}
+
+AllowAgentForwarding   {{ sshd.allow_agent_forwarding }}
+AllowTcpForwarding   {{ sshd.allow_tcp_forwarding }}
+GatewayPorts   {{ sshd.gateway_ports }}
+X11UseLocalhost   {{ sshd.x11_use_localhost }}
+PermitTTY   {{ sshd.permit_tty }}
+PermitUserEnvironment   {{ sshd.permit_user_environment }}
+Compression   {{ sshd.compression }}
+UseDNS   {{ sshd.use_dns }}
+PidFile   {{ sshd.pid_file }}
+MaxStartups   {{ sshd.max_startups }}
+PermitTunnel   {{ sshd.permit_tunnel }}
+ChrootDirectory   {{ sshd.chroot_directory }}
+VersionAddendum   {{ sshd.version_addendum }}

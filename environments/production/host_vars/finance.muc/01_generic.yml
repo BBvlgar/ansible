@@ -1,0 +1,10 @@
+---
+
+docker_host: true
+traefik_enabled: true
+remote: true
+composerFilePath: '/mnt/shared/compose'
+docker_home:      '/mnt/shared/applications'
+docker_registry:  'docker.it-economics.de/proxy/'
+
+...

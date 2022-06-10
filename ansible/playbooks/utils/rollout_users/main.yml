@@ -1,0 +1,24 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+###
+
+- hosts: 'all:!localhost'
+  become: yes
+  serial:
+    - 1
+  order: inventory
+
+  tasks:
+
+    - name: 'create users and give permissions by groups'
+      include_role:
+        name: admin_user
+
+    - name: 'run SSH role to ensure SSH config on server'
+      include_role:
+        name: ssh_server
+
+...

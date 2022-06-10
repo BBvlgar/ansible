@@ -1,0 +1,18 @@
+skip_list:  # or 'skip_list' to silence them completely
+  - '204'  # Lines should be no longer than 160 chars 
+  - 'var-spacing'  # Variables should have spaces before and after: {{ var_name }}
+  - 'risky-file-permissions'  # File permissions unset or incorrect
+  - 'no-changed-when'  # Commands should not change things if nothing needs doing
+  - 'deprecated-command-syntax'  # Using command rather than an argument to e.g. file
+  - 'command-instead-of-module'  # Using command rather than module
+  - 'command-instead-of-shell'  # Use shell only when shell functionality is required
+  - 'risky-shell-pipe6'  # Shells that use pipes should set the pipefail option
+  - 'git-latest'  # Git checkouts must contain explicit version
+  - 'literal-compare'  # Don't compare to literal True/False
+  - 'no-relative-paths'  # Doesn't need a relative path in role
+  - 'unnamed-task'  # All tasks should be named
+  - 'no-handler'  # Tasks that run when changed should likely be handlers
+  - 'deprecated-local-action'  # Do not use 'local_action', use 'delegate_to: localhost'
+  - 'literal-compare'  # Don't compare to literal True/False
+  - 'empty-string-compare'  # Don't compare to empty 
+  - experimental  # all rules tagged as experimental

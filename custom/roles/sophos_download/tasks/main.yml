@@ -1,0 +1,34 @@
+---
+- name: Update repositories cache and install "gcc" package
+  apt:
+    name: gcc
+    update_cache: yes
+
+- name: Update repositories cache and install "linux-source" package
+  apt:
+    name: linux-source
+    update_cache: yes
+
+- name: Update repositories cache and install "linux-headers-generic" package
+  apt:
+    name: linux-headers-generic
+    update_cache: yes
+
+- name: Update repositories cache and install " build-essential" package
+  apt:
+    name:  build-essential
+    update_cache: yes
+
+- name: Install linux headers
+  package:
+    name: "linux-headers-{{ ansible_kernel }}"
+
+- name: Download Sophos Installers
+  get_url: url={{ sophos_av_url }}/{{ item }}/SophosInstall.sh dest=/var/tmp/SophosInstall_{{ item }}.sh
+  with_items:
+    - "{{ sophos_reg_token }}"
+
+- name: Changing perm of install files, adding "a+x"
+  file: dest=/var/tmp/SophosInstall_{{ item }}.sh mode=a+x
+  with_items:
+    - "{{ sophos_reg_token }}"

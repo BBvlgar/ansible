@@ -1,0 +1,21 @@
+---
+
+- name: Ensure fail2ban is installed
+  apt:
+    name: fail2ban
+    state: present
+    update_cache: yes
+
+- name: Ensure template is installed
+  template:
+    src: jail.local.j2 
+    dest: /etc/fail2ban/jail.local
+  register: config
+
+- name: Ensure service is restarted
+  service:
+    name: fail2ban 
+    state: restarted
+  when: config.changed
+
+...

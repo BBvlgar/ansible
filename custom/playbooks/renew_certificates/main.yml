@@ -1,0 +1,30 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced unter CC-BY
+##
+###
+- name: renew certificates
+  hosts: localhost
+
+  tasks:
+    - name: Read users from CSV file
+      read_csv:
+        path: files/users.csv
+        fieldnames: id,cn,mail
+        delimiter: ','
+      register: users
+
+    - name: Debug - Read users from CSV file
+      debug:
+        msg: "{{ users.list }}"
+
+    - name: Renew certificates
+      include_role:
+        name: renew_certificates
+      with_items: "{{ users.list }}"
+      vars:
+        user: "{{ item }}"
+      ignore_errors: yes
+...

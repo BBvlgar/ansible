@@ -1,0 +1,9 @@
+---
+
+remote:           yes
+docker_host:      yes
+docker_home:      '/mnt/data'
+composerFilePath: '/mnt/shared/compose'
+docker_registry: 'docker.io'
+
+...

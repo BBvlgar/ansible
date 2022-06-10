@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+# We don't really need a prompt, do we?
+#    - pause: prompt="This playbook will install required dependencies on your control machine (localhost) - continue with ENTER or abort with CTRL-C"
+
+    - name: Ensure ldap utils are installed
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - ldap-utils
+
+    - name: Get it-economics CA certificate and install it
+      get_url:
+        url: http://ca.it-economics.de/it-economics_CA.crt
+        dest: /usr/share/ca-certificates/it-economics_CA.crt
+        mode: 0755
+
+    - name: Ensure CA cert is enabled in config
+      lineinfile:
+        dest: /etc/ca-certificates.conf
+        state: present
+        line: "it-economics_CA.crt"
+
+    - name: Ensure CA list is updated
+      command: update-ca-certificates

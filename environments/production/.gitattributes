@@ -1,0 +1,8 @@
+*.crt*           filter=git-crypt diff=git-crypt
+*.key*           filter=git-crypt diff=git-crypt
+*.pem*           filter=git-crypt diff=git-crypt
+*_rsa*           filter=git-crypt diff=git-crypt
+*.rsa*           filter=git-crypt diff=git-crypt
+
+*credentials.yml filter=git-crypt diff=git-crypt
+*users.yml       filter=git-crypt diff=git-crypt

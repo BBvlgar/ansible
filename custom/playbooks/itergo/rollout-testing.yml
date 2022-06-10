@@ -1,0 +1,38 @@
+---
+- name: Rollout Playbook Itergo Cloudformation Template
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Rollout Itergo Cloudformation Stack
+      include_role:
+        name: run-cloudformation
+      vars:
+        app: "{{ all }}"
+
+    - name: Get informations about Itergo Cloudformation Stack
+      cloudformation_info:
+        stack_name: itergotest
+        stack_resources: yes
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ security_token }}"
+        region: "{{ region }}"
+      register: cloudformation_output
+
+    - name: Set Vars
+      set_fact:
+        lambda_name:      "{{ cloudformation_output.cloudformation['itergotest'].stack_resources['rdsCreateLambda'] }}"
+
+
+    - name: Run Jira DB Lambda
+      include_role:
+        name: run-lambda
+      vars:
+        app: "{{ jira }}"
+
+    - name: Run Confluence DB Lambda
+      include_role:
+        name: run-lambda
+      vars:
+        app: "{{ confluence }}"

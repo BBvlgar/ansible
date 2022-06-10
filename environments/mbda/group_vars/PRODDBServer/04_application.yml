@@ -1,0 +1,38 @@
+---
+
+applications:
+  prd-stack:
+    jira-prd:
+      name: "{{ jiraprd.app }}-{{ jiraprd.stage }}_db"
+      image: "{{ POSTGRESIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ jiraprd.app }}/data:{{ PGDATA }}:rw"
+      environment:
+        POSTGRES_USER: "{{ jiraprd.app }}-{{ jiraprd.stage }}"
+        POSTGRES_DB: "{{ jiraprd.app }}-{{ jiraprd.stage }}"
+        POSTGRES_PASSWORD: "{{ jiraprd.DATABASE_PASSWORD }}"
+        PGDATA: "{{ PGDATA }}"
+      ports:
+        - "5432:5432"
+      networks:
+        - database
+      labels:
+        - "traefik.enable: false"
+    confluence-prd:
+      name: "{{ confluenceprd.app }}-{{ confluenceprd.stage }}_db"
+      image: "{{ POSTGRESIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ confluenceprd.app }}/data:{{ PGDATA }}:rw"
+      environment:
+        POSTGRES_USER: "{{ confluenceprd.app }}-{{ confluenceprd.stage }}"
+        POSTGRES_DB: "{{ confluenceprd.app }}-{{ confluenceprd.stage }}"
+        POSTGRES_PASSWORD: "{{ confluenceprd.DATABASE_PASSWORD }}"
+        PGDATA: "{{ PGDATA }}"
+      ports:
+        - "5433:5432"
+      networks:
+        - database
+      labels:
+        - "traefik.enable: false"

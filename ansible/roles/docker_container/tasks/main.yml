@@ -1,0 +1,380 @@
+---
+
+##
+# Pull command from docker module does not work as expected and
+# has thus been replaced with "docker pull" on the command line
+##
+
+# Tell the user, which container will be worked on
+- debug:
+    msg: "Now container *{{ container.name }}* will be worked on:"
+
+# There are basically two ways to connect data space to a container:
+# * Bind: a specific folder within the host system will be mounted to the
+#   container
+# * Mount: there will be a Docker volume that will provide one folder to be
+#   mounted to the container
+#
+# Within this role, we handle two types of data binding and one type of mounting
+#
+# This first helper task prepares the first type of data binding, the binding of
+# whole folders / directories
+- name: 'fill first volume helper: prepare for directory binds'
+  set_fact:
+    # * `docker_home` is a globally (at least for server) defined base directory
+    #   where directories and files of binds should be stored.
+    # * `container.shared_home_app` would allow one to use one shared base path for
+    #   subfolders and files with another container / app.
+    #   Is regularly defined by app variable within the host_vars file.
+    #   Defaults to the current app name, `container.name`
+    # * `helper` is the loop variable – regularly known as `item`.
+    #
+    # Since we want to handle a bind, the given array represented as `helper`
+    # has to have two entries and can have another third entry.
+    # * `helper.0` represents the subfolder mentioned above that should be
+    #   placed on the host system.
+    # * `helper.1` is the destination path within the container
+    # * `helper.2` is the optional mention of how to bind – with read only
+    #   access (`ro`) or with read write access (`rw`).
+    #   Docker defaults to `rw` if not defined.
+    volvar: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ helper.0 }}:{{helper.1}}{% if helper.2 is defined and helper.2 != '' %}:{{ helper.2 }}{% endif %}"
+  # Only run this task, if there is a folder on the host defined and the current
+  # App / Container should even be worked on.
+  when: helper.1 is defined and ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
+  # `with_items` tells Ansible to repeat this task for every element of a list /
+  # array ( [] ).
+  # By combining `with_items` and a `when` condition, the condition will be
+  # checked for every run through the loop.
+  # By default – i.e. if the variable is not defined – this task should loop
+  # over an empty array.
+  # OFF TOPIC: For usage with dictionaries / objects, there would be `with_dict`
+  with_items: "{{ container.directories | default([]) }}"
+  # The result of this task is the variable `volume_helper1`.
+  # Of this object, the only interesting part afterwards will be the objects
+  # behind the key `results` – thats how Ansible allows Skripts to access the
+  # results of Tasks within a loop like that.
+  register: volume_helper1
+  # Since the role `docker_single_container` is a role that is reused in lots of
+  # other roles and / or playbooks and is likely to have nested loops, Ansible
+  # easily gets confused by nested `item` variables.
+  # To avoid this confusion, all loops within this role are completed by a
+  # `loop_control` section that defines the `loop_var` which will replace the
+  # usage of `item` within the current task.
+  loop_control:
+    loop_var: helper
+
+# Basically the same as above – instead for directories now for files that
+# should be bound to the Docker container.
+- name: 'fill second volume helper: prepare for file binds'
+  set_fact:
+    volvar: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ file.0 }}:{{file.1}}{% if file.2 is defined and file.2 != '' %}:{{ file.2 }}{% endif %}"
+  when: file.1 is defined and ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
+  with_items: "{{ container.mountfiles | default([]) }}"
+  register: volume_helper2
+  loop_control:
+    loop_var: file
+
+# The `register:variable` attribute of tasks like used above creates a variable
+# with a relatively unusable object behind `variable.results` at first.
+# To get a clean, usable array of bind commands to be used for the Container
+# creation, we have to do some "magic" here:
+# `volumes1` will be an array of strings with one of the following
+# forms after that task:
+# * `path_on_host:path_on_container` if only two elements are defined
+# * `path_on_host:path_on_container:mode` if all three elements are defined
+- name: reduce first volume helper
+  set_fact:
+    # directories
+    volumes1: "{{ volume_helper1.results | map(attribute='ansible_facts.volvar') | list }}"
+  ignore_errors: yes
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# again the same thing for files:
+- name: reduce second volume helper
+  set_fact:
+    # mountfiles
+    volumes2: "{{ volume_helper2.results | map(attribute='ansible_facts.volvar') | list }}"
+  ignore_errors: yes
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# If there is defined one or more git repository to be checked out, prepare the
+# checkout.
+- name: correct git destinations
+  set_fact:
+    git:
+      repo: "{{ gititem.repo }}"
+      dest: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ gititem.dest }}"
+  with_items: "{{ container.git | default([]) }}"
+  register: dockerAndGit
+  loop_control:
+    loop_var: gititem
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# again prepare usable variable for the git commands below
+- name: fetch git items out of the previous results
+  set_fact:
+    docker_git: "{{ dockerAndGit.results | map(attribute='ansible_facts.git') | list }}"
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# fix new “security fix” https://github.com/actions/checkout/issues/760
+- name: unsafe repository fix
+  command: |
+    git config --global --add safe.directory {{ repo.dest }}
+  with_items: "{{ docker_git | default([]) }}"
+  loop_control:
+    loop_var: repo
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# run the git checkout process
+- name: checkout git repo if defined
+  git: "{{ repo }}"
+  with_items: "{{ docker_git | default([]) }}"
+  loop_control:
+    loop_var: repo
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# now that we prepared all bind commands for our folders that should be bound,
+# we have to ensure that the folders on the host system do exist.
+- name: Create needed dirs – if they do not already exist
+  become: yes
+  file:
+    path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ dir.0 }}"
+    state: directory
+    mode: "{{ dir.3 | default('0755') }}"
+  with_items: "{{ container.directories | default([]) }}"
+  loop_control:
+    loop_var: dir
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# copy tasks / roles could prepare some (templated) files that have to be
+# moved to their correct destination within Host binds.
+- name: move prepared files
+  copy:
+    src: "{{ cpf.src }}"
+    dest: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ cpf.dest }}"
+    remote_src: yes
+  with_items: "{{ container.prepared_files.binds | default([]) }}"
+  loop_control:
+    loop_var: cpf
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# define docker host repository url
+- name: define docker host repo url
+  set_fact:
+    docker_image_url: "{% if container.registry is defined and container.registry != '' %}{{ container.registry }}/{% endif %}{% if container.repository is defined and container.repository != '' %}{{ container.repository }}/{% endif %}{{ container.image }}:{{ container.version | default('latest') }}"
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# Same as above for directories – now we ensure that our files that should be
+# bound to the container do exist.
+# If we would not do this, Docker would assume the bind paths to be directories
+# and create folders, what could destroy the container when it requires a file
+# on the destination.
+- name: Create parent directories for files – if they do not already exist
+  file:
+    path: "{{ ( docker_home + '/' + ( container.shared_home_app | default( container.name ) ) + '/' + file.0 ) | dirname }}"
+    state: directory
+  with_items: "{{ container.mountfiles | default([]) }}"
+  loop_control:
+    loop_var: file
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+- name: Create needed files – if they do not already exist
+  file:
+    path: "{{ docker_home }}/{{ container.shared_home_app | default(container.name) }}/{{ file.0 }}"
+    state: touch
+    mode: "{{ file.3 | default('0755') }}"
+  with_items: "{{ container.mountfiles | default([]) }}"
+  loop_control:
+    loop_var: file
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# pull the currently newest image for the container rollout
+- name: "Pull updated image ({{ docker_image_url }}) for the container rollout"
+  command: "docker pull {{ docker_image_url }}"
+  when: ((container.pull is defined and container.pull) or (pull is defined and (pull|bool == true or pull == "always"))) and
+        ((runallcontainer is defined and runallcontainer) or (container.run is defined and container.run))
+
+# If one or more directories of the container should be mounted from a data
+# volume, at this moment that single one or the other ones will be created
+- name: Create Docker volumes
+  docker_volume:
+    name: "{{ vol.name }}"
+    state: "{{ vol.state | default('present') }}"
+  with_items: "{{ container.docker_volumes | default([]) }}"
+  loop_control:
+    loop_var: vol
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# If the container runs in a Træfik environment and its Træfik communication
+# is enabled by `container.traefik` evaluating true, we have to do some preparations
+
+# we have to check / prepare the traefik rule
+- name: 'prepare Træfik rule'
+  set_fact:
+    local_traefik_rule: "{{ local_traefik_rule | default('') }}{% if idx > 0 %} || {% endif %}{{ traefik_rule }}"
+  with_items: "{{ container.fqdn | default([]) }}"
+  loop_control:
+    index_var: idx
+  when: >
+    ( container.traefik | bool | default ( false ) ) and
+    ( container.fqdn | default ( false ) ) and
+    ( container.fqdn | type_debug == 'list' ) and
+    ( container.traefik_rule is not defined )
+
+- name: 'define default value for traefik rules by single fqdn'
+  set_fact:
+    local_traefik_rule: "{{ traefik_rule }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    ( container.fqdn | default ( false ) ) and
+    ( container.fqdn | type_debug == 'str' ) and
+    ( container.traefik_rule is not defined )
+
+- name: 'fetch given value for traefik rules from container'
+  set_fact:
+    local_traefik_rule: "{{ container.traefik_rule }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    ( container.traefik_rule | default( false ) ) and
+    ( container.traefik_rule | type_debug == 'str' )
+
+- name: 'define default values for labels'
+  set_fact:
+    containerlabels: "{{ container.labels | default({}) }}"
+
+# prepare labels with traefik content
+- name: 'prepare labels for Traefik – default'
+  set_fact:
+    containerlabels: "{{ containerlabels | combine ( { item.key: item.value } ) }}"
+  when: ( container.traefik | default ( false ) )
+  with_items: "{{ traefik_labels.default }}"
+
+- name: 'prepare labels for Traefik – web'
+  set_fact:
+    containerlabels: "{{ containerlabels | combine ( { item.key: item.value } ) }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    ( not ( container.traefik_secure_only | default ( traefik_secure_only  | default ( false ) ) ) )
+  with_items: "{{ traefik_labels.web }}"
+
+- name: 'prepare labels for Traefik – websecure'
+  set_fact:
+    containerlabels: "{{ containerlabels | combine ( { item.key: item.value } ) }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    ( not ( container.traefik_insecure_only | default ( traefik_insecure_only  | default ( false ) ) ) )
+  with_items: "{{ traefik_labels.websecure }}"
+
+- name: 'extract networks'
+  set_fact:
+    container_networks: "{{ container.networks | default ( [] ) }}"
+
+- name: 'ensure traefik network is defined'
+  set_fact:
+    container_networks: "{{ container_networks + [ { 'name': traefik_network } ] }}"
+  when: >
+    ( container.traefik | default ( false ) ) and
+    (
+      container.network_mode is not defined
+      or not container.network_mode == 'host'
+    ) and
+    {'name': 'host'} not in container_networks
+
+# create Docker networks if they are defined and needed
+- name: Make sure docker networks exists
+  docker_network:
+    name:    "{{ network.name }}"
+    appends: yes
+  with_items: "{{ container_networks }}"
+  loop_control:
+    loop_var: network
+  ignore_errors: yes
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# We have to check, if `log_driver` is `json-file` to determine
+# if our default `log_options` may be used
+- name: "reset docker logging options"
+  set_fact:
+    container_log_options: {}
+  when:
+    (container.log_driver is defined and container.log_driver != docker_logging.driver) and
+    (container.log_options is not defined)
+
+# Now the final app container will be started with all defined variables
+# For more information on this task:
+# https://docs.ansible.com/ansible/latest/modules/docker_container_module.html
+- name: build docker run dictionary
+  set_fact:
+    docker_container:
+      image:           "{{ docker_image_url }}"
+      name:            "{{ container.name }}"
+      capabilities:    "{{ container.capabilities   | default( [] ) }}"
+      command:         "{{ container.command        | default( '' ) }}"
+      devices:         "{{ container.devices        | default( [] ) }}"
+      domainname:      "{{ container.domainname     | default( '' ) }}"
+      env:             "{{ container.env            | default( {} ) }}"
+      exposed:         "{{ container.expose_ports   | default( [] ) }}"
+      healthcheck:     "{{ container.healthcheck    | default( {} ) }}"
+      hostname:        "{{ container.hostname       | default( container.name ) }}"
+      init:            "{{ container.init           | default( 'no' ) }}"
+      labels:          "{{ containerlabels }}"
+      log_driver:      "{{ container.log_driver     | default( docker_logging.driver ) }}"
+      log_options:     "{{ container_log_options    | default( container.log_options | default( docker_logging.options ) ) }}"
+      memory:          "{{ container.memory_limit   | default( '0' )}}"
+      networks:        "{{ container_networks }}"
+      network_mode:    "{{ container.network_mode   | default ('bridge') }}"
+      privileged:      "{{ container.privileged     | default( 'no' ) }}"
+      purge_networks:  "{{ container.purge_networks | default( true | bool ) }}"
+      published_ports: "{{ container.aux_ports      | default( [] ) }}"
+      recreate:        "{{ container.recreate       | default( cnt_recreate ) }}"
+      restart_policy:  "{{ container.restart_policy | default( docker_restart_policy ) }}"
+      state:           "{{ container.state          | default( cnt_state ) }}"
+      stop_timeout:    "{{ container.stop_timeout   | default( 10 ) }}"
+      user:            "{{ container.user           | default( '' ) }}"
+      volumes_from:    "{{ container.volumes_from   | default( [] ) }}"
+      volumes:         "{{ volumes1                 | default( [] )   +   volumes2 | default( [] )   +   container.volumes | default( [] ) }}"
+      working_dir:     "{{ container.working_dir    | default( '' ) }}"
+      networks_cli_compatible: "yes"
+
+- name: 'DEBUG: Print docker container info to be run'
+  debug:
+    msg: '{{ docker_container }}'
+  when: ( debug is defined and debug )
+
+- name: 'DEBUG: Wait for user to continue'
+  pause:
+    prompt: "Should we continue? (yes/no - default: yes)"
+  register: continue_cnt
+  when: ( debug is defined and debug )
+
+- name: 'Fail if user skipps'
+  fail:
+    msg: 'User aborted the run'
+  when: debug is defined and
+        debug and
+        continue_cnt.user_input is defined and
+        not ( continue_cnt.user_input == '' ) and
+        not ( continue_cnt.user_input | bool )
+
+- name: Control Container
+  become: true
+  docker_container: "{{ docker_container }}"
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# previous tasks / roles could prepare some (templated) files that have to be
+# moved to their correct destination within Docker volumes through the currently
+# created docker container.
+- name: copy prepared files
+  command: "docker cp {{ cpf.src }} {{ container.name }}:{{ cpf.dest }}"
+  with_items: "{{ container.prepared_files.mounts | default([]) }}"
+  loop_control:
+    loop_var: cpf
+  when: (runallcontainer is defined and runallcontainer) or (container.run is defined and container.run)
+
+# since the role can run multiple times, the container variables should be cleared each time ...
+- name: clear variables
+  set_fact:
+    containerlabels: !!null
+    local_traefik_rule: !!null
+
+...

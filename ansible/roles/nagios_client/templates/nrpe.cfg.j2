@@ -1,0 +1,46 @@
+# The syslog facility that should be used for logging purposes.
+log_facility=daemon
+pid_file=/var/run/nagios/nrpe.pid
+
+# NOTE: This must be a non-priviledged port (i.e. > 1024).
+# NOTE: This option is ignored if NRPE is running under either inetd or xinetd
+server_port={{ nagios.port }}
+
+# NOTE: This option is ignored if NRPE is running under either inetd or xinetd
+server_address=0.0.0.0
+
+# NOTE: This option is ignored if NRPE is running under either inetd or xinetd
+nrpe_user={{ nagios.user }}
+
+# NOTE: This option is ignored if NRPE is running under either inetd or xinetd
+nrpe_group={{ nagios.user }}
+
+# NOTE: This option is ignored if NRPE is running under either inetd or xinetd
+# Will also be enforced by UFW
+{% if nagios_allowed_hosts is defined and nagios_allowed_hosts | length > 0 %}allowed_hosts={{ nagios_allowed_hosts | join(',') }}
+{% endif %}
+
+# *** ENABLING THIS OPTION IS A SECURITY RISK! ***
+# Read the SECURITY file for information on some of the security implications
+# of enabling this variable.
+#
+# Values: 0=do not allow arguments, 1=allow command arguments
+dont_blame_nrpe=1
+
+# Values: 0=debugging off, 1=debugging on
+debug=1
+
+command_timeout=60
+connection_timeout=300
+
+# The following uses hardcoded command arguments...
+#/usr/lib/nagios/plugins/check_disk -w 6% -c 3% -W 6% -K 3% -l -e -A -i "/srv/sd[a-b][1-3]" --exclude-type=tracefs --exclude-type=overlayfs --exclude-type=tmpfs --exclude-type=nsfs --verbose
+{% for name, cmd in nagios_commands.items() %}command[{{ name }}]={{ cmd }}
+{% endfor %}
+
+# local configuration:
+#	if you'd prefer, you can instead place directives here
+include=/etc/nagios/nrpe_local.cfg
+
+# you can place your config snipplets into nrpe.d/
+include_dir=/etc/nagios/nrpe.d/

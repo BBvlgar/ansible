@@ -1,0 +1,73 @@
+; config.ini
+[DB]
+HOST = {{ database }}
+DATABASE = {{ customer }}{{ hosting_application }}db
+USERNAME = {{ customer }}{{ hosting_application }}
+PASSWORD = Def12345
+
+[INSTANCE]
+TITLE = Confluence Instanz
+BASEURL = http://{{ customer }}-{{ hosting_application }}.aws.it-economics-testing.de
+LICENCEKEY = {{ licenseConfluence }}
+APPLICATION_NAME = Confluence
+
+[ADMIN]
+FULLNAME = Admin
+EMAIL = lpohl@it-economics.de
+USERNAME = admin
+PASSWORD = Def12345
+
+[SELENIUM]
+GRID_URL = http://127.0.0.1:4445/wd/hub
+USE_GRID = Yes
+
+[SETUP]
+SPACENAME = Setupspace
+PAGENAME = Setuppage
+
+
+[ASSERTS]
+DBSUCCESS = Success! Database connected successfully
+ADMIN_LOGIN = authenticate.action
+ADMIN_PAGE = admin/users
+USER = createuser.action
+CREATEDUSER = username=test
+CREATEDUSER_UPDATE = username=testupdate
+VERSION = {{ versionConfluence }}
+VERSION_UPDATE = {{ versionUpdateConfluence }}
+UPGRADE = Upgrade
+CREATEDSPACEHOME = Seleniumspace Home
+CREATEDSPACEHOME_UPDATE = SpaceAfterUpdate Home
+SETUP_START = Set up Confluence
+SETUP_APPS = Get apps
+SETUP_LICENSE = Enter your Confluence license key
+SETUP_DB = Set up your database
+SETUP_SPACE = Load Content
+SETUP_USER_MANGE = Configure User Management
+SETUP_ADMIN_USER = Configure System Administrator Account
+SETUP_SUCCESS = Setup Successful
+SETUP_DEPLOYMENT_TYPE = Choose your deployment type
+LOGOUT = logout=true
+
+
+
+[CREATEUSER]
+USERNAME = test
+FULLNAME = Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+[CREATEUSER_UPDATE]
+USERNAME = testupdate
+FULLNAME = Test
+EMAIL = lpohl@it-economics.de
+PASSWORD = Def12345
+
+
+[CREATESPACE]
+SPACENAME = Seleniumspace
+PAGENAME = Seleniumpage
+
+[CREATESPACE_UPDATE]
+SPACENAME = SpaceAfterUpdate
+PAGENAME = PageAfterUpdate

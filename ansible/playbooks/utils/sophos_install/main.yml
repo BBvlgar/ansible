@@ -1,0 +1,19 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## Licenced under CC-BY
+###
+
+- hosts: updatableServers
+
+  tasks:
+
+    - name: 'install sophos antivirus'
+      include_role:
+        name: sophos_install
+      when:
+        - sophos_av_url is defined
+        - sophos_av_url | length > 0
+
+...

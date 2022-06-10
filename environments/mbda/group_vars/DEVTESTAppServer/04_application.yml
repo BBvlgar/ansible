@@ -1,0 +1,75 @@
+---
+
+applications:
+  dev_stack:
+    jira-dev:
+      name: "{{ jiradev.app }}-{{ jiradev.stage }}"
+      image: "{{ JIRAIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ jiradev.stage }}/{{ jiradev.app }}/data:/var/atlassian/application-data/{{ jiradev.app }}/:rw"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.{{ jiradev.app }}{{ jiradev.stage }}.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}_http.rule: 'Host(`{{ jiradev.url }}`)'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}_http.entrypoints: 'web'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}.rule: 'Host(`{{ jiradev.url }}`)'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}.entrypoints: 'websecure'"
+        - "traefik.http.routers.{{ jiradev.app }}{{ jiradev.stage }}.tls: 'true'"
+      networks:
+        - backbone
+    confluence-dev:
+      name: "{{ confluencedev.app }}-{{ confluencedev.stage }}"
+      image: "{{ CONFLUENCEIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ confluencedev.stage }}/{{ confluencedev.app }}/data:/var/atlassian/application-data/{{ confluencedev.app }}/:rw"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.{{ confluencedev.app }}{{ confluencedev.stage }}.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}_http.rule: 'Host(`{{ confluencedev.url }}`)'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}_http.entrypoints: 'web'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}.rule: 'Host(`{{ confluencedev.url }}`)'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}.entrypoints: 'websecure'"
+        - "traefik.http.routers.{{ confluencedev.app }}{{ confluencedev.stage }}.tls: 'true'"
+      networks:
+        - backbone
+
+  abn_stack:
+    jira-abn:
+      name: "{{ jiraabn.app }}-{{ jiraabn.stage }}"
+      image: "{{ JIRAIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ jiraabn.stage }}/{{ jiraabn.app }}/data:/var/atlassian/application-data/{{ jiraabn.app }}/:rw"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.{{ jiraabn.app }}{{ jiraabn.stage }}.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}_http.rule: 'Host(`{{ jiraabn.url }}`)'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}_http.entrypoints: 'web'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}.rule: 'Host(`{{ jiraabn.url }}`)'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}.entrypoints: 'websecure'"
+        - "traefik.http.routers.{{ jiraabn.app }}{{ jiraabn.stage }}.tls: 'true'"
+      networks:
+        - backbone
+    confluence-abn:
+      name: "{{ confluenceabn.app }}-{{ confluenceabn.stage }}"
+      image: "{{ CONFLUENCEIMAGE }}"
+      restartPolicy: "{{ RESTARTPOLICY }}"
+      volumes:
+        - "/mnt/data/{{ confluenceabn.stage }}/{{ confluenceabn.app }}/data:/var/atlassian/application-data/{{ confluenceabn.app }}/:rw"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.{{ confluenceabn.app }}{{ confluenceabn.stage }}.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}_http.rule: 'Host(`{{ confluenceabn.url }}`)'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}_http.entrypoints: 'web'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}.rule: 'Host(`{{ confluenceabn.url }}`)'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}.entrypoints: 'websecure'"
+        - "traefik.http.routers.{{ confluenceabn.app }}{{ confluenceabn.stage }}.tls: 'true'"
+      networks:
+        - backbone
+

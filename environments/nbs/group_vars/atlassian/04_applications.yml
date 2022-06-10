@@ -1,0 +1,42 @@
+---
+
+applications:
+  atlassian-stack:
+    confluence:
+      name: "confluence-{{ stage }}"
+      image: "iteconomics/confluence:hosting"
+      container_name: "confluence-{{ stage }}"
+      restartPolicy: always
+      environment:
+        CATALINA_OPTS: "-Xms{{ confluence.RAMmin }}m -Xmx{{ confluence.RAMmax }}m -Djdk.tls.trustNameService=true -Duser.timezone=Europe/Berlin"
+        PROXY: "{{ confluence.url }}"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.confluence.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.confluence_http.rule: 'Host(`{{ confluence.url }}`)'"
+        - "traefik.http.routers.confluence_http.entrypoints: 'web'"
+        - "traefik.http.routers.confluence_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.confluence.rule: 'Host(`{{ confluence.url }}`)'"
+        - "traefik.http.routers.confluence.entrypoints: 'websecure'"
+        - "traefik.http.routers.confluence.tls: 'true'"
+      volumes:
+        - "{{ dockerdatapath }}/{{ stage }}/confluence/data:/var/atlassian/application-data/confluence"
+    jira:
+      name: "confluence-{{ stage }}"
+      image: "iteconomics/jira:hosting"
+      container_name: "jira-{{ stage }}"
+      restartPolicy: always
+      environment:
+        CATALINA_OPTS: "-Xms{{ jira.RAMmin }}m -Xmx{{ jira.RAMmax }}m -Djdk.tls.trustNameService=true -Duser.timezone=Europe/Berlin"
+        PROXY: "{{ jira.url }}"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.jira.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.jira_http.rule: 'Host(`{{ jira.url }}`)'"
+        - "traefik.http.routers.jira_http.entrypoints: 'web'"
+        - "traefik.http.routers.jira_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.jira.rule: 'Host(`{{ jira.url }}`)'"
+        - "traefik.http.routers.jira.entrypoints: 'websecure'"
+        - "traefik.http.routers.jira.tls: 'true'"
+      volumes:
+        - "{{ dockerdatapath }}/{{ stage }}/jira/data:/var/atlassian/application-data/jira"

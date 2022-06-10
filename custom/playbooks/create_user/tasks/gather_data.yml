@@ -1,0 +1,143 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+
+  tasks:
+    - name: set issue key if not defined
+      block:
+        - name: Search for an issue
+          uri:
+            url: "{{ usercreationbot.uri }}/rest/api/2/search?jql=project%20%3D%20AM%20AND%20issuetype%20in%20(%22External%20Account%22%2C%20%22User%20account%22)%20AND%20status%20%3D%20%22Ready%20for%20RollOut%22&maxResults=10"
+            user: "{{ usercreationbot.username }}"
+            password: "{{ usercreationbot.password }}"
+            method: "GET"
+            force_basic_auth: yes
+            body_format: "json"
+          register: issue
+
+        - set_fact:
+            ticket_number: "{{ issue.json.issues[0].key }}"
+          when: issue.json.issues|length>0
+
+        - set_fact:
+            ticket_number: -1
+          when: issue.json.issues| length == 0
+
+        - meta: end_play
+          when: issue.json.issues| length == 0
+
+      when: "ticket_number is not defined"
+
+    - meta: end_play
+      when: ticket_number == -1
+
+    - name: Get data fields from ticket
+      uri:
+        url: "{{ ticket_system }}/rest/api/2/issue/{{ ticket_number }}"
+        user: "{{ ticket_user }}"
+        password: "{{ ticket_password }}"
+        method: "GET"
+        force_basic_auth: yes
+        body_format: "json"
+      register: data
+      no_log: "{{ no_log|default('true') }}"
+
+    - debug:
+        msg: "{{ data.json.fields.customfield_10144 | trim }}"
+
+    - name: Create random password (for user login)
+      shell: 'printf I7e- && openssl rand -base64 9'
+      register: password
+
+    - set_fact:
+        user:
+          registration:
+            user:
+              username:     "{{ data.json.fields.customfield_10144|trim }}"
+              name:         "{{ data.json.fields.customfield_10135|trim }}"
+              firstname:    "{{ data.json.fields.customfield_10136|trim }}"
+              mail:         "{{ data.json.fields.customfield_10143|lower|trim }}"
+              lvl:          "{{ data.json.fields.customfield_10141.value }}"
+              valuestream:  "{{ data.json.fields.customfield_11200.value|default('null') }}"
+              location:     "{{ data.json.fields.customfield_10138.value }}"
+              mobilephone:  "{{ data.json.fields.customfield_10201 }}"
+              telephone:    "{{ data.json.fields.customfield_10201 }}"
+              password:     "{{ password.stdout }}"
+              gender:       "{{ data.json.fields.customfield_15200.value }}"
+            contract:
+              days:         "{{ data.json.fields.customfield_10137 }}"
+              startdate:    "{{ data.json.fields.customfield_10133 }}"
+              enddate:      "{{ data.json.fields.customfield_10134 }}"
+              hours:        "{{ data.json.fields.customfield_10142 }}"
+              state:        "{{ data.json.fields.customfield_10138.value }}"
+              employer:     "{{ data.json.fields.customfield_11600.value }}"
+              employerId:     "{{ data.json.fields.customfield_11600.id }}"
+              mo: "{{data.json.fields.customfield_12902}}"
+              tu: "{{data.json.fields.customfield_12903}}"
+              we: "{{data.json.fields.customfield_12904}}"
+              th: "{{data.json.fields.customfield_12905}}"
+              fr: "{{data.json.fields.customfield_12906}}"
+              sa: "{{data.json.fields.customfield_12907}}"
+              su: "{{data.json.fields.customfield_12908}}"
+          secret: "{{ secret }}"
+
+        # Set input variables as host facts for use in other playbooks on this host
+        admin_user: "{{admin_user}}"
+        admin_password: "{{ admin_password }}"
+        admin_api_token: "{{admin_api_token}}"
+        ldap_url: "{{ ldap_url }} "
+
+        # Set Variables for tm-mittelstand
+        tmmittelstand_password: "{{ tmmittelstand_password }}"
+
+# Validation
+    - name: Test if all fields are set
+      fail:
+        msg: "Require fields are not set!"
+      with_items:
+        - "{{ user.registration.user.username }}"
+        - "{{ user.registration.user.mail }}"
+      when: item|trim =='' or item|trim =='null' or item|trim =='none'
+
+    - name: Test if contract is valid
+      fail: "msg='Please correct the contract type which is set to >{{ data.json.fields.customfield_12107.value }}< with and end date of >{{ user.registration.contract.enddate }}< in the ticket {{ ticket_number }}'"
+      when: ( data.json.fields.customfield_12107.id == "11806" and user.registration.contract.enddate == "" ) or ( data.json.fields.customfield_12107.id == "11807" and user.registration.contract.enddate != "" )
+
+    - name: Hash password
+      shell: "printf {{ user.registration.user.password }} | base64"
+      register: password
+
+    # Workaround to generate utf-8 from unicode and then encode it in base64
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.location }} | base64"
+      register: location_b64
+
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.firstname }} | base64"
+      register: firstname_b64
+
+    - name: Base64 encode variables
+      shell: "printf {{ user.registration.user.name }} | base64"
+      register: lastname_b64
+
+    - name: Base64 encode variables
+      shell: "printf '{{ user.registration.user.firstname }} {{ user.registration.user.name }}' | base64"
+      register: name_b64
+
+    # credentials base64 encoded
+    - name: Base64 encode variables
+      shell: "printf {{ admin_user }}:{{ admin_password }} | base64"
+      register: auth_base64
+
+
+    # Set base64 encoded variables
+    - set_fact:
+        password_enc: "{{ password.stdout }}"
+        location_b64: "{{ location_b64.stdout }}"
+        firstname_b64: "{{ firstname_b64.stdout }}"
+        lastname_b64: "{{ lastname_b64.stdout }}"
+        name_b64: "{{ name_b64.stdout }}"
+        auth_b64: "{{ auth_base64.stdout }}"
+
+    - debug:
+        msg: "Creating user with the following details {{ user.registration.user.username  }} {{ user.registration.user.password }} with employer {{ user.registration.contract.employer }} id {{ user.registration.contract.employerId }}"

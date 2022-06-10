@@ -1,0 +1,123 @@
+---
+# yamllint disable rule:braces
+# yamllint disable rule:line-length
+# yamllint disable rule:trailing-spaces
+
+downloads: ~/.ansible-downloads/
+
+mas_installed_apps: []
+
+homebrew_installed_packages:
+  - ansible
+  - wget
+  - ansible
+  - watch
+  - tmux
+  - htop
+  - bash-completion
+  - youtube-dl
+  - tree
+  - mosh
+  - ffmpeg
+  - git-crypt
+  - sshfs
+
+homebrew_taps:
+  - homebrew/core
+  - homebrew/cask
+  - homebrew/cask-drivers
+
+homebrew_cask_appdir: /Applications
+homebrew_cask_apps:
+  - docker
+  - firefox
+  - google-chrome
+  - sequel-pro
+  - slack
+  - sublime-text
+  - sublime-merge
+  - transmit
+  - microsoft-office
+  - slack
+  - firefox
+  - xmind
+  - zoomus
+  - the-unarchiver
+  - vlc
+  - microsoft-teams
+  - 1password
+  - teamviewer
+  - alfred
+  - mactex
+  - dbeaver-community
+  - gpg-suite
+  - osxfuse
+  - vmware-fusion
+  - sourcetree
+  - intellij-idea
+  - phpstorm
+  - istat-menus
+  - bartender
+  - spotify
+  - little-snitch
+  - steam
+  - versions
+  - skype
+  - signal
+  - paragon-extfs
+  - fontexplorer-x-pro
+  - bettertouchtool
+  - logitech-options
+  - charles
+  - shimo
+  - elgato-stream-deck
+
+# See `geerlingguy.mas` role documentation for usage instructions.
+# appstore_app_ids: []
+appleid: "mail@mail.de"
+appleid_password: "DoesNotWork"
+appstore_app_ids:
+  - { id: 975937182, name: "Fantastical - Calendar & Tasks" }
+  - { id: 411643860, name: "DaisyDisk" }
+  - { id: 1451685025, name: "WireGuard" }
+  - { id: 937984704, name: "Amphetamine" }
+  - { id: 824183456, name: "Affinity Photo" }
+  - { id: 824171161, name: "Affinity Designer" }
+  - { id: 881418622, name: "Affinity Publisher " }
+  - { id: 948660805, name: "AusweisApp2" }
+  - { id: 409201541, name: "Pages" }
+  - { id: 409203825, name: "Numbers" }
+  - { id: 747648890, name: "Telegram" }
+  - { id: 1099568401, name: "Home Assistant" }
+  - { id: 412448059, name: "ForkLift - File Manager and FTP/SFTP/WebDAV/Amazon S3 client" }
+  - { id: 1295203466, name: "Microsoft Remote Desktop " }
+  - { id: 409907375, name: "Apple Remote Desktop" }
+  - { id: 411897373, name: "Letter Opener" }
+  - { id: 1245536234, name: "Nfc Ideas" }
+  - { id: 517543576, name: "PDF OCR X Enterprise Edition" }
+  - { id: 1037126344, name: "Apple Configurator 2  " }
+  - { id: 472226235, name: "LanScan" }
+  - { id: 784801555, name: "Microsoft OneNote" }
+  - { id: 406056744, name: "Evernote" }
+  - { id: 784801555, name: "Microsoft OneNote " }
+  - { id: 404897036, name: "DiveLogManager (3.5.22)" }
+  - { id: 425424353, name: "The Unarchiver " }
+  - { id: 409183694, name: "Keynote" }
+  - { id: 1006087419, name: "SnippetsLab" }
+  - { id: 1436522307, name: "Transmit 5 " }
+  - { id: 497799835, name: "Xcode" }
+
+appstore_upgrade_all_apps: true
+mas_signin_dialog: true
+
+pip_packages:
+  - name: jinja2
+    state: latest
+  - name: j2cli
+    state: latest
+  - name: awscli
+    state: latest
+  - name: yamllint
+    state: latest
+  - name: ansible-lint
+    state: latest

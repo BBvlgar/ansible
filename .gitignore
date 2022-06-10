@@ -1,1 +1,23 @@
+# ignore all environments
+# (if you add some as Git subtree, those are NOT ignored!)
+environments/*
+!environments/README.md
+!environments/production
+!environments/hosting
+!environments/hosting-test
+!environments/production
+!environments/itergo
+!environments/itergo-test
+
+###
+## globally ignore
+###
+*.retry
+.logintask
+.directory
+.save
+.vagrant
 .DS_*
+__pycache__
+
+._*

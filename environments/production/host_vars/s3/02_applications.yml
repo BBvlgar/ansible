@@ -1,0 +1,63 @@
+---
+
+applications:
+  alfresco-stack:
+    alfresco-prd:
+      name: alfresco-prd
+      image: docker.it-economics.de/proxy/iteconomics/alfresco:latest
+      container_name: alfresco-prd
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.alfresco.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.alfresco_http.rule: 'Host(`dms.muc.it-economics.de`)'"
+        - "traefik.http.routers.alfresco_http.entrypoints: 'web'"
+        - "traefik.http.routers.alfresco_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.alfresco.rule: 'Host(`dms.muc.it-economics.de`)'"
+        - "traefik.http.routers.alfresco.entrypoints: 'websecure'"
+        - "traefik.http.routers.alfresco.tls: 'true'"
+        - "traefik.http.routers.alfresco.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.alfresco.tls.domains[0].main: 'muc.it-economics.de'"
+        - "traefik.http.routers.alfresco.tls.domains[0].sans: '*.muc.it-economics.de'"
+      volumes:
+        - "/srv/alfresco-prd/config:/srv/project/config"
+        - "/srv/alfresco-prd/config/custom-log4j.properties:/opt/alfresco/tomcat/shared/classes/alfresco/extension/custom-log4j.properties"
+        - "/srv/alfresco-prd/data:/opt/alfresco/alf_data"
+      networks:
+        - "database"
+        - "backbone"
+
+    alfresco-prd_db:
+      name: alfresco-prd_db
+      image: mysql:5.6
+      container_name: alfresco-prd_db
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MYSQL_ROOT_PASSWORD: "{{ alfresco.MYSQL_ROOT_PASSWORD }}"
+        MYSQL_DATABASE: "{{ alfresco.MYSQL_DATABASE }}"
+        MYSQL_USER: "{{ alfresco.MYSQL_USER }}"
+        MYSQL_PASSWORD: "{{ alfresco.MYSQL_PASSWORD }}"
+      volumes:
+        - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
+        - "/srv/alfresco-prd/db/backup:/mnt/backup/db"
+        - "/srv/alfresco-prd/db/data:/var/lib/mysql"
+      networks:
+        - "database"
+
+    alfresco-prd_data:
+      name: alfresco-prd_data
+      image: docker.it-economics.de/proxy/library/busybox:latest
+      container_name: alfresco-prd_data
+      restartPolicy: "no"
+      labels:
+        - "traefik.enable: 'false'"
+      volumes:
+        - "/srv/alfresco-prd/db/config:/etc/mysql/conf.d"
+        - "/srv/alfresco-prd/db/data:/var/lib/mysql"
+        - "/srv/alfresco-prd/config:/srv/project/config"
+        - "/srv/alfresco-prd/config/custom-log4j.properties:/opt/alfresco/tomcat/shared/classes/alfresco/extension/custom-log4j.properties"
+        - "/srv/alfresco-prd/data:/opt/alfresco/alf_data"
+
+...

@@ -1,0 +1,14 @@
+---
+
+applications:
+  helloworld_stack:
+    helloworld-service:
+      name: hello-world
+      image: "library/hello-world"
+      restartPolicy: on-failure
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+        - "database"
+...

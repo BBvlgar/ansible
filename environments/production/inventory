@@ -1,0 +1,408 @@
+[all:children]
+
+####
+## This first "real" group defines all servers and all needed server properties.
+##  * the first row element has to be the host alias used in playbooks, other groups, etc.
+##  * `ansible_port` defines the SSH port to be used
+##  * `ansible_host` defines an IP address or – better – the FQDN of the server
+##  * `ansible_user` is the default SSH user – if not defined, you hopefully use your SSH-Config well
+##  * If `ansible_host` is an IP or something else not to be used as hostname basis,
+##    please define the parameter `alias_fqdn`, which will then be used as hostname basis instead
+##  * If there are jumphosts to be used to connect a server, please use your SSH-Config to define them:
+##      Host alias
+##          HostName fqdn.of.the.host
+##          Port 22
+##          ForwardAgent yes
+##          User user
+##          ProxyCommand ssh -W %h:%p jumphostalias
+####
+
+###
+## To understand the magic, please read the docu:
+## https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+## https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Proxies_and_Jump_Hosts
+###
+
+
+[server_definitions]
+
+###
+## Munich Servers
+###
+
+bastion.muc                ansible_port=22               ansible_host=hq1-muc.it-economics.de
+s3                         ansible_port=60022            ansible_host=s3.muc.it-economics.de                ansible_ssh_common_args='-A -J hq'
+appproxy.muc               ansible_port=60022            ansible_host=appproxy.muc.it-economics.de          ansible_ssh_common_args='-A -J hq'
+proxmox.muc	               ansible_port=60022            ansible_host=proxmox.muc.it-economics.de           ansible_ssh_common_args='-A -J hq'
+vpn.test                   ansible_port=60022            ansible_host=192.168.2.143                 alias_fqdn="vpn-test.muc.it-economics.de"
+
+
+###
+## Do not Touch Systems Muc
+###
+
+# nas4
+# s2
+# s4
+
+apps2-mirror.muc            ansible_port=60022            ansible_host=apps2-mirror-db.muc.it-economics.de   ansible_ssh_common_args='-A -J hq'       alias_fqdn=apps2-mirror.muc
+finance.muc                 ansible_port=60022            ansible_host=finance.muc.it-economics.de           ansible_ssh_common_args='-A -J hq'
+admin                       ansible_port=60022            ansible_host=admin.muc.it-economics.de             ansible_ssh_common_args='-A -J hq'
+
+
+###
+## Hetzner Root Servers
+###
+
+hs1                         ansible_port=60022           ansible_host=hs1.it-economics.de                    ansible_ssh_common_args='-A -J hq'
+bareos-ext                  ansible_port=60022           ansible_host=bareos-ext.it-economics.de             ansible_ssh_common_args='-A -J hq'
+
+
+###
+## Hetzner Cloud Server
+###
+
+hs2                         ansible_port=60022           ansible_host=hs2.it-economics.de                    ansible_ssh_common_args='-A -J hq'
+bareos                      ansible_port=60022           ansible_host=bareos.it-economics.de                 ansible_ssh_common_args='-A -J hq'
+meet.it-economics.de        ansible_port=60022           ansible_host=meet.it-economics.de                   ansible_ssh_common_args='-A -J hq'
+office.it-economics.de      ansible_port=60022           ansible_host=office.it-economics.de                 ansible_ssh_common_args='-A -J hq'
+fiscon                      ansible_port=60022           ansible_host=fiscon.it-economics.de                 ansible_ssh_common_args='-A -J hq'
+gasx                        ansible_port=60022           ansible_host=gasx.it-economics.de                   ansible_ssh_common_args='-A -J hq'
+gasx-test                  ansible_port=60022            ansible_host=23.88.61.84                            alias_fqdn=gasx-test.it-economics.de
+hca1                       ansible_port=60022            ansible_host=167.235.55.135                         alias_fqdn=hca1.it-economics.de
+
+
+###
+## AWS Servers (intern)
+###
+
+bastion                     ansible_port=22              ansible_host=bastion.aws.it-economics.de                              ansible_ssh_common_args='-A -J hq'
+website                     ansible_port=60022           ansible_host=ip-10-0-1-69.eu-central-1.compute.internal               ansible_ssh_common_args='-A -J bastion'
+monitoring                  ansible_port=60022           ansible_host=ip-10-0-1-25.eu-central-1.compute.internal               ansible_ssh_common_args='-A -J bastion'
+dockerhost                  ansible_port=60022           ansible_host=dockerhost.aws.it-economics.de                           ansible_ssh_common_args='-A -J bastion'
+dockerhost-testing          ansible_port=60022           ansible_host=dockerhost-testing.aws.it-economics.de                   ansible_ssh_common_args='-A -J bastion'
+docker                      ansible_port=60022           ansible_host=ip-10-0-1-74.eu-central-1.compute.internal               ansible_ssh_common_args='-A -J bastion'
+bambooserver                ansible_port=60022           ansible_host=ip-10-0-1-145.eu-central-1.compute.internal              ansible_ssh_common_args='-A -J bastion'
+authcontroller              ansible_port=60022           ansible_host=ip-10-0-1-116.eu-central-1.compute.internal              ansible_ssh_common_args='-A -J bastion'
+finance                     ansible_port=60022           ansible_host=ip-10-0-1-246.eu-central-1.compute.internal              ansible_ssh_common_args='-A -J bastion'
+pki                         ansible_port=60022           ansible_host=ip-10-0-1-229.eu-central-1.compute.internal              ansible_ssh_common_args='-A -J bastion'
+alfresco-update2            ansible_port=60022           ansible_host=ip-10-0-1-103.eu-central-1.compute.internal              ansible_ssh_common_args='-A -J bastion'
+
+
+
+###
+## PIs
+###
+
+# atlassian-pi.muc
+# okr-pi.muc
+# okr-pi.dus
+# teamviewer-pi.muenster
+# teamviewer-pi.fra
+# teamviewer-pi.dus
+# teamviewer-pi.karlsruhe
+# teamviewer-pi.bonn
+# teamviewer-pi.sofia
+
+
+
+###
+##  BELOW ONLY GROUPING, NO MORE DEFINITION
+###
+
+[blatlassian]
+gasx
+gasx-test
+hca1
+
+
+[financeservers]
+s3
+hs2
+apps2-mirror.muc
+finance.muc
+finance
+bastion
+bastion.muc
+alfresco-update2
+
+
+[updatableAWSServers]
+monitoring
+dockerhost
+website
+dockerhost-testing
+finance.muc
+authcontroller
+bastion
+bastion.muc
+finance
+#alfresco-update2
+
+
+[updatableInternalServers]
+s3
+# admin
+appproxy.muc
+vpn.test
+finance.muc
+
+
+[updatableHetznerRootServers]
+bareos-ext
+hs1
+
+
+[updatableHetznerCloudServers]
+bareos
+hs2
+fiscon
+# camunda-showcase
+gasx
+gasx-test
+hca1
+
+
+[updatableServers:children]
+updatableAWSServers
+updatableInternalServers
+updatableHetznerRootServers
+updatableHetznerCloudServers
+
+
+[updatableRaspis]
+# atlassian-pi.muc
+# hass-pi.muc
+# okr-pi.muc
+# teamviewer-pi.muenster
+# teamviewer-pi.fra
+# okr-pi.dus
+# teamviewer-pi.dus
+# teamviewer-pi.karlsruhe
+# teamviewer-pi.bonn
+# teamviewer-pi.sofia
+
+
+[production:children]
+ssh_hosts
+pis
+
+
+[ssh_hosts]
+vpn.test
+
+
+[pis]
+
+
+[aws_non_ami]
+
+
+[docker_hosts]
+dockerhost
+dockerhost-testing
+hs2
+hs1
+website
+s3
+fiscon
+docker
+# camunda-showcase
+admin
+bambooserver
+authcontroller
+bastion.muc
+appproxy.muc
+proxmox.muc
+finance
+gasx
+alfresco-update2
+gasx-test
+vpn.test
+finance.muc
+hca1
+
+
+[application_update_docker_hosts]
+dockerhost
+dockerhost-testing
+hs2
+hs1
+website
+s3
+fiscon
+admin
+authcontroller
+appproxy.muc
+finance
+gasx
+alfresco-update2
+vpn.test
+finance.muc
+hca1
+
+
+[aws_dockerhosts]
+dockerhost
+dockerhost-testing
+website
+bambooserver
+authcontroller
+
+
+[personio_backup]
+
+
+[native_ldap_client]
+
+
+####
+## Dockered Applications
+####
+
+[dms]
+s3
+
+
+[directory]
+dockerhost
+
+
+[directory_guest]
+dockerhost
+
+
+[directory_test]
+dockerhost
+
+
+[achievo]
+hs2
+
+
+[vcard]
+dockerhost
+
+
+[appstore]
+dockerhost
+
+[survey]
+dockerhost
+
+
+[survey]
+dockerhost
+
+
+[vcard]
+dockerhost
+
+
+[secrets]
+dockerhost
+
+
+[teamsurvey_dashboard]
+dockerhost
+
+
+[teamsurvey_api]
+dockerhost
+
+
+[kdc01]
+dockerhost
+
+
+[phonestat]
+dockerhost
+
+
+[events_app_backend]
+dockerhost
+
+
+[ldap01]
+dockerhost
+
+
+[ldapCerts]
+dockerhost
+
+
+[ldapGuest]
+dockerhost
+
+
+[roominfo_service]
+dockerhost
+
+
+[memorysourceexport]
+dockerhost
+
+
+[atlassian_quote]
+dockerhost
+
+
+[crowd]
+dockerhost
+
+
+[nextcloud]
+dockerhost
+
+
+[skillmatrix]
+dockerhost
+
+
+[portainer]
+dockerhost
+website
+hs1
+
+
+[social_partner]
+s3
+
+
+[certs_download]
+dockerhost
+
+
+[raspi]
+# atlassian-pi.muc
+# okr-pi.muc
+# okr-pi.dus
+# teamviewer-pi.muenster
+# teamviewer-pi.fra
+# teamviewer-pi.dus
+# teamviewer-pi.karlsruhe
+# teamviewer-pi.bonn
+# teamviewer-pi.sofia
+
+
+[jira]
+
+[confluence]
+
+[bitbucket]
+
+
+####
+## Infrastructural Stuff
+####
+
+[vpn]
+bastion.muc
+
+
+[mysql_slave]
+
+
+####
+## Admin Permission Definitions
+####

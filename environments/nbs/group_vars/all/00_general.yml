@@ -1,0 +1,15 @@
+---
+dockerdatapath: /mnt/data
+remote: false
+
+confluence:
+  RAMmin: 2048
+  RAMmax: 8192
+  url: "web.de"
+
+jira:
+  RAMmin: 2048
+  RAMmax: 8192
+  url: "web.de"
+
+stage: "testing"

@@ -1,0 +1,32 @@
+#!/usr/bin/env ansible-playbook
+---
+
+###
+## this playbook creates all open useracconts that are ready for creation
+###
+
+- name:  'Create Composefiles for Hosts'
+  hosts: 'localhost'
+
+  tasks:
+
+    - name: "Search for an issue"
+      uri:
+        url: "{{ usercreationbot.uri }}/rest/api/2/search?jql=project%20%3D%20AM%20AND%20issuetype%20in%20(%22External%20Account%22%2C%20%22User%20account%22)%20AND%20status%20%3D%20%22Ready%20for%20RollOut%22&maxResults=10"
+        user: "{{ usercreationbot.username }}"
+        password: "{{ usercreationbot.password }}"
+        method: "GET"
+        force_basic_auth: yes
+        body_format: "json"
+      register: issue
+
+    - name: "create single user"
+      include_playbook: "playbooks/custom/create_user/tasks/main.yml"
+      vars:
+        ticket_number: "{{ item.key }}"
+        username:      "{{ usercreationbot.username }}"
+        password:      "{{ usercreationbot.password }}"
+        uri:           "{{ usercreationbot.uri }}"
+      with_items: "{{ issue.json.issues }}"
+
+...

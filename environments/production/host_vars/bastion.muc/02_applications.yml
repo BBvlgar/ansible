@@ -1,0 +1,122 @@
+---
+
+applications:
+
+  wireguard-stack:
+    wireguard:
+      name: wireguard
+      image: "{{ docker_registry }}linuxserver/wireguard"
+      restartPolicy: always
+      cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+      environment:
+        PUID: "1000"
+        PGID: "1000"
+        TZ: "Europe/London"
+        SERVERURL: "hq1-muc.it-economics.de" #optional
+        SERVERPORT: "51820" #optional
+        PEERS: "1" #optional
+        PEERDNS: "auto" #optional
+        INTERNAL_SUBNET: "10.13.13.0" #optional
+        ALLOWEDIPS: "0.0.0.0/0" #optional
+      volumes:
+        - "/var/wireguard/config:/config"
+        - "/lib/modules:/lib/modules"
+      sysctls:
+        - net.ipv4.conf.all.src_valid_mark=1
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 51820:51820/udp
+
+    wireguard-ui:
+      name: wireguard-ui
+      image: "{{ docker_registry }}ngoduykhanh/wireguard-ui:latest"
+      restartPolicy: always
+      cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+      environment:
+        EMAIL_FROM_ADDRESS: "wireguard@it-economics.de"
+        EMAIL_FROM_NAME: "wireguard@it-economics.de"
+        SESSION_SECRET: "sdf45fdjkgSDFGSdfjlksdfk"
+        WGUI_USERNAME: "admin"
+        WGUI_PASSWORD: "IbiBaDidubiBaBu2021!"
+        SENDGRID_API_KEY: "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"
+      volumes:
+        - "/var/wireguard-ui/db:/app/db"
+        - "/var/wireguard/config:/etc/wireguard"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.bamboo.loadbalancer.server.port: '5000'"
+        - "traefik.http.routers.bamboo_http.rule: 'Host(`wgui.it-economics.de`)'"
+        - "traefik.http.routers.bamboo_http.entrypoints: 'web'"
+        - "traefik.http.routers.bamboo_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.bamboo.rule: 'Host(`wgui.it-economics.de`)'"
+        - "traefik.http.routers.bamboo.entrypoints: 'websecure'"
+        - "traefik.http.routers.bamboo.tls: 'true'"
+        - "traefik.http.routers.bamboo.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.bamboo.tls.domains[0].main: 'it-economics.de'"
+        - "traefik.http.routers.bamboo.tls.domains[0].sans: '*.it-economics.de'"
+      networks:
+        - "backbone"
+      ports:
+        - 5000:5000
+
+  openvpn-stack:
+    openvpn:
+      name: openvpn
+      privileged: true
+      image: "{{ docker_registry }}iteconomics/openvpn:42"
+      restartPolicy: always
+      volumes:
+        - '/srv/openvpn/config/ite.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 6443:443
+
+  devopenvpn-stack:
+    devopenvpn:
+      name: devopenvpn
+      privileged: true
+      image: "{{ docker_registry }}iteconomics/openvpn:42"
+      restartPolicy: always
+      volumes:
+        - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 8443:443
+
+  openvpn-testing-stack:
+    openvpn-testing:
+      name: openvpn-testing
+      privileged: true
+      image: "{{ docker_registry }}iteconomics/openvpn:42"
+      restartPolicy: always
+      volumes:
+        - '/srv/openvpn/config/devops.conf:/etc/openvpn/ite.conf'
+        - '/srv/openvpn/config/ldap.cfg:/etc/openvpn/ldap.cfg'
+        - '/srv/openvpn/ssl:/etc/ssl/vpn'
+      labels:
+        - "traefik.enable: 'false'"
+      networks:
+        - "backbone"
+      ports:
+        - 8444:443
+
+
+
+...

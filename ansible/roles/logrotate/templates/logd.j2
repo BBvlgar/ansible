@@ -1,0 +1,10 @@
+#{{ ansible_managed }}
+
+{{ item.value.logfile }} {
+  rotate {{ item.value.rotate }}
+  {{ item.value.time }}
+  compress
+  missingok
+  notifempty
+  {{ item.value.additionals | default('') }}
+}

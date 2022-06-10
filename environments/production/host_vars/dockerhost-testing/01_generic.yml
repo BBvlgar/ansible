@@ -1,0 +1,10 @@
+---
+
+remote:           true
+traefik_enabled:  true
+composerFilePath: '/mnt/shared/compose/dockerhost-testing'
+docker_home:      '/mnt/shared/applications-testing'
+traefik_fqdn:     'traefik.staging.it-economics.de'
+docker_registry: 'docker.it-economics.de/proxy/'
+
+...

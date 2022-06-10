@@ -1,0 +1,35 @@
+---
+
+- name: "set data paths"
+  set_fact:
+    cnt_cnf_path:  "{{ mysql_cnt.name }}/{{ mysql_path.config }}"
+
+- name: "add mysql to `containers` variable"
+  set_fact:
+    containers: "{{ containers + [ mysql_cnt ] }}"
+
+- name: "prepare configuration path"
+  set_fact:
+    mysql_templates:
+      - "mysqld.cnf"
+    cnt_cnf_tpl_path: "{{ docker_home }}/{{ workstack.name }}/{{ cnt_cnf_path }}/"
+
+- name:   "prepare mysql container"
+  become: yes
+  block:
+
+    - name:   "Create needed dirs – if they do not already exist"
+      file:
+        path: "{{ cnt_cnf_tpl_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure MySQL configs are placed well"
+      template:
+        src: "{{ item }}.j2"
+        dest: "{{ cnt_cnf_tpl_path }}{{ item|basename }}"
+      with_items: "{{ mysql_templates }}"
+      vars:
+        cnf: "{{ mysql_cnf }}"
+
+...

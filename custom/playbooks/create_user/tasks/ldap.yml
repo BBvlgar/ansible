@@ -1,0 +1,88 @@
+---
+- hosts: localhost
+
+  vars_files:
+  - ../vars/level.yml
+  - ../vars/location.yml
+  - ../vars/contact.yml
+
+  vars:
+   user_to_directory:
+     uid: "{{ user.registration.user.username }}"
+     sn: "{{ lastname_b64 }}"
+     commonname: "{{ name_b64 }}"
+     givenName: "{{ firstname_b64 }}"
+     gender: "{{ user.registration.user.gender }}"
+     l: "{{ location_b64 }}"
+     description: "{{ 'Sopra Steria Consulting' if  user.registration.contract.employerId == '12700' else user.registration.user.lvl }}"
+     mail: "{{ user.registration.user.mail }}"
+     password: "{{ password_enc }}"
+   ldap_level_description: "ldap_{{ user.registration.user.lvl }}"
+
+  tasks:
+    - name: Send create user request to directory
+      uri:
+        method: POST
+        return_content: yes
+        headers: {"Authorization": "Basic {{ hostvars.get('localhost').get('auth_b64') }}" }
+        url: "{{ hostvars.get('localhost').get('directory_url') }}{{ hostvars.get('localhost').get('directory_url_create_user') }}?api_token={{ hostvars.get('localhost').get('admin_api_token') }}"
+        body_format: json
+        body:
+         data: "{{ user_to_directory | to_json }}"
+      register: response
+      failed_when: "'false' in response.json['Object Status'] or 'json' not in response"
+
+    - name: Send add user to lvl groups request to directory
+      uri:
+        method: POST
+        return_content: yes
+        headers: {"Authorization": "Basic {{ hostvars.get('localhost').get('auth_b64') }}" }
+        url: "{{ hostvars.get('localhost').get('directory_url') }}{{ hostvars.get('localhost').get('directory_url_add_user_to_groups') }}?api_token={{ hostvars.get('localhost').get('admin_api_token') }}"
+        body_format: json
+        body:
+         data: "{{ vars[ldap_level_description|lower|regex_replace(' ','_')] | to_json }}"
+         uid: "{{ user_to_directory.uid }}"
+      register: response
+      failed_when: "'false' in response.json['Object Status'] or 'json' not in response"
+
+    - name: Send add user to location groups request to directory
+      uri:
+        method: POST
+        return_content: yes
+        headers: {"Authorization": "Basic {{ hostvars.get('localhost').get('auth_b64') }}" }
+        url: "{{ hostvars.get('localhost').get('directory_url') }}{{ hostvars.get('localhost').get('directory_url_add_user_to_groups') }}?api_token={{ hostvars.get('localhost').get('admin_api_token') }}"
+        body_format: json
+        body:
+         data: "{{ vars[user.registration.user.location|lower|regex_replace(' ','_')] | to_json }}"
+         uid: "{{ user_to_directory.uid }}"
+      register: response
+      failed_when: "'false' in response.json['Object Status'] or 'json' not in response"
+      when: user.registration.user.lvl != 'Extern - Freelancer'  and user.registration.user.lvl != 'Extern - Subcontractor'
+
+    - name: inform jira about new user
+      uri:
+        url: "{{ ticket_system }}/rest/api/2/issue/{{ hostvars.get('localhost').get('ticket_number') }}"
+        user: "{{ ticket_user }}"
+        password: "{{ ticket_password }}"
+        method: "PUT"
+        force_basic_auth: yes
+        status_code: [204]
+        body_format: "json"
+        body:
+          fields:
+            customfield_15201: "{{ user.registration.user.password }}"
+
+    - name: inform jira about new user
+      uri:
+        url: "{{ ticket_system }}/rest/api/2/issue/{{ hostvars.get('localhost').get('ticket_number') }}/transitions"
+        user: "{{ ticket_user }}"
+        password: "{{ ticket_password }}"
+        method: "POST"
+        force_basic_auth: yes
+        status_code: [204]
+        body_format: "json"
+        body:
+          transition:
+            id: "191"
+
+...

@@ -1,0 +1,9 @@
+---
+
+debug:                no
+remote:               yes
+docker_host:          no
+traefik_enabled:      no
+sophos_av_disableMTD: yes
+
+...

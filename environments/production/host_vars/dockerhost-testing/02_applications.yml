@@ -1,0 +1,618 @@
+---
+
+applications:
+
+  skillmatrix_stack:
+    skillmatrix-service:
+      name: skillmatrix-service
+      image: "{{ docker_registry }}iteconomics/mindmap-service:testing"
+      restartPolicy: always
+      environment:
+        POSTGRESQL_URL:         "{{ skillmatrixservice.POSTGRESQL_URL }}"
+        POSTGRESQL_USER:        "{{ skillmatrixservice.POSTGRESQL_USER }}"
+        POSTGRESQL_PASSWORD:    "{{ skillmatrixservice.POSTGRESQL_PASSWORD }}"
+        STATIC_CONTENT_PATH:    "/usr/share/nginx/html"
+        LDAP_URI:               "ldaps://ldap-test.auth.it-economics.de:24636"
+        LDAP_BASE:              "dc=test,dc=it-economics,dc=de"
+        LDAP_PEOPLE:            "ou=people"
+        LDAP_ADMIN_GROUP:       "cn=prm_social_onepager-administrators,ou=groups,dc=test,dc=it-economics,dc=de"
+        ATTRIBUTE_MAIL:         "mail"
+        ATTRIBUTE_CN:           "cn"
+        ATTRIBUTE_UID:          "uid"
+        ATTRIBUTE_OBJECT_CLASS: "objectClass"
+        ATTRIBUTE_MEMBER_OF:    "memberOf"
+        ATTRIBUTE_LOCATION:     "l"
+        ATTRIBUTE_DESCRIPTION:  "description"
+        ATTRIBUTE_JPEG_PHOTO:   "jpegPhoto"
+        CLASS_CATEGORY_PERSON:  "person"
+      volumes:
+        - "/mnt/shared/applications-testing/skillmatrix/html/:/usr/share/nginx/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.skillmatrix-service.loadbalancer.server.port: '8085'"
+        - "traefik.http.routers.skillmatrix-service_http.rule: 'Host(`skillmatrix-service.staging.staging.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix-service_http.entrypoints: 'web'"
+        - "traefik.http.routers.skillmatrix-service_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.skillmatrix-service.rule: 'Host(`skillmatrix-service.staging.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix-service.entrypoints: 'websecure'"
+        - "traefik.http.routers.skillmatrix-service.tls: 'true'"
+        - "traefik.http.routers.skillmatrix-service.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.skillmatrix-service.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.skillmatrix-service.tls.domains[0].sans: '*.staging.it-economics.de'"
+        # Skillmatrix Middleware for allowing CORS (Cross-Origin Resource Sharing)
+        - "traefik.http.middlewares.skillmatrix.headers.accesscontrolallowmethods: 'GET,POST,OPTIONS'"
+        - "traefik.http.middlewares.skillmatrix.headers.accessControlAllowCredentials: 'true'"
+        - "traefik.http.middlewares.skillmatrix.headers.accesscontrolmaxage: '180'"
+        - "traefik.http.middlewares.skillmatrix.headers.addvaryheader: 'true'"
+        - "traefik.http.middlewares.skillmatrix.headers.accessControlAllowOriginList: 'https://skillmatrix-service.it-economics.de,https://skillmatrix.it-economics.de'"
+        - "traefik.http.middlewares.skillmatrix.headers.accessControlAllowHeaders: '*'"
+      networks:
+        - "backbone"
+        - "database"
+
+    skillmatrix-gui:
+      name: skillmatrix-gui
+      image: "{{ docker_registry }}iteconomics/d3-skills-mindmap:testing"
+      volumes:
+        - "/mnt/shared/applications-testing/skillmatrix/html/:/usr/share/nginx/html"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.skillmatrix.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.skillmatrix_http.rule: 'Host(`skillmatrix.staging.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix_http.entrypoints: 'web'"
+        - "traefik.http.routers.skillmatrix_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.skillmatrix.rule: 'Host(`skillmatrix.staging.it-economics.de`)'"
+        - "traefik.http.routers.skillmatrix.entrypoints: 'websecure'"
+        - "traefik.http.routers.skillmatrix.tls: 'true'"
+        - "traefik.http.routers.skillmatrix.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.skillmatrix.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.skillmatrix.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        VUE_APP_BACKEND_URL: "https://skillmatrix-service.staging.it-economics.de"
+      networks:
+        - "backbone"
+        - "database"
+
+  appstore_stack:
+    appstore:
+      name: appstore
+      image: "{{ docker_registry }}iteconomics/apache:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/appstore/web/certs:/certs"
+        - "/mnt/shared/applications-testing/appstore/web/config:/etc/apache2/sites-enabled"
+        - "/mnt/shared/applications-testing/appstore/data:/var/www/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.appstore.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.appstore_http.rule: 'Host(`appstore.staging.it-economics.de`)'"
+        - "traefik.http.routers.appstore_http.entrypoints: 'web'"
+        - "traefik.http.routers.appstore_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.appstore.rule: 'Host(`appstore.staging.it-economics.de`)'"
+        - "traefik.http.routers.appstore.entrypoints: 'websecure'"
+        - "traefik.http.routers.appstore.tls: 'true'"
+        - "traefik.http.routers.appstore.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.appstore.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.appstore.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MODS: "ssl ldap authnz_ldap php7 rewrite headers"
+      networks:
+        - "backbone"
+
+    appstore_ssh:
+      name: appstore_ssh
+      image: "{{ docker_registry }}devopsansiblede/worksuite:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/appstore/ssh/authorized_keys:/root/.ssh/authorized_keys"
+        - "/mnt/shared/applications-testing/appstore/data:/var/www/html"
+      labels:
+        - "traefik.enable: false"
+      ports:
+      - "30022:22"
+      networks:
+        - "backbone"
+
+  atlassian-quote_stack:
+    atlassian-quote:
+      name: atlassian-quote
+      image: "{{ docker_registry }}iteconomics/atlassian-quote:testing"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.atlassian-quote.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.atlassian-quote_http.rule: 'Host(`atlassian-quote.staging.it-economics.de`)'"
+        - "traefik.http.routers.atlassian-quote_http.entrypoints: 'web'"
+        - "traefik.http.routers.atlassian-quote_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.atlassian-quote.rule: 'Host(`atlassian-quote.staging.it-economics.de`)'"
+        - "traefik.http.routers.atlassian-quote.entrypoints: 'websecure'"
+        - "traefik.http.routers.atlassian-quote.tls: 'true'"
+        - "traefik.http.routers.atlassian-quote.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.atlassian-quote.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.atlassian-quote.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        OpenID_ClientSecret: "{{ atlassianquote.OpenID_ClientSecret }}"
+        OpenID_ClientID: "{{ atlassianquote.OpenID_ClientID }}"
+        OpenID_MetaDataURL: "{{ atlassianquote.OpenID_MetaDataURL }}"
+        OpenID_RedirectURL: "{{ atlassianquote.OpenID_RedirectURL }}"
+        OpenID_Mailpost: "{{ atlassianquote.OpenID_Mailpost }}"
+        LDAP_Host: "{{ atlassianquote.LDAP_Host }}"
+        LDAP_Group: "{{ atlassianquote.LDAP_Group }}"
+        LDAP_BindDN: "{{ ldap_directory_user }}"
+        LDAP_BindPassword: "{{ ldap_directory_pass }}"
+      networks:
+        - "backbone"
+        - "database"
+
+  crowd_stack:
+    crowd:
+      name: crowd
+      image: "{{ docker_registry }}iteconomics/crowd:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/crowd/conf/server.xml:/opt/atlassian/crowd/apache-tomcat/conf/server.xml"
+        - "/mnt/shared/applications-testing/crowd/data:/var/atlassian/application-data/crowd"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.crowd.loadbalancer.server.port: '8095'"
+        - "traefik.http.routers.crowd_http.rule: 'Host(`crowd.staging.it-economics.de`)'"
+        - "traefik.http.routers.crowd_http.entrypoints: 'web'"
+        - "traefik.http.routers.crowd_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.crowd.rule: 'Host(`crowd.staging.it-economics.de`)'"
+        - "traefik.http.routers.crowd.entrypoints: 'websecure'"
+        - "traefik.http.routers.crowd.tls: 'true'"
+        - "traefik.http.routers.crowd.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.crowd.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.crowd.tls.domains[0].sans: '*.staging.it-economics.de'"
+      networks:
+        - "backbone"
+
+  directory-test_stack:
+    directory-test:
+      name: directory-test
+      image: "{{ docker_registry }}iteconomics/directory:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/certs/data/data:/var/www/html/storage/app/certs"
+        - "/mnt/shared/applications-testing/certs/data/templates:/var/www/html/storage/app/templates"
+        - "/mnt/shared/applications-testing/directory-test/config/.env:/var/www/html/.env"
+        - "/mnt/shared/applications-testing/directory-test/database.sqlite:/var/www/html/database/database.sqlite"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.directory-test.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.directory-test_http.rule: 'Host(`directory-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.directory-test_http.entrypoints: 'web'"
+        - "traefik.http.routers.directory-test_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.directory-test.rule: 'Host(`directory-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.directory-test.entrypoints: 'websecure'"
+        - "traefik.http.routers.directory-test.tls: 'true'"
+        - "traefik.http.routers.directory-test.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.directory-test.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.directory-test.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MODS: "ssl ldap authnz_ldap php7 rewrite headers"
+      networks:
+        - "backbone"
+        - "database"
+
+  teamsurvey-dashboard_stack:
+    teamsurvey-dashboard:
+      name: teamsurvey-dashboard
+      image: "{{ docker_registry }}iteconomics/teamsurvey-dashboard:testing"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurvey-dashboard.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.rule: 'Host(`teamsurvey.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurvey-dashboard_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurvey-dashboard.rule: 'Host(`teamsurvey.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-dashboard.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls: 'true'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.teamsurvey-dashboard.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        GRAPHQL_ENDPOINT: "https://teamsurvey-api.staging.it-economics.de/graphql"
+      networks:
+        - "backbone"
+
+  share-secrets_stack:
+    share-secrets:
+      name: share-secrets
+      image: "{{ docker_registry }}iteconomics/apache:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/share-secrets/apache/apache.j2:/templates/apache.j2"
+        - "/mnt/shared/applications-testing/share-secrets/html:/var/www/html/public"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.secrets.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.secrets_http.rule: 'Host(`secrets.staging.it-economics.de`)'"
+        - "traefik.http.routers.secrets_http.entrypoints: 'web'"
+        - "traefik.http.routers.secrets_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.secrets.rule: 'Host(`secrets.staging.it-economics.de`)'"
+        - "traefik.http.routers.secrets.entrypoints: 'websecure'"
+        - "traefik.http.routers.secrets.tls: 'true'"
+        - "traefik.http.routers.secrets.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.secrets.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.secrets.tls.domains[0].sans: '*.staging.it-economics.de'"
+      networks:
+        - "backbone"
+      environment:
+        APACHE_PUBLIC_DIR: '/var/www/html/public'
+
+  roominfo-service_stack:
+    roominfo-service:
+      name: roominfo-service
+      image: "{{ docker_registry }}iteconomics/icsviewer:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/roominfo-service/config/.env:/var/www/html/.env"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.roominfo-service.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.roominfo-service_http.rule: 'Host(`roominfo-service.staging.it-economics.de`)'"
+        - "traefik.http.routers.roominfo-service_http.entrypoints: 'web'"
+        - "traefik.http.routers.roominfo-service_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.roominfo-service.rule: 'Host(`roominfo-service.staging.it-economics.de`)'"
+        - "traefik.http.routers.roominfo-service.entrypoints: 'websecure'"
+        - "traefik.http.routers.roominfo-service.tls: 'true'"
+        - "traefik.http.routers.roominfo-service.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.roominfo-service.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.roominfo-service.tls.domains[0].sans: '*.staging.it-economics.de'"
+      networks:
+        - "backbone"
+
+  portainer_stack:
+    portainer:
+      name: portainer
+      image: "{{ docker_registry }}portainer/portainer-ce"
+      restartPolicy: always
+      volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+            - '/mnt/shared/applications/portainer/data:/data'
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.portainer.loadbalancer.server.port: '9000'"
+        - "traefik.http.routers.portainer_http.rule: 'Host(`portainer.staging.it-economics.de`)'"
+        - "traefik.http.routers.portainer_http.entrypoints: 'web'"
+        - "traefik.http.routers.portainer_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.portainer.rule: 'Host(`portainer.staging.it-economics.de`)'"
+        - "traefik.http.routers.portainer.entrypoints: 'websecure'"
+        - "traefik.http.routers.portainer.tls: 'true'"
+        - "traefik.http.routers.portainer.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.portainer.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.portainer.tls.domains[0].sans: '*.staging.it-economics.de'"
+      networks:
+        - "backbone"
+
+  passcard_stack:
+    passcard:
+      name: passcard
+      image: "{{ docker_registry }}iteconomics/passcard:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/passcard/data:/var/www/html/storage"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.passcard.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.passcard_http.rule: 'Host(`passcard.staging.it-economics.de`)'"
+        - "traefik.http.routers.passcard_http.entrypoints: 'web'"
+        - "traefik.http.routers.passcard_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.passcard.rule: 'Host(`passcard.staging.it-economics.de`)'"
+        - "traefik.http.routers.passcard.entrypoints: 'websecure'"
+        - "traefik.http.routers.passcard.tls: 'true'"
+        - "traefik.http.routers.passcard.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.passcard.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.passcard.tls.domains[0].sans: '*.staging.it-economics.de'"
+      networks:
+        - "backbone"
+
+  ldap-test_stack:
+    ldap-test:
+      name: ldap-test
+      image: "{{ docker_registry }}iteconomics/openldap:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/ldap-test/data/certs:/certs"
+        - "/mnt/shared/applications-testing/ldap-test/data/config:/etc/ldap/slapd.d"
+        - "/mnt/shared/applications-testing/ldap-test/data/import:/import"
+        - "/mnt/shared/applications-testing/ldap-test/data/data:/var/lib/ldap"
+      labels:
+        - "traefik.enable: false"
+      ports:
+       - "40636:636"
+      networks:
+        - "database"
+
+  kdc01_stack:
+    kdc01:
+      name: kdc01
+      image:  "{{ docker_registry }}iteconomics/kdc:testing"
+      restartPolicy: always
+      volumes:
+        - "/dev/urandom:/dev/urandom"
+        - "/mnt/shared/applications-testing/kdc01/config:/kdc"
+      labels:
+        - "traefik.enable: false"
+      ports:
+        - "464:464/tcp"
+        - "464:464/udp"
+        - "749:749/tcp"
+        - "749:749/udp"
+        - "88:88/tcp"
+        - "88:88/udp"
+      networks:
+        - "database"
+
+  limesurvey_stack:
+    limesurvey:
+      name: limesurvey
+      image:  "{{ docker_registry }}iteconomics/limesurvey:testing"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/survey/data/admin_theme:/var/www/html/upload/admintheme/iteconomics"
+        - "/mnt/shared/applications-testing/survey/data/template:/var/www/html/upload/themes/survey/iteconomics"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.survey.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.survey_http.rule: 'Host(`survey.staging.it-economics.de`)'"
+        - "traefik.http.routers.survey_http.entrypoints: 'web'"
+        - "traefik.http.routers.survey_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.survey.rule: 'Host(`survey.staging.it-economics.de`)'"
+        - "traefik.http.routers.survey.entrypoints: 'websecure'"
+        - "traefik.http.routers.survey.tls: 'true'"
+        - "traefik.http.routers.survey.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.survey.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.survey.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        DB_HOST: "{{ limesurvey.DB_HOST }}"
+        DB_NAME: "{{ limesurvey.DB_NAME }}"
+        DB_USER: "{{ limesurvey.DB_USER }}"
+        DB_PASS: "{{ limesurvey.DB_PASS }}"
+        LIMESURVEY_TITLE: "{{ limesurvey.LIMESURVEY_TITLE }}"
+        LIMESURVEY_ADMIN: "{{ limesurvey.LIMESURVEY_ADMIN }}"
+        LIMESURVEY_ADMIN_PASS: "{{ limesurvey.LIMESURVEY_ADMIN_PASS }}"
+        LIMESURVEY_ADMIN_NAME: "{{ limesurvey.LIMESURVEY_ADMIN_NAME }}"
+        LIMESURVEY_ADMIN_MAIL: "{{ limesurvey.LIMESURVEY_ADMIN_MAIL }}"
+        LIMESURVEY_DEFAULT_LANG: "{{ limesurvey.LIMESURVEY_DEFAULT_LANG }}"
+        LIMESURVEY_SHOW_SCRIPT_NAME: "{{ limesurvey.LIMESURVEY_SHOW_SCRIPT_NAME }}"
+        LDAP_SERVER: "{{ limesurvey.LDAP_SERVER }}"
+        LDAP_PORT: "{{ limesurvey.LDAP_PORT }}"
+        LDAP_TLS: "{{ limesurvey.LDAP_TLS }}"
+        LDAP_ALLOW_CREATION_TO_LOGGEDIN: "{{ limesurvey.LDAP_ALLOW_CREATION_TO_LOGGEDIN }}"
+        LDAP_GROUP_NAME: "{{ limesurvey.LDAP_GROUP_NAME }}"
+        LDAP_USER_PREFIX: "{{ limesurvey.LDAP_USER_PREFIX }}"
+        LDAP_USER_SUFFIX: "{{ limesurvey.LDAP_USER_SUFFIX }}"
+        LDAP_USER_SEARCH_BASE: "{{ limesurvey.LDAP_USER_SEARCH_BASE }}"
+        LDAP_GROUP_SEARCH_BASE: "{{ limesurvey.LDAP_GROUP_SEARCH_BASE }}"
+        LDAP_BIND_DN: "{{ limesurvey.LDAP_BIND_DN }}"
+        LDAP_BIND_PASS: "{{ limesurvey.LDAP_BIND_PASS }}"
+        LIMESURVEY_DEBUG: "{{ limesurvey.LIMESURVEY_DEBUG }}"
+        ADMIN_THEME_NAME: "{{ limesurvey.ADMIN_THEME_NAME }}"
+        DEFAULT_TEMPLATE: "{{ limesurvey.DEFAULT_TEMPLATE }}"
+      networks:
+        - "backbone"
+        - "database"
+
+  portainer_agent_stack:
+    portainer_agent:
+      name: portainer_edge_agent
+      image:  "{{ docker_registry }}portainer/agent"
+      restartPolicy: always
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+        - "/:/host"
+        - "/mnt/shared/applications-testing/portainer_agent/data:/data"
+      labels:
+        - "traefik.enable: false"
+      environment:
+        EDGE: 1
+        EDGE_ID: 8a72ab76-e33c-4329-a758-66cbc3d0c3ea
+        EDGE_KEY: aHR0cDovL2RvY2tlcmhvc3QuYXdzLml0LWVjb25vbWljcy5kZTo5MDAwfGRvY2tlcmhvc3QuYXdzLml0LWVjb25vbWljcy5kZTo4MDAwfGQ3OjAxOjI5Ojg3OjYzOjY0OjA3OmY4OmJjOjhiOmI3OmNhOjY1OjRmOmM5OjQxfDY
+        CAP_HOST_MANAGEMENT: 1
+      networks:
+        - "database"
+
+  achievo-test_stack:
+    achievo-test:
+      name: achievo-test
+      image: "{{ docker_registry }}iteconomics/apache"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/achievo-test/config/achievo.conf:/etc/apache2/sites-enabled/achievo.conf"
+        - "/mnt/shared/applications-testing/achievo-test/data:/var/www/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.achievo-test.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.achievo-test_http.rule: 'Host(`achievo-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.achievo-test_http.entrypoints: 'web'"
+        - "traefik.http.routers.achievo-test_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.achievo-test.rule: 'Host(`achievo-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.achievo-test.entrypoints: 'websecure'"
+        - "traefik.http.routers.achievo-test.tls: 'true'"
+        - "traefik.http.routers.achievo-test.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.achievo-test.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.achievo-test.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MODS: "ssl ldap authnz_ldap php7 rewrite headers"
+        HTTPS: "true"
+        NOWWW: "true"
+      networks:
+        - "backbone"
+        - "database"
+
+  reporting-test_stack:
+    reporting-test:
+      name: reporting-test
+      image: "{{ docker_registry }}iteconomics/apache"
+      restartPolicy: always
+      volumes:
+        - "/mnt/shared/applications-testing/reporting-test/config/reporting.conf:/etc/apache2/sites-enabled/reporting.conf"
+        - "/mnt/shared/applications-testing/reporting-test/data:/var/www/html"
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.reporting-test.loadbalancer.server.port: '80'"
+        - "traefik.http.routers.reporting-test_http.rule: 'Host(`reporting-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.reporting-test_http.entrypoints: 'web'"
+        - "traefik.http.routers.reporting-test_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.reporting-test.rule: 'Host(`reporting-test.staging.it-economics.de`)'"
+        - "traefik.http.routers.reporting-test.entrypoints: 'websecure'"
+        - "traefik.http.routers.reporting-test.tls: 'true'"
+        - "traefik.http.routers.reporting-test.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.reporting-test.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.reporting-test.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MODS: "ssl ldap authnz_ldap php7 rewrite headers"
+        HTTPS: "true"
+        NOWWW: "true"
+      networks:
+        - "backbone"
+        - "database"
+
+  teamsurvey-api_stack:
+    teamsurvey-api:
+      name: teamsurvey-api
+      image: "{{ docker_registry }}iteconomics/teamsurvey-api:latest"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurvey-api.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.teamsurvey-api_http.rule: 'Host(`teamsurvey-api.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-api_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurvey-api_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurvey-api.rule: 'Host(`teamsurvey-api.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-api.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurvey-api.tls: 'true'"
+        - "traefik.http.routers.teamsurvey-api.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurvey-api.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.teamsurvey-api.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MSQL_USER: "{{ teamsurveyapi.MYSQL_USER }}"
+        MSQL_PASS: "{{ teamsurveyapi.MYSQL_PASS }}"
+        MSQL_HOST: "{{ teamsurveyapi.MYSQL_HOST }}"
+        MONGO_USER: "{{ teamsurveyapi.MONGO_USER }}"
+        MONGO_PASS: "{{ teamsurveyapi.MONGO_PASS }}"
+        MONGO_HOST: "{{ teamsurveyapi.MONGO_HOST }}"
+      ports:
+      - "127.0.0.1:5050:5050"
+      networks:
+        - "database"
+        - "backbone"
+    teamsurvey-api_db:
+      name: teamsurvey-api_db
+      image: "{{ docker_registry }}library/mongo:4.2"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: "{{ teamsurveyapi.MONGO_USER }}"
+        MONGO_INITDB_ROOT_PASSWORD: "{{ teamsurveyapi.MONGO_PASS }}"
+        MONGO_INITDB_DATABASE: "{{ teamsurveyapi.DATABASE }}"
+      networks:
+        - "database"
+      volumes:
+        - "/mnt/shared/applications-testing/teamsurvey-api/db/data:/data/db"
+
+  teamsurvey-api-testing_stack:
+    teamsurvey-api-testing:
+      name: teamsurvey-api-testing
+      image: "{{ docker_registry }}iteconomics/teamsurvey-api:latest"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'true'"
+        - "traefik.http.services.teamsurvey-api-testing.loadbalancer.server.port: '8080'"
+        - "traefik.http.routers.teamsurvey-api-testing_http.rule: 'Host(`teamsurvey-api-testing.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-api-testing_http.entrypoints: 'web'"
+        - "traefik.http.routers.teamsurvey-api-testing_http.middlewares: 'forcehttps@file'"
+        - "traefik.http.routers.teamsurvey-api-testing.rule: 'Host(`teamsurvey-api-testing.staging.it-economics.de`)'"
+        - "traefik.http.routers.teamsurvey-api-testing.entrypoints: 'websecure'"
+        - "traefik.http.routers.teamsurvey-api-testing.tls: 'true'"
+        - "traefik.http.routers.teamsurvey-api-testing.tls.certresolver: 'letsencrypt'"
+        - "traefik.http.routers.teamsurvey-api-testing.tls.domains[0].main: 'staging.it-economics.de'"
+        - "traefik.http.routers.teamsurvey-api-testing.tls.domains[0].sans: '*.staging.it-economics.de'"
+      environment:
+        MSQL_USER: "{{ teamsurveyapi.MYSQL_USER }}"
+        MSQL_PASS: "{{ teamsurveyapi.MYSQL_PASS }}"
+        MSQL_HOST: "{{ teamsurveyapi.MYSQL_HOST }}"
+        MONGO_USER: "{{ teamsurveyapitesting.MONGO_USER }}"
+        MONGO_PASS: "{{ teamsurveyapitesting.MONGO_PASS }}"
+        MONGO_HOST: "{{ teamsurveyapitesting.MONGO_HOST }}"
+      ports:
+      - "127.0.0.1:5051:5050"
+      networks:
+        - "database"
+        - "backbone"
+    teamsurvey-api-testing_db:
+      name: teamsurvey-api-testing_db
+      image: "{{ docker_registry }}library/mongo:4.2"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: "{{ teamsurveyapitesting.MONGO_USER }}"
+        MONGO_INITDB_ROOT_PASSWORD: "{{ teamsurveyapitesting.MONGO_PASS }}"
+        MONGO_INITDB_DATABASE: "{{ teamsurveyapitesting.DATABASE }}"
+      networks:
+        - "database"
+      volumes:
+        - "/mnt/shared/applications-testing/teamsurvey-api-testing/db/data:/data/db"
+
+  apps:
+    apps-database:
+      name: apps-database
+      image: "{{ docker_registry }}library/mysql:5.5"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      environment:
+        MSQL_USER: "{{ teamsurveyapi.MYSQL_USER }}"
+        MSQL_PASS: "{{ teamsurveyapi.MYSQL_PASS }}"
+        MSQL_HOST: "{{ teamsurveyapi.MYSQL_HOST }}"
+        MYSQL_ROOT_PASSWORD: "{{ teamsurveyapi.MYSQL_PASS }}"
+      ports:
+      - "127.0.0.1:3306:3306"
+      networks:
+        - "database"
+      volumes:
+        - "/srv/mysql/config:/etc/mysql/conf.d:ro"
+        - "/srv/mysql/log:/var/log/mysql"
+        - "/srv/mysql/db:/var/lib/mysql"
+
+  worksuite:
+    teamsurvey-ssh:
+      name: teamsurvey_ssh
+      image: "{{ docker_registry }}devopsansiblede/worksuite:latest"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      ports:
+      - "50022:22"
+      networks:
+        - "database"
+        - "backbone"
+      volumes:
+        - "/mnt/shared/applications-testing/worksuite/teamsurvey_ssh/:/root/.ssh:ro"
+
+  concursolutions:
+    concursolutions_ssh:
+      name: concursolutions_ssh
+      image: "{{ docker_registry }}devopsansiblede/worksuite:latest"
+      restartPolicy: always
+      labels:
+        - "traefik.enable: 'false'"
+      ports:
+      - "40022:22"
+      networks:
+        - "database"
+        - "backbone"
+      volumes:
+        - "/mnt/shared/applications-testing/concursolutions/ssh-config/:/home/ubuntu/.ssh:ro"
+        - "/mnt/shared/applications-testing/achievo-test/data/concursolutions/production:/data/production:rw"
+        - "/mnt/shared/applications-testing/achievo-test/data/concursolutions/test:/data/test:rw"
+        - "/mnt/shared/applications-testing/concursolutions/sshd-config/:/etc/ssh/"
+
+...

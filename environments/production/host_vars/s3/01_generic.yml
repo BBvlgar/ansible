@@ -1,0 +1,9 @@
+---
+
+docker_host: true
+traefik_enabled: false
+remote: true
+omposerFilePath: "/srv/compose/"
+
+
+...

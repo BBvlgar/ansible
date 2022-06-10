@@ -1,0 +1,93 @@
+---
+# TODO Add default values for ticket_system & ldap_url
+- hosts: localhost
+  vars:
+    env: testing
+
+  tasks:
+    - name: set issue key if not defined
+      block:
+        - name: Search for an issue
+          uri:
+            user: "{{ usercreationbot.username }}"
+            password: "{{ usercreationbot.password }}"
+            url: "{{ usercreationbot.uri }}/rest/api/2/search?jql=project%20%3D%20AM%20AND%20issuetype%20%3D%20%22Employee%20Exit%22%20AND%20status%20%3D%20%22Ready%20for%20RollOut%22%20AND%20resolution%20%3D%20Unresolved%20AND%20%22To%22%20%3C%3D%20-1m&maxResults=10 "
+            method: "GET"
+            force_basic_auth: yes
+            body_format: "json"
+          register: issue
+
+        - set_fact:
+            ticket_number: "{{ issue.json.issues[0].key }}"
+          when: issue.json.issues|length>0
+
+        - set_fact:
+            ticket_number: -1
+          when: issue.json.issues| length == 0
+
+        - meta: end_play
+          when: issue.json.issues| length == 0
+
+      when: "ticket_number is not defined"
+
+    - meta: end_play
+      when: ticket_number == -1
+
+    - name: Get data fields from ticket
+      uri:
+        url: "{{ ticket_system }}/rest/api/2/issue/{{ ticket_number }}"
+        user: "{{ ticket_user }}"
+        password: "{{ ticket_password }}"
+        method: "GET"
+        force_basic_auth: yes
+        body_format: "json"
+      register: data
+      no_log: "{{ no_log|default('true') }}"
+
+
+
+    - name: Create random password for use in email account
+      shell: openssl rand -base64 8
+      register: email_password
+
+    - set_fact:
+        # Set input variables as host facts for use in other playbooks on this host
+        admin_user: "{{admin_user}}"
+        admin_password: "{{ admin_password }}"
+        admin_api_token: "{{admin_api_token}}"
+        office_user: "{{office_user}}"
+        office_password: "{{ office_password }}"
+        office_2fa_method: "{{ office_2fa_method }}"
+        office_2fa_code: "{% if office_2fa_method == 'Code' %} {{office_2fa_code }}{% else %} '' {% endif %}"
+        username: "{{ data.json.fields.customfield_11601.name }}"
+        email: "{{ data.json.fields.customfield_11601.emailAddress  }}"
+        email_password: "{{ email_password.stdout + '1' }}"
+        ldap_url: "{{ ldap_url }} "
+        encryption_password: "{{encryption_password}}"
+
+    - name: set delete data
+      set_fact:
+        user:
+          disable:
+            user:
+              username:     "{{ data.json.fields.customfield_11601.name }}"
+              email:        "{{ data.json.fields.customfield_11601.emailAddress  }}"
+              to:           "{{ data.json.fields.customfield_10134 }}"
+          secret: "{{ secret }}"
+
+    # credentials base64 encoded
+    - name: Base64 encode variables
+      shell: "printf {{ admin_user }}:{{ admin_password }} | base64"
+      register: auth_base64
+
+    - set_fact:
+        auth_b64: "{{ auth_base64.stdout }}"
+
+    - fail: msg="{{ item }} is required!"
+      with_items:
+        - "{{ admin_user }}"
+        - "{{ username }}"
+        - "{{ email }}"
+        - "{{ office_user }}"
+        - "{{ office_2fa_method }}"
+      when: "{{ item|trim =='' }}"

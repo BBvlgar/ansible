@@ -1,0 +1,14 @@
+---
+
+- debug:
+    msg: "{{ stack }}"
+  when: debug is defined and debug == true
+
+- name: "Create Config-Files"
+  include_tasks: "_deployapptemplate.yml"
+  with_dict: "{{ stack.value }}"
+  loop_control:
+    loop_var: app
+  when: remote == true
+
+...

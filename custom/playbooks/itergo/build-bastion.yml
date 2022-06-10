@@ -1,0 +1,6 @@
+---
+- include: launch-temporary-instance.yml
+- include: provision-bastion-instance.yml
+- include: bundle-bastion-ami.yml
+- include: run-post-steps.yml
+#- include: cleanup.yml

@@ -1,0 +1,19 @@
+---
+
+- name: Ensure authorized_keys script is installed
+  copy:
+    src: set-authorized-keys
+    dest: /usr/bin/set-authorized-keys
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Ensure rc.local is installed
+  copy:
+    src: rc.local
+    dest: /etc/rc.local
+    mode: a+x
+    owner: root
+    group: root
+
+...

@@ -1,0 +1,9 @@
+---
+
+composerFilePath: '/mnt/shared/compose/connect'
+docker_home:      '/mnt/shared/applications'
+docker_registry:  'docker.it-economics.de/proxy/'
+traefik_enabled: true
+sophos_av_disableMTD: true
+
+...
