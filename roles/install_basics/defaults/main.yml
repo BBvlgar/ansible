@@ -48,6 +48,7 @@ basic_toolset:
   - name: "python-setuptools"
   - name: "strace"
   - name: "whois"
+  - name: 'python-is-python3'
 
 basic_pip_toolset:
   - name: "pip"
