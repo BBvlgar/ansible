@@ -2,7 +2,7 @@
 
 - name: merge global_ufw_rules and host_ufw_rules into ufw_rules
   set_fact:
-    ufw_rules: "{{ global_ufw_rules | default([]) }} + {{ host_ufw_rules | default([]) }}"
+    ufw_rules: "{{ global_ufw_rules | default([]) + host_ufw_rules | default([]) }}"
 
 - name: root block
   block:
@@ -33,7 +33,7 @@
         src:   "{{ item.src | default('any') }}"
         dest:  "{{ item.dest | default('any') }}"
       with_items: "{{ ufw_rules }}"
-      when: configure_ufw is not defined or configure_ufw | bool
+      when: ( configure_ufw is not defined or configure_ufw | bool ) and ufw_rules is defined and ufw_rules | length > 0
       retries: 3
       delay: 10
 
@@ -50,7 +50,6 @@
       when: enable_ufw  is not defined or enable_ufw  | bool
       retries: 3
       delay: 10
-
 
   become: true
 

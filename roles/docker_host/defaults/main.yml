@@ -13,16 +13,18 @@ install_docker:
   tools:
     - name: 'docker-ce'
     - name: 'docker-ce-cli'
-    # - name: 'containerd.io'
+    - name: 'docker-compose-plugin'
 
   aws_templates:
-    - src: aws-logger.conf.j2
-      dest: /etc/docker/aws-logger.conf
-    - src: docker-defaults.j2
-      dest: /etc/default/docker
+    - src:  'aws-logger.conf.j2'
+      dest: '/etc/docker/aws-logger.conf'
+    - src:  'docker-defaults.j2'
+      dest: '/etc/default/docker'
 
-package_state: latest
+package_state: 'latest'
 
 docker_registry: ''
+
+compose_bin_location: '/usr/local/bin/docker-compose'
 
 ...
