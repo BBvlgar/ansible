@@ -84,7 +84,16 @@
       - virtualenv
       - chardet
       - docker
-      - docker-compose
+
+- name: install latest docker-compose from GitHub
+  shell:
+    cmd: |
+      # retrieve latest tag / version to be downloaded
+      dlVersion="$( curl -Ls -o /dev/null -w %{url_effective} https://github.com/docker/compose/releases/latest )"
+      # do the download
+      curl -L "https://github.com/docker/compose/releases/download/${dlVersion##*/}/docker-compose-$( uname -s )-$( uname -m )" > {{ compose_bin_location }}
+      # change execution permissions
+      chmod +x {{ compose_bin_location }}
 
 - name: Set pull credentials as root user
   become: true

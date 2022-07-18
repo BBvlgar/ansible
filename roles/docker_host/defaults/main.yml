@@ -13,6 +13,7 @@ install_docker:
   tools:
     - name: 'docker-ce'
     - name: 'docker-ce-cli'
+    - name: 'docker-compose-plugin'
 
   aws_templates:
     - src:  'aws-logger.conf.j2'
@@ -23,5 +24,7 @@ install_docker:
 package_state: 'latest'
 
 docker_registry: ''
+
+compose_bin_location: '/usr/local/bin/docker-compose'
 
 ...
