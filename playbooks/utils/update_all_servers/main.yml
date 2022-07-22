@@ -15,10 +15,25 @@
     - name: 'update Server'
       include_role:
         name: update_server
+      vars:
+        override_user: 'yes'
+        skip_update_reboot: yes
+
+    - name: 'install sophos antivirus'
+      include_role:
+        name: sophos_install
+      when:
+        - sophos_av_url is defined
+        - sophos_av_url | length > 0
 
     - name: 'ensure basic toolset and configuration installed'
       include_role:
         name: install_basics
+
+    - name: 'install docker tools'
+      include_role:
+        name: docker_host
+      when: docker_host is defined and docker_host
 
     - name: 'create logrotate config'
       include_role:
