@@ -11,6 +11,14 @@ mdb_version:          "{{ stack.mdb_version      | default ('latest') }}"
 
 docker_home: "/data/docker"
 
+###
+## DEFAULT PORTS FOR DATABASES
+## the assignment for local ports is only supported for default ports for now ...
+###
+
+postgres_port: "5432"
+mysql_port:    "3306"
+mdb_port:      "3306"
 
 ###
 ## NETWORK DEFINITIONS

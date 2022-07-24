@@ -4,9 +4,19 @@
   set_fact:
     cnt_cnf_path:  "{{ mysql_cnt.name }}/{{ mysql_path.config }}"
 
+- name: "use DB default"
+  set_fact:
+    db_cnt: "{{ mysql_cnt }}"
+  when: workstack.local_db_port is not defined
+
+- name: "prepare local DB port if configured"
+  set_fact:
+    db_cnt: "{{ mysql_cnt | prepareLocal( mysql_port, workstack.local_db_port ) }}"
+  when: workstack.local_db_port is defined
+
 - name: "add mysql to `containers` variable"
   set_fact:
-    containers: "{{ containers + [ mysql_cnt ] }}"
+    containers: "{{ containers + [ db_cnt ] }}"
 
 - name: "prepare configuration path"
   set_fact:

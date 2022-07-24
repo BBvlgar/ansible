@@ -1,7 +1,20 @@
 ---
 
+- name: "use DB default"
+  set_fact:
+    db_cnt: "{{ postgres_cnt }}"
+  when: workstack.local_db_port is not defined
+
+- name: "prepare local DB port if configured"
+  set_fact:
+    db_cnt: "{{ postgres_cnt | prepareLocal( postgres_port, workstack.local_db_port ) }}"
+  when: workstack.local_db_port is defined
+
+- debug:
+    msg: "{{ db_cnt }}"
+
 - name: "add PostgreSQL to `containers` variable"
   set_fact:
-    containers: "{{ containers + [ postgres_cnt ] }}"
+    containers: "{{ containers + [ db_cnt ] }}"
 
 ...

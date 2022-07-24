@@ -76,6 +76,7 @@ belonging to the stack it'll be the same schema.
 * `stack.db_user` defines the MySQL / PostgreSQL user to work with.
 * `stack.db_pw` defines the MySQL / PostgreSQL password for the dedicated user above.
 * `stack.db_root_pw` defines the password for MySQL root user (unused with PostgreSQL).
+* `stack.local_db_port` defines a port the database (MySQL, MariaDB or PostgreSQL) will be bound to on the Docker host.
 
 If you want to two or all three of MySQL, MariaDB or PostgreSQL with different settings, you can replace `db_` within the variables above by `mysql_`, `mdb_` or `pg_` – so i.e. `stack.db_name` gets `stack.pg_name` with PostgreSQL.
 

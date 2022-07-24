@@ -13,6 +13,7 @@ class FilterModule( object ):
             'unifyVolumes': self.unifyVolumes,
             'ensurePullRun': self.ensurePullRun,
             'adjustNetworks': self.adjustNetworks,
+            'prepareLocal': self.prepareLocal,
         }
 
     def prepareString( self, line ):
@@ -138,3 +139,10 @@ class FilterModule( object ):
                     elif isinstance(network, dict) and network.__contains__( 'name' ):
                         stack_items[i]['networks'].append( network )
         return stack_items
+
+    def prepareLocal( self, db_cnt, db_internal_port, host_db_port ):
+        ports_key = 'aux_ports'
+        if ports_key not in db_cnt:
+            db_cnt[ ports_key ] = []
+        db_cnt[ ports_key ].append( ':'.join( [ '127.0.0.1', host_db_port.strip(), db_internal_port.strip() ] ) )
+        return db_cnt
